@@ -1,0 +1,89 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/projectSettingsUpdater.xml
+/.idea.Magnus.iml
+/contentModel.xml
+/modules.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# .NET Core & .NET Framework
+# Ignore ASP.NET temporary files
+wwwroot/
+
+# Build Folders
+bin/
+obj/
+
+# User-specific files
+.vscode/
+.idea/
+
+# Rider settings
+.idea/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows Installer log files
+*.log
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# User-specific files
+.vscode/
+.idea/
+
+# JetBrains Rider files
+.idea/
+
+# User-specific files (VS Code)
+.vscode/
+
+# User-specific files for Visual Studio
+.vs/
+
+# User-specific files (Windows)
+Thumbs.db
+ehthumbs.db
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Ignore user-specific files created by Rider
+.idea/
+
+# Dependency directories
+node_modules/
+
+# ASP.NET Core secrets
+secrets/
+
+# ASP.NET Core runtime config file
+project.runtimeconfig.json
+
+# DotNet Test Results
+TestResults/
+
+# .NET Core Global Tool directories
+dotnet-tools/
+
+# Ignore coverage results folder
+coverage/
+
+# Ignore local settings files
+local.settings.json
