@@ -22,6 +22,12 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<TransferWarehouseItem> TransferWarehouseItems { get; set; }
     public DbSet<AuditProduct> AuditProducts { get; set; }
     public DbSet<ProductStock> ProductStocks { get; set; }
+    public DbSet<CostCenter> CostCenters { get; set; }
+    public DbSet<CostCenterSubGroup> CostCenterSubGroups { get; set; }
+    public DbSet<CostCenterGroup> CostCenterGroups { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceItem> InvoiceItems { get; set; }
+    public DbSet<AccountsPayable> AccountsPayables { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

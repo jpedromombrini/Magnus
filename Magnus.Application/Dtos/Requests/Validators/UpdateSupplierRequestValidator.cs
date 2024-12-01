@@ -16,7 +16,7 @@ public class UpdateSupplierRequestValidator : AbstractValidator<UpdateSupplierRe
         
         RuleFor(x => x.Phone)
             .NotEmpty().WithMessage("O número de telefone não pode ser vazio.")
-            .Must((request, number) => PhoneValidator.IsValidPhoneNumber(number, request.PhoneType))
+            .Must((number) => PhoneValidator.IsValidPhoneNumber(number))
             .WithMessage("Número de telefone inválido para o tipo selecionado.");
         
         RuleFor(seller => seller.Email)

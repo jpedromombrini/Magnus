@@ -15,9 +15,8 @@ public class Laboratory : EntityBase
     public void SetCode(int code)
     {
         if (code <= 0)
-        {
             throw new ArgumentException("O código deve ser maior que zero.");
-        }
+        
         Code = code;
     }
     

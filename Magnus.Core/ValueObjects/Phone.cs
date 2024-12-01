@@ -6,39 +6,23 @@ namespace Magnus.Core.ValueObjects;
 public class Phone
 {
     public string Number { get; }
-    public PhoneType PhoneType { get; }
-    public Phone(string number, PhoneType phoneType)
+    public Phone(string number)
     {
         if (string.IsNullOrEmpty(number) || number.Length < 10 || number.Length > 11)
             throw new ArgumentException("Número inválido");
-        if (!IsValidPhoneNumber(number, phoneType))
+        if (!IsValidPhoneNumber(number))
             throw new ArgumentException("Número inválido");
         Number = number;
-        PhoneType = phoneType;
     }
-    private bool IsValidPhoneNumber(string number, PhoneType phoneType)
+    private bool IsValidPhoneNumber(string number)
     {
-        switch (phoneType)
-        {
-            case PhoneType.Mobile:
-                return IsValidMobilePhone(number);
-            case PhoneType.Fixed:
-                return IsValidFixedPhone(number);
-            default:
-                return false;
-        }
-    }
-    
-    private bool IsValidMobilePhone(string number)
-    {
-        var regex = new Regex(@"^\(\d{2}\)\s9\d{4}-\d{4}$");
-        return regex.IsMatch(number);
-    }
-    
-    private bool IsValidFixedPhone(string number)
-    {
-        var regex = new Regex(@"^\(\d{2}\)\s\d{4}-\d{4}$");
-        return regex.IsMatch(number);
+        var regexMobile = new Regex(@"^\(\d{2}\)\s9\d{4}-\d{4}$");
+        if (regexMobile.IsMatch(number))
+            return true;
+        var regexFixed = new Regex(@"^\(\d{2}\)\s\d{4}-\d{4}$");
+        if(regexFixed.IsMatch(number))
+            return true;
+        return false;
     }
 
     public override string ToString() => Number;

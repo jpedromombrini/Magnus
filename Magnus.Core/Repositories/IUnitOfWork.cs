@@ -16,6 +16,11 @@ public interface IUnitOfWork : IDisposable
     ITransferWarehouseRepository TransferWarehouses { get; }
     IAuditProductRepository AuditProducts { get; }
     IProductStockRepository ProductStocks { get; }
+    ICostCenterRepository CostCenters { get; }
+    ICostCenterGroupRepository CostCenterGroups { get; }
+    ICostCenterSubGroupRepository CostCenterSubGroups { get; }
+    IInvoiceRepository Invoices { get; }
+    IAccountsPayableRepository AccountsPayables { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

@@ -21,5 +21,9 @@ public class TransferWarehouseItemMap : IEntityTypeConfiguration<TransferWarehou
         builder.Property(x => x.Validity)
             .IsRequired()
             .HasColumnType("date");
+        builder.HasOne(x => x.TransferWarehouse)  
+            .WithMany()  
+            .HasForeignKey(x => x.TransferWarehouseId)  
+            .OnDelete(DeleteBehavior.Cascade);  
     }
 }

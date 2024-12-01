@@ -11,7 +11,7 @@ public class DoctorController(
     IDoctorAppService doctorAppService) : ControllerBase
 {
     [HttpGet("getall")]
-    public async Task<IEnumerable<DoctorResponse>> GetAllClientsAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<DoctorResponse>> GetAllDoctorsAsync(CancellationToken cancellationToken)
     {
         return await doctorAppService.GetDoctorsAsync(cancellationToken);
     }

@@ -35,7 +35,7 @@ public class SellerAppService(
         sellerDb.SetName(request.Name);
         sellerDb.SetEmail(new Email(request.Email));
         sellerDb.SetDocument(new Document(request.Password));
-        sellerDb.SetPhone(new Phone(request.Phone, request.PhoneType));
+        sellerDb.SetPhone(new Phone(request.Phone));
         unitOfWork.Sellers.UpdateAsync(sellerDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

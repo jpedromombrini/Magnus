@@ -13,4 +13,9 @@ public class ProductStockRepository(MagnusContext context) : Repository<ProductS
     {
         return await _context.ProductStocks.FirstOrDefaultAsync(predicate, cancellationToken);
     }
+
+    public async Task AddRangeAsync(List<ProductStock> productStocks, CancellationToken cancellationToken)
+    {
+        await _context.ProductStocks.AddRangeAsync(productStocks, cancellationToken);
+    }
 }

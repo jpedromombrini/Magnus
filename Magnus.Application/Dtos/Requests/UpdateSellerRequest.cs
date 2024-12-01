@@ -7,5 +7,4 @@ public record UpdateSellerRequest(
     string Document, 
     string Phone,
     string Email,
-    string Password,
-    PhoneType PhoneType);
+    string Password);

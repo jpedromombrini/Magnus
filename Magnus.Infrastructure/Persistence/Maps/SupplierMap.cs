@@ -24,7 +24,7 @@ public class SupplierMap : IEntityTypeConfiguration<Supplier>
             .HasColumnType("varchar(100)");     
         builder.OwnsOne(x => x.Phone)
             .Property(x => x.Number)
-            .HasColumnName("Number")
+            .HasColumnName("PhoneNumber")
             .IsRequired()
             .HasColumnType("varchar(14)");       
         builder.OwnsOne(x => x.Address)
@@ -49,7 +49,7 @@ public class SupplierMap : IEntityTypeConfiguration<Supplier>
             .HasColumnType("varchar(50)");
         builder.OwnsOne(x => x.Address)
             .Property(x =>x.Number)
-            .HasColumnName("Number");
+            .HasColumnName("AddressNumber");
         builder.OwnsOne(x => x.Address)
             .Property(x => x.ZipCode)
             .HasColumnType("varchar(9)");

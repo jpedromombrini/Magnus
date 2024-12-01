@@ -1,4 +1,3 @@
-using Magnus.Core.Entities;
 using Magnus.Core.Repositories;
 using Magnus.Infrastructure.Persistence.Contexts;
 
@@ -23,6 +22,11 @@ public class UnitOfWork : IUnitOfWork
         TransferWarehouses = new TransferWarehouseRepository(_context);
         AuditProducts = new AuditProductRepository(_context);
         ProductStocks = new ProductStockRepository(_context);
+        CostCenters = new CostCenterRepository(_context);
+        CostCenterGroups = new CostCenterGroupRepository(_context);
+        CostCenterSubGroups = new CostCenterSubGroupRepository(_context);
+        Invoices = new InvoiceRepository(_context);
+        AccountsPayables = new AccountsPayableRepository(_context);
     }
 
     public IProductRepository Products { get; }
@@ -37,6 +41,11 @@ public class UnitOfWork : IUnitOfWork
     public ITransferWarehouseRepository TransferWarehouses { get; }
     public IAuditProductRepository AuditProducts { get; }
     public IProductStockRepository ProductStocks { get; }
+    public ICostCenterRepository CostCenters { get; }
+    public ICostCenterGroupRepository CostCenterGroups { get; }
+    public ICostCenterSubGroupRepository CostCenterSubGroups { get; }
+    public IInvoiceRepository Invoices { get; }
+    public IAccountsPayableRepository AccountsPayables { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {

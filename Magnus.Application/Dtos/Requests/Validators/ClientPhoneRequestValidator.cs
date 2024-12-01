@@ -10,7 +10,7 @@ public class ClientPhoneRequestValidator : AbstractValidator<ClientPhoneRequest>
     {
         RuleFor(x => x.Number)
             .NotEmpty().WithMessage("O número de telefone não pode ser vazio.")
-            .Must((request, number) => PhoneValidator.IsValidPhoneNumber(number, request.PhoneType))
+            .Must((number) => PhoneValidator.IsValidPhoneNumber(number))
             .WithMessage("Número de telefone inválido para o tipo selecionado.");
         
         RuleFor(x => x.Description)

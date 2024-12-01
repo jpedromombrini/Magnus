@@ -22,6 +22,138 @@ namespace Magnus.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsPayable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Canceled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("CostCenter")
+                        .IsRequired()
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("Document")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("DueDate")
+                        .HasColumnType("timestamp");
+
+                    b.Property<int>("Installment")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Interest")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid?>("InvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("PaymentDate")
+                        .HasColumnType("timestamp");
+
+                    b.Property<decimal>("PaymentValue")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid>("SupplierId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<Guid?>("UserPaymentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountsPayable", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsPayableOccurrence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountsPayableId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Occurrence")
+                        .IsRequired()
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountsPayableId");
+
+                    b.ToTable("AccountsPayableOccurrence", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.AuditProduct", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Document")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("RecordDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Serie")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("SupplierId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("TotalValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("TransferhouseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("Validity")
+                        .HasColumnType("date");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditProducts");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Bar", b =>
                 {
                     b.Property<Guid>("Id")
@@ -79,13 +211,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasColumnType("varchar(15)");
-
-                    b.Property<int>("PhoneType")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -115,6 +240,189 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasIndex("ClientId");
 
                     b.ToTable("ClientSocialMedia", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.CostCenter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<Guid?>("CostCenterSubGroupId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CostCenterSubGroupId");
+
+                    b.ToTable("CostCenter", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.CostCenterGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CostCenterGroup", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.CostCenterSubGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("varchar(5)");
+
+                    b.Property<Guid?>("CostCenterGroupId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CostCenterGroupId");
+
+                    b.ToTable("CostCenterSubGroup", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Doctor", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Code"));
+
+                    b.Property<string>("Crm")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Doctor", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp");
+
+                    b.Property<DateTime>("DateEntry")
+                        .HasColumnType("timestamp");
+
+                    b.Property<decimal>("Deduction")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid?>("DoctorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Freight")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("InvoiceSituation")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("varchar(44)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Observation")
+                        .IsRequired()
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int>("Serie")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SupplierId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Invoice", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.InvoiceItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(12,3)");
+
+                    b.Property<bool>("Bonus")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ProductInternalCode")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<decimal>("TotalValue")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateOnly>("Validity")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("InvoiceItem", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Laboratory", b =>
@@ -195,6 +503,157 @@ namespace Magnus.Infrastructure.Migrations
                     b.ToTable("Product", (string)null);
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.ProductStock", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,3)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("ValidityDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WarehouseName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductStock", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Receipt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("InIstallments")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("Increase")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Receipt", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Seller", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Seller", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Supplier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Supplier", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.TransferWarehouse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("WarehouseDestinyId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WarehouseDestinyName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("WarehouseOriginId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WarehouseOriginName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TransferWarehouse", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.TransferWarehouseItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,3)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("ProductInternalCode")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TransferWarehouseId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Validity")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransferWarehouseId");
+
+                    b.ToTable("TransferWarehouseItem", (string)null);
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -226,6 +685,44 @@ namespace Magnus.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.Warehouse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Code"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Warehouse", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsPayableOccurrence", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.AccountsPayable", "AccountsPayable")
+                        .WithMany("Occurrences")
+                        .HasForeignKey("AccountsPayableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccountsPayable");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Bar", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Product", "Product")
@@ -239,24 +736,6 @@ namespace Magnus.Infrastructure.Migrations
 
             modelBuilder.Entity("Magnus.Core.Entities.Client", b =>
                 {
-                    b.OwnsOne("Magnus.Core.ValueObjects.Email", "Email", b1 =>
-                        {
-                            b1.Property<Guid>("ClientId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Address")
-                                .IsRequired()
-                                .HasColumnType("varchar(100)")
-                                .HasColumnName("Email");
-
-                            b1.HasKey("ClientId");
-
-                            b1.ToTable("Client");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ClientId");
-                        });
-
                     b.OwnsOne("Magnus.Core.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<Guid>("ClientId")
@@ -321,6 +800,24 @@ namespace Magnus.Infrastructure.Migrations
                                 .HasForeignKey("ClientId");
                         });
 
+                    b.OwnsOne("Magnus.Core.ValueObjects.Email", "Email", b1 =>
+                        {
+                            b1.Property<Guid>("ClientId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Address")
+                                .IsRequired()
+                                .HasColumnType("varchar(100)")
+                                .HasColumnName("Email");
+
+                            b1.HasKey("ClientId");
+
+                            b1.ToTable("Client");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ClientId");
+                        });
+
                     b.Navigation("Address");
 
                     b.Navigation("Document")
@@ -336,6 +833,27 @@ namespace Magnus.Infrastructure.Migrations
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.OwnsOne("Magnus.Core.ValueObjects.Phone", "Phone", b1 =>
+                        {
+                            b1.Property<Guid>("ClientPhoneId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasColumnType("varchar(14)")
+                                .HasColumnName("Number");
+
+                            b1.HasKey("ClientPhoneId");
+
+                            b1.ToTable("ClientPhone");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ClientPhoneId");
+                        });
+
+                    b.Navigation("Phone")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.ClientSocialMedia", b =>
@@ -347,6 +865,37 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.CostCenter", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.CostCenterSubGroup", "CostCenterSubGroup")
+                        .WithMany("CostCenters")
+                        .HasForeignKey("CostCenterSubGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("CostCenterSubGroup");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.CostCenterSubGroup", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.CostCenterGroup", "CostCenterGroup")
+                        .WithMany("CostCenterSubGroups")
+                        .HasForeignKey("CostCenterGroupId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("CostCenterGroup");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.InvoiceItem", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Invoice", "Invoice")
+                        .WithMany("Items")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.PriceRule", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Product", "Product")
@@ -356,6 +905,198 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Seller", b =>
+                {
+                    b.OwnsOne("Magnus.Core.ValueObjects.Document", "Document", b1 =>
+                        {
+                            b1.Property<Guid>("SellerId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("varchar(14)")
+                                .HasColumnName("Document");
+
+                            b1.HasKey("SellerId");
+
+                            b1.ToTable("Seller");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SellerId");
+                        });
+
+                    b.OwnsOne("Magnus.Core.ValueObjects.Email", "Email", b1 =>
+                        {
+                            b1.Property<Guid>("SellerId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Address")
+                                .IsRequired()
+                                .HasColumnType("varchar(100)")
+                                .HasColumnName("Email");
+
+                            b1.HasKey("SellerId");
+
+                            b1.ToTable("Seller");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SellerId");
+                        });
+
+                    b.OwnsOne("Magnus.Core.ValueObjects.Phone", "Phone", b1 =>
+                        {
+                            b1.Property<Guid>("SellerId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasColumnType("varchar(14)")
+                                .HasColumnName("Number");
+
+                            b1.HasKey("SellerId");
+
+                            b1.ToTable("Seller");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SellerId");
+                        });
+
+                    b.Navigation("Document")
+                        .IsRequired();
+
+                    b.Navigation("Email")
+                        .IsRequired();
+
+                    b.Navigation("Phone")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Supplier", b =>
+                {
+                    b.OwnsOne("Magnus.Core.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<Guid>("SupplierId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasColumnType("varchar(50)")
+                                .HasColumnName("City");
+
+                            b1.Property<string>("Complement")
+                                .IsRequired()
+                                .HasColumnType("varchar(50)")
+                                .HasColumnName("Complement");
+
+                            b1.Property<string>("Neighborhood")
+                                .IsRequired()
+                                .HasColumnType("varchar(50)")
+                                .HasColumnName("Neighborhood");
+
+                            b1.Property<int>("Number")
+                                .HasColumnType("integer")
+                                .HasColumnName("AddressNumber");
+
+                            b1.Property<string>("PublicPlace")
+                                .IsRequired()
+                                .HasColumnType("varchar(100)")
+                                .HasColumnName("PublicPlace");
+
+                            b1.Property<string>("State")
+                                .IsRequired()
+                                .HasColumnType("varchar(2)")
+                                .HasColumnName("State");
+
+                            b1.Property<string>("ZipCode")
+                                .IsRequired()
+                                .HasColumnType("varchar(9)");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("Supplier");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.OwnsOne("Magnus.Core.ValueObjects.Document", "Document", b1 =>
+                        {
+                            b1.Property<Guid>("SupplierId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("varchar(14)")
+                                .HasColumnName("Document");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("Supplier");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.OwnsOne("Magnus.Core.ValueObjects.Email", "Email", b1 =>
+                        {
+                            b1.Property<Guid>("SupplierId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Address")
+                                .IsRequired()
+                                .HasColumnType("varchar(100)")
+                                .HasColumnName("Email");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("Supplier");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.OwnsOne("Magnus.Core.ValueObjects.Phone", "Phone", b1 =>
+                        {
+                            b1.Property<Guid>("SupplierId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Number")
+                                .IsRequired()
+                                .HasColumnType("varchar(14)")
+                                .HasColumnName("PhoneNumber");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("Supplier");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.Navigation("Address")
+                        .IsRequired();
+
+                    b.Navigation("Document")
+                        .IsRequired();
+
+                    b.Navigation("Email")
+                        .IsRequired();
+
+                    b.Navigation("Phone")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.TransferWarehouseItem", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.TransferWarehouse", "TransferWarehouse")
+                        .WithMany("Items")
+                        .HasForeignKey("TransferWarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TransferWarehouse");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.User", b =>
@@ -382,6 +1123,22 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.Warehouse", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.User", "User")
+                        .WithOne("Warehouse")
+                        .HasForeignKey("Magnus.Core.Entities.Warehouse", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsPayable", b =>
+                {
+                    b.Navigation("Occurrences");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Client", b =>
                 {
                     b.Navigation("Phones");
@@ -389,11 +1146,36 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("SocialMedias");
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.CostCenterGroup", b =>
+                {
+                    b.Navigation("CostCenterSubGroups");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.CostCenterSubGroup", b =>
+                {
+                    b.Navigation("CostCenters");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Product", b =>
                 {
                     b.Navigation("Bars");
 
                     b.Navigation("PriceRule");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.TransferWarehouse", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.User", b =>
+                {
+                    b.Navigation("Warehouse");
                 });
 #pragma warning restore 612, 618
         }

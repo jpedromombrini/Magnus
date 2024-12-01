@@ -28,9 +28,9 @@ public class TransferWarehouseMap : IEntityTypeConfiguration<TransferWarehouse>
         builder.Property(x => x.WarehouseOriginName)
             .IsRequired()
             .HasColumnType("varchar(100)");
-        builder.HasMany(tw => tw.Items)
-            .WithOne() 
-            .HasForeignKey(twi => twi.TransferWarehouseId)
+        builder.HasMany(x => x.Items)
+            .WithOne(x => x.TransferWarehouse) 
+            .HasForeignKey(x => x.TransferWarehouseId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

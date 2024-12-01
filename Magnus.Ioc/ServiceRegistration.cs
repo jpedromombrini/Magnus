@@ -23,6 +23,10 @@ public static class ServiceRegistration
         services.AddScoped<ISupplierAppService, SupplierAppService>();
         services.AddScoped<IReceiptAppService, ReceiptAppService>();
         services.AddScoped<ITransferWarehouseAppService, TransferWarehouseAppService>();
+        services.AddScoped<ICostCenterAppService, CostCenterAppService>();
+        services.AddScoped<ICostCenterGroupAppService, CostCenterGroupAppService>();
+        services.AddScoped<ICostCenterSubGroupAppService, CostCenterSubGroupAppService>();
+        services.AddScoped<IProductStockAppService, ProductStockAppService>();
         #endregion
 
         #region Services Core

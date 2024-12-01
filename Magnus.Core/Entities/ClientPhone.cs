@@ -11,7 +11,7 @@ public class ClientPhone : EntityBase
     public string? Description { get; private set; }
 
     private ClientPhone(){}
-    public ClientPhone(Guid clientId, Phone phone, string description, PhoneType phoneType)
+    public ClientPhone(Guid clientId, Phone phone, string description)
     {
         SetClientId(clientId);
         SetPhone(phone);
@@ -31,21 +31,5 @@ public class ClientPhone : EntityBase
     public void SetDescription(string description)
     {
         Description = description;
-    }
-    
-    private bool ValidatePhoneNumber(string number, PhoneType phoneType)
-    {
-        string pattern;
-
-        if (phoneType == PhoneType.Mobile)
-        {
-            pattern = @"^\(\d{2}\)\s9\d{4}-\d{4}$";  
-        }
-        else
-        {
-            pattern = @"^\(\d{2}\)\s\d{4}-\d{4}$";   
-        }
-        
-        return Regex.IsMatch(number, pattern);
     }
 }

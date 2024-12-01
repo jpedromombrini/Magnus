@@ -5,28 +5,14 @@ namespace Magnus.Application.Dtos.Requests.Validators;
 
 public static class PhoneValidator
 {
-    public static bool IsValidPhoneNumber(string number, PhoneType phoneType)
+    public static bool IsValidPhoneNumber(string number)
     {
-        switch (phoneType)
-        {
-            case PhoneType.Mobile:
-                return IsValidMobilePhone(number);
-            case PhoneType.Fixed:
-                return IsValidFixedPhone(number);
-            default:
-                return false;
-        }
-    }
-    
-    private static bool IsValidMobilePhone(string number)
-    {
-        var regex = new Regex(@"^\d{11}$");
-        return regex.IsMatch(number);
-    }
-    
-    private static bool IsValidFixedPhone(string number)
-    {
-        var regex = new Regex(@"^\d{10}$");
-        return regex.IsMatch(number);
+        var regexMobile = new Regex(@"^\(\d{2}\)\s9\d{4}-\d{4}$");
+        if (regexMobile.IsMatch(number))
+            return true;
+        var regexFixed = new Regex(@"^\(\d{2}\)\s\d{4}-\d{4}$");
+        if(regexFixed.IsMatch(number))
+            return true;
+        return false;
     }
 }
