@@ -61,7 +61,7 @@ public class InvoiceAppService(
         invoiceDb.SetObservation(request.Observation);
         invoiceDb.SetInvoiceSituation(request.InvoiceSituation);
         invoiceDb.SetDoctorId(request.DoctorId);
-        unitOfWork.Invoices.UpdateAsync(invoiceDb);
+        unitOfWork.Invoices.Update(invoiceDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

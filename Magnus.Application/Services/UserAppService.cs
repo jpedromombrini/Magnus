@@ -34,7 +34,7 @@ public class UserAppService(
         user.SetFinalDate(request.FinalDate);
         user.SetPassword(request.Password);
         user.SetUserType(userType);
-        unitOfWork.Users.UpdateAsync(user);
+        unitOfWork.Users.Update(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -63,7 +63,7 @@ public class UserAppService(
         var user = await unitOfWork.Users.GetByIdAsync(id, cancellationToken);
         if (user is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.Users.DeleteAsync(user);
+        unitOfWork.Users.Delete(user);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

@@ -6,7 +6,7 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {
     public LoginRequestValidator()
     {
-        RuleFor(x => x.UserName)
+        RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Informe o usuário")
             .EmailAddress().WithMessage("Email inválido");
         RuleFor(x => x.Password)

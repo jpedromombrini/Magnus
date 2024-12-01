@@ -26,7 +26,7 @@ public class CostCenterAppService(
             throw new EntityNotFoundException(id);
         costCenter.SetName(request.Name);
         costCenter.SetCode(request.Code);
-        unitOfWork.CostCenters.UpdateAsync(costCenter);
+        unitOfWork.CostCenters.Update(costCenter);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -55,7 +55,7 @@ public class CostCenterAppService(
         var costCenter = await unitOfWork.CostCenters.GetByIdAsync(id, cancellationToken);
         if (costCenter is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.CostCenters.DeleteAsync(costCenter);
+        unitOfWork.CostCenters.Delete(costCenter);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

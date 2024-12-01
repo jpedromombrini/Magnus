@@ -25,7 +25,7 @@ public class LaboratoryAppService(
         if (laboratory is null)
             throw new EntityNotFoundException(id);
         laboratory.SetName(request.Name);
-        unitOfWork.Laboratories.UpdateAsync(laboratory);
+        unitOfWork.Laboratories.Update(laboratory);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -54,7 +54,7 @@ public class LaboratoryAppService(
         var laboratory = await unitOfWork.Laboratories.GetByIdAsync(id, cancellationToken);
         if (laboratory is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.Laboratories.DeleteAsync(laboratory);
+        unitOfWork.Laboratories.Delete(laboratory);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

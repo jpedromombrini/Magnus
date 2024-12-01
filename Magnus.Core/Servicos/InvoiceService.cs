@@ -34,7 +34,7 @@ public class InvoiceService(
             else
             {
                 stock.Amount += product.TotalAmount;
-                unitOfWork.ProductStocks.UpdateAsync(stock);
+                unitOfWork.ProductStocks.Update(stock);
             }
         }
 
@@ -63,7 +63,8 @@ public class InvoiceService(
                 pay.Installment,
                 invoice.Id,
                 null,
-                false)
+                false,
+                pay.Payment)
             );
         }
         await unitOfWork.AccountsPayables.AddRangeAsync(accountsPayables, cancellationToken);
@@ -78,6 +79,6 @@ public class InvoiceService(
             x => x.InvoiceId == invoice.Id, cancellationToken);
         unitOfWork.AuditProducts.RemoveRange(audits);
         unitOfWork.AccountsPayables.RemoveRange(payments);
-        unitOfWork.Invoices.DeleteAsync(invoice);
+        unitOfWork.Invoices.Delete(invoice);
     }
 }

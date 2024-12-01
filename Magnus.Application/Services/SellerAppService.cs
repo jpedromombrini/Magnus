@@ -36,7 +36,7 @@ public class SellerAppService(
         sellerDb.SetEmail(new Email(request.Email));
         sellerDb.SetDocument(new Document(request.Password));
         sellerDb.SetPhone(new Phone(request.Phone));
-        unitOfWork.Sellers.UpdateAsync(sellerDb);
+        unitOfWork.Sellers.Update(sellerDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -62,7 +62,7 @@ public class SellerAppService(
         var sellerDb = await unitOfWork.Sellers.GetByIdAsync(id, cancellationToken);
         if (sellerDb is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.Sellers.DeleteAsync(sellerDb);
+        unitOfWork.Sellers.Delete(sellerDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

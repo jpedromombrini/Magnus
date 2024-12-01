@@ -28,6 +28,7 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InvoiceItem> InvoiceItems { get; set; }
     public DbSet<AccountsPayable> AccountsPayables { get; set; }
+    public DbSet<Payment> Payments { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -28,7 +28,7 @@ public class SupplierAppService(
         supplierDb.SetAddress(mapper.Map<Address>(request.Address));
         supplierDb.SetDocument(new Document(request.Document));
         supplierDb.SetEmail(new Email(request.Email));
-        unitOfWork.Suppliers.UpdateAsync(supplierDb);
+        unitOfWork.Suppliers.Update(supplierDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -54,7 +54,7 @@ public class SupplierAppService(
         var supplierDb = await unitOfWork.Suppliers.GetByIdAsync(id, cancellationToken);
         if (supplierDb is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.Suppliers.DeleteAsync(supplierDb);
+        unitOfWork.Suppliers.Delete(supplierDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

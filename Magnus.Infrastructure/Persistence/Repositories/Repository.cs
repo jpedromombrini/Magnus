@@ -26,12 +26,12 @@ public abstract class Repository<T>(MagnusContext context) : IRepository<T>
         return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
     }
 
-    public virtual void UpdateAsync(T entity)
+    public virtual void Update(T entity)
     {
         _dbSet.Update(entity);
     }
 
-    public virtual void DeleteAsync(T entity)
+    public virtual void Delete(T entity)
     {
         _dbSet.Remove(entity);
     }

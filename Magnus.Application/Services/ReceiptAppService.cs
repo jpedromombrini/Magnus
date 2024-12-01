@@ -26,7 +26,7 @@ public class ReceiptAppService(
         receiptDb.SetName(request.Name);
         receiptDb.SetIncrease(request.Increase);
         receiptDb.SetInIstallments(request.InInstallments);
-        unitOfWork.Receipts.UpdateAsync(receiptDb);
+        unitOfWork.Receipts.Update(receiptDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -52,7 +52,7 @@ public class ReceiptAppService(
         var receiptDb = await unitOfWork.Receipts.GetByIdAsync(id, cancellationToken);
         if (receiptDb is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.Receipts.DeleteAsync(receiptDb);
+        unitOfWork.Receipts.Delete(receiptDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

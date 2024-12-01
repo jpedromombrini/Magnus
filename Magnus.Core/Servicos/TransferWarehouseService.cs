@@ -22,7 +22,7 @@ public class TransferWarehouseService(
             throw new EntityNotFoundException(transferWarehouseItem.ProductId);
 
         productStockOrigin.DecreaseAmount(transferWarehouseItem.Amount);
-        unitOfWork.ProductStocks.UpdateAsync(productStockOrigin);
+        unitOfWork.ProductStocks.Update(productStockOrigin);
 
         var productStockDestiny = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
             x.WarehouseId == destinationWarehouseId &&
@@ -38,7 +38,7 @@ public class TransferWarehouseService(
         else
         {
             productStockDestiny.IncreaseAmount(transferWarehouseItem.Amount);
-            unitOfWork.ProductStocks.UpdateAsync(productStockDestiny);
+            unitOfWork.ProductStocks.Update(productStockDestiny);
         }
 
         await unitOfWork.AuditProducts.AddRangeAsync(audits, cancellationToken);
@@ -58,7 +58,7 @@ public class TransferWarehouseService(
             throw new EntityNotFoundException(transferWarehouseItem.ProductId);
 
         productStockDestiny.DecreaseAmount(transferWarehouseItem.Amount);
-        unitOfWork.ProductStocks.UpdateAsync(productStockDestiny);
+        unitOfWork.ProductStocks.Update(productStockDestiny);
 
         var productStockOrigin = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
             x.WarehouseId == originWarehouseId &&
@@ -75,7 +75,7 @@ public class TransferWarehouseService(
         else
         {
             productStockOrigin.IncreaseAmount(transferWarehouseItem.Amount);
-            unitOfWork.ProductStocks.UpdateAsync(productStockOrigin);
+            unitOfWork.ProductStocks.Update(productStockOrigin);
         }
 
         var audits = await unitOfWork.AuditProducts.GetAllByExpressionAsync(

@@ -17,6 +17,8 @@ public class AccountsPayable : EntityBase
     public Guid? InvoiceId { get; private set; }
     public Guid? UserPaymentId { get; private set; }
     public bool Canceled { get; private set; }
+    public Guid PaymentId { get; set; }
+    public Payment Payment { get; set; }
     public List<AccountsPayableOccurrence>? Occurrences { get; private set; }
     private AccountsPayable(){}
     
@@ -35,7 +37,8 @@ public class AccountsPayable : EntityBase
         int installment,
         Guid? invoiceId,
         Guid? userPaymentId,
-        bool canceled)
+        bool canceled,
+        Payment payment)
     {
         SetDocument(document);
         SetSupplierId(supplierId);
@@ -52,6 +55,7 @@ public class AccountsPayable : EntityBase
         SetInvoiceId(invoiceId);
         SetUserPaymentId(userPaymentId);
         SetCanceled(canceled);
+        SetPayent(payment);
     }
 
    public void SetDocument(int document)
@@ -149,6 +153,17 @@ public class AccountsPayable : EntityBase
     public void SetCanceled(bool canceled)
     {
         Canceled = canceled;
+    }
+
+    public void SetPayent(Payment payment)
+    {
+        if(payment is null)
+            throw new ArgumentNullException("Informe o pagamento");
+        if(payment.Id == Guid.Empty)
+            throw new ArgumentException("informe o Id do pagamento");
+        PaymentId = payment.Id;
+        Payment = payment;
+        
     }
 
     public void SetOccurrences(List<AccountsPayableOccurrence>? occurrences)

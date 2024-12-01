@@ -1,12 +1,14 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Magnus.Api.Controller;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
+[Authorize]
 public class SupplierController(
     ISupplierAppService supplierAppService) : ControllerBase
 {

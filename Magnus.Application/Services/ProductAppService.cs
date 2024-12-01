@@ -30,7 +30,7 @@ public class ProductAppService(
         product.SetBars(bars);
         product.SetLaboratoryId(request.LaboratoryId);
         product.SetPriceRule(priceRule);
-        unitOfWork.Products.UpdateAsync(product);
+        unitOfWork.Products.Update(product);
         await unitOfWork.SaveChangesAsync(cancellation);
     }
 
@@ -59,7 +59,7 @@ public class ProductAppService(
         var product = await unitOfWork.Products.GetByIdAsync(id, cancellationToken);
         if (product is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.Products.DeleteAsync(product);
+        unitOfWork.Products.Delete(product);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

@@ -18,7 +18,7 @@ public class AuthAppService(
 {
     public async Task<LoginResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
     {
-        var userDb = await unitOfWork.Users.GetUserByEmailAsync(request.UserName, cancellationToken);
+        var userDb = await unitOfWork.Users.GetUserByEmailAsync(request.Email, cancellationToken);
         if (userDb is null)
             throw new AuthenticationException("Usuário ou senha inválidos");
         if(!userDb.Password.Equals(request.Password))

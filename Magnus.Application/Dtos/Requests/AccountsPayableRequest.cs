@@ -7,4 +7,5 @@ public record AccountsPayableRequest(
     decimal PaymentValue,
     decimal Discount,
     decimal Interest,    
-    int Installment);
+    int Installment,
+    Guid PaymentId);

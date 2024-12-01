@@ -4,13 +4,14 @@ using System.Text;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Magnus.Api.Controller;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class AuthController(
     IAuthAppService authAppService) : ControllerBase
 {
@@ -28,4 +29,13 @@ public class AuthController(
     {
         return await authAppService.RefreshLoginAsync(request, cancellationToken);
     }
+
+    [HttpGet]
+    [Route("check-auth")]
+    [Authorize]
+    public IActionResult CheckAuthAsync()
+    {
+        return Ok();
+    }
+    
 }

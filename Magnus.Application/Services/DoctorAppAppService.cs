@@ -26,7 +26,7 @@ public class DoctorAppAppService(
             throw new EntityNotFoundException(id);
         doctorDb.SetName(request.Name);
         doctorDb.SetCrm(request.Crm);
-        unitOfWork.Doctors.UpdateAsync(doctorDb);
+        unitOfWork.Doctors.Update(doctorDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -52,7 +52,7 @@ public class DoctorAppAppService(
         var doctorDb = await unitOfWork.Doctors.GetByIdAsync(id, cancellationToken);
         if (doctorDb is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.Doctors.DeleteAsync(doctorDb);
+        unitOfWork.Doctors.Delete(doctorDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

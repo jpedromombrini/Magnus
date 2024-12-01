@@ -33,7 +33,7 @@ public class ClientAppAppService(
         if (clientReq.Phones is not null) clientDb.SetPhones(clientReq.Phones);
         if (clientReq.SocialMedias is not null) clientDb.SetSocialMedias(clientReq.SocialMedias);
         
-        unitOfWork.Clients.UpdateAsync(clientDb);
+        unitOfWork.Clients.Update(clientDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -58,7 +58,7 @@ public class ClientAppAppService(
     {
         var clientDb = await unitOfWork.Clients.GetByIdAsync(id, cancellationToken);
         if (clientDb is null) throw new EntityNotFoundException(id);
-        unitOfWork.Clients.DeleteAsync(clientDb);
+        unitOfWork.Clients.Delete(clientDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

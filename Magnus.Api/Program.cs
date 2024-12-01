@@ -1,4 +1,5 @@
 using System.Text;
+using Magnus.Api.Configurations;
 using Magnus.Application.Middlewares;
 using Magnus.Infrastructure.Persistence.Contexts;
 using Magnus.Ioc;
@@ -7,6 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy(name: "default", policy =>
+    {
+        policy.AllowAnyOrigin();
+        policy.AllowAnyMethod();
+        policy.AllowAnyHeader();
+    });
+});
 
 builder.Services.AddDbContext<MagnusContext>(options =>
 {
@@ -32,7 +43,7 @@ builder.Services.AddApplicationServices();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerConfiguration();
 
 var app = builder.Build();
 
@@ -43,6 +54,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("default");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();

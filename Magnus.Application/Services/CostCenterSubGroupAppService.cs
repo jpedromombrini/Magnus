@@ -26,7 +26,7 @@ public class CostCenterSubGroupAppService(
             throw new EntityNotFoundException(id);
         costCenterSubGroup.SetName(request.Name);
         costCenterSubGroup.SetCode(request.Code);
-        unitOfWork.CostCenterSubGroups.UpdateAsync(costCenterSubGroup);
+        unitOfWork.CostCenterSubGroups.Update(costCenterSubGroup);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -54,7 +54,7 @@ public class CostCenterSubGroupAppService(
         var costCenterSubGroup = await unitOfWork.CostCenterSubGroups.GetByIdAsync(id, cancellationToken);
         if (costCenterSubGroup is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.CostCenterSubGroups.DeleteAsync(costCenterSubGroup);
+        unitOfWork.CostCenterSubGroups.Delete(costCenterSubGroup);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

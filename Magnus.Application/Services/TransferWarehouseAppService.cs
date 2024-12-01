@@ -41,7 +41,7 @@ public class TransferWarehouseAppService(
             transferWarehouseDb.AddItem(item);
         }
 
-        unitOfWork.TransferWarehouses.UpdateAsync(transferWarehouseDb);
+        unitOfWork.TransferWarehouses.Update(transferWarehouseDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -113,7 +113,7 @@ public class TransferWarehouseAppService(
         var transferWarehouseDb = await unitOfWork.TransferWarehouses.GetByIdAsync(id, cancellationToken);
         if (transferWarehouseDb is null)
             throw new EntityNotFoundException(id);
-        unitOfWork.TransferWarehouses.DeleteAsync(transferWarehouseDb);
+        unitOfWork.TransferWarehouses.Delete(transferWarehouseDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

@@ -21,6 +21,7 @@ public interface IUnitOfWork : IDisposable
     ICostCenterSubGroupRepository CostCenterSubGroups { get; }
     IInvoiceRepository Invoices { get; }
     IAccountsPayableRepository AccountsPayables { get; }
+    IPaymentRepository Payments { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
