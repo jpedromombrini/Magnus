@@ -16,5 +16,5 @@ public record CreateInvoiceRequest(
     string Observation,
     InvoiceSituation InvoiceSituation,
     List<InvoiceItemRequest> Items,
-    List<AccountsPayableRequest> AccountsPayables,
+    InvoicePaymentRequest Payment,
     Guid? DoctorId);

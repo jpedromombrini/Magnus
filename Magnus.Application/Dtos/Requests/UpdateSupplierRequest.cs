@@ -8,4 +8,11 @@ public record UpdateSupplierRequest(
     string Phone, 
     PhoneType PhoneType, 
     string Email,     
-    AddressRequest Address);
+    string ZipCode,
+    string PublicPlace,
+    int Number,
+    string Neighborhood,
+    string City,
+    string State,
+    string Complement,
+    string RegisterNumber);

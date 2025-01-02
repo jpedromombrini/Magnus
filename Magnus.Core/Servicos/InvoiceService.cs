@@ -7,7 +7,7 @@ namespace Magnus.Core.Servicos;
 public class InvoiceService(
     IUnitOfWork unitOfWork) : IInvoiceService
 {
-    public async Task CreateInvoiceAsync(Invoice invoice, List<AccountsPayable> accountsPayables,
+    public async Task CreateInvoiceAsync(Invoice invoice, InvoicePayment invoicePayment,
         CancellationToken cancellationToken)
     {
         var productStock = invoice.Items
@@ -45,29 +45,12 @@ public class InvoiceService(
             item.Validity)));
         await unitOfWork.Invoices.AddAsync(invoice, cancellationToken);
         await unitOfWork.AuditProducts.AddRangeAsync(audits, cancellationToken);
-        List<AccountsPayable> payments = [];
-        foreach (var pay in accountsPayables)
+        invoicePayment.SetInvoice(invoice);
+        foreach (var pay in invoicePayment.Installments)
         {
-            accountsPayables.Add(new AccountsPayable(
-                invoice.Number,
-                invoice.SupplierId,
-                invoice.SupplierName,
-                DateTime.Now,
-                pay.DueDate,
-                null,
-                pay.Value,
-                0m,
-                pay.Discount,
-                pay.Interest,
-                pay.CostCenter,
-                pay.Installment,
-                invoice.Id,
-                null,
-                false,
-                pay.Payment)
-            );
+            invoicePayment.AddInstallment(new InvoicePaymentInstallment(invoicePayment,pay.DueDate,null,pay.Value, pay.Discount, pay.Interest, pay.Installment));
         }
-        await unitOfWork.AccountsPayables.AddRangeAsync(accountsPayables, cancellationToken);
+        await unitOfWork.InvoicePayments.AddAsync(invoicePayment, cancellationToken);
     }
 
     public async Task DeleteInvoiceAsync(Invoice invoice, CancellationToken cancellationToken)

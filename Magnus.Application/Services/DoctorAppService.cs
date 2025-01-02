@@ -9,12 +9,16 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace Magnus.Application.Services;
 
-public class DoctorAppAppService(
+public class DoctorAppService(
     IUnitOfWork unitOfWork,
     IMapper mapper) : IDoctorAppService
 {
     public async Task AddDoctorAsync(CreateDoctorRequest request, CancellationToken cancellationToken)
     {
+        var doctorDb = await unitOfWork.Doctors.GetByExpressionAsync(
+            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        if (doctorDb is not null)
+            throw new ApplicationException("Já existe um médico com esse nome");
         await unitOfWork.Doctors.AddAsync(mapper.Map<Doctor>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

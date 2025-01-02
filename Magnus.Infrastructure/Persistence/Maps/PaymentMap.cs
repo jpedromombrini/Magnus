@@ -8,7 +8,7 @@ public class PaymentMap : IEntityTypeConfiguration<Payment>
 {
     public void Configure(EntityTypeBuilder<Payment> builder)
     {
-        builder.ToTable("Product");
+        builder.ToTable("Payment");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Name)
             .IsRequired()

@@ -8,6 +8,6 @@ public class BarRequestValidator : AbstractValidator<BarRequest>
     {
         RuleFor(x =>x.Code)
             .NotEmpty().WithMessage("Informe um código de barra")
-            .Length(1,13).WithMessage("Código de barras deve ter no máximo 13 caracteres");
+            .Length(1,14).WithMessage("Código de barras deve ter no máximo 14 caracteres");
     }
 }

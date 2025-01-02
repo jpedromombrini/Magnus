@@ -8,7 +8,7 @@ public class Phone
     public string Number { get; }
     public Phone(string number)
     {
-        if (string.IsNullOrEmpty(number) || number.Length < 10 || number.Length > 11)
+        if (string.IsNullOrEmpty(number))
             throw new ArgumentException("Número inválido");
         if (!IsValidPhoneNumber(number))
             throw new ArgumentException("Número inválido");

@@ -14,6 +14,10 @@ public class LaboratoryAppService(
 {
     public async Task AddLaboratoryAsync(CreateLaboratoryRequest request, CancellationToken cancellationToken)
     {
+        var laboratoryDb = await unitOfWork.Laboratories.GetAllByExpressionAsync(
+            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        if (laboratoryDb is not null)
+            throw new ApplicationException("Já existe um laboratório com esse nome");
         await unitOfWork.Laboratories.AddAsync(mapper.Map<Laboratory>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -31,7 +35,8 @@ public class LaboratoryAppService(
 
     public async Task<IEnumerable<LaboratoryResponse>> GetLaboratoriesAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<LaboratoryResponse>>(await unitOfWork.Laboratories.GetAllAsync(cancellationToken));
+        return mapper.Map<IEnumerable<LaboratoryResponse>>(
+            await unitOfWork.Laboratories.GetAllAsync(cancellationToken));
     }
 
     public async Task<IEnumerable<LaboratoryResponse>> GetLaboratoriesByFilterAsync(

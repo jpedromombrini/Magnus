@@ -18,13 +18,13 @@ public class ProductController(
         return await productAppService.GetProductsAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<ProductResponse>> GetProductsByFilterAsync([FromQuery] string filter,
+    [HttpGet("GetByName")]
+    public async Task<IEnumerable<ProductResponse>> GetProductsByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await productAppService.GetProductsByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await productAppService.GetProductsByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

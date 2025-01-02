@@ -14,6 +14,10 @@ public class PaymentAppService(
 {
     public async Task AddPaymentAsync(CreatePaymentRequest request, CancellationToken cancellationToken)
     {
+        var paymentDb = await unitOfWork.Payments.GetByExpressionAsync(
+            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        if (paymentDb is not null)
+            throw new ApplicationException("Já existe um pagamento com esse nome");
         await unitOfWork.Payments.AddAsync(mapper.Map<Payment>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

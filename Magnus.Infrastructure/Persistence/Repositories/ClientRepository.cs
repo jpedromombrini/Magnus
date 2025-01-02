@@ -21,6 +21,15 @@ public class ClientRepository(MagnusContext context) : Repository<Client>(contex
             .ToListAsync(cancellationToken);
     }
 
+    public override async Task<Client?> GetByExpressionAsync(Expression<Func<Client, bool>> predicate, CancellationToken cancellationToken)
+    {
+        return await _context.Clients
+            .Where(predicate)
+            .Include(x => x.Phones)
+            .Include(x => x.SocialMedias)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
     public override async Task<IEnumerable<Client>> GetAllAsync(CancellationToken cancellationToken)
     {
         return await _context.Clients

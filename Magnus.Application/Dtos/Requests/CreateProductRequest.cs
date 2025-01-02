@@ -5,6 +5,6 @@ public record CreateProductRequest(
     string Name,
     decimal Price,
     List<BarRequest>? Bars,
-    PriceRuleRequest PriceRule,
+    PriceRuleRequest? PriceRule,
     Guid LaboratoryId
 );

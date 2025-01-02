@@ -40,4 +40,9 @@ public abstract class Repository<T>(MagnusContext context) : IRepository<T>
     {
         return await _dbSet.AsNoTracking().Where(predicate).ToListAsync(cancellationToken);
     }
+
+    public virtual async Task<T?> GetByExpressionAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
+    {
+        return await _dbSet.FirstOrDefaultAsync(predicate, cancellationToken);
+    }
 }

@@ -21,11 +21,7 @@ public class UpdateClientRequestValidator : AbstractValidator<UpdateClientReques
         
         RuleFor(x => x.Occupation)
             .Length(3, 50).WithMessage("A ocupação deve ter entre 3 e 50 caracteres.")
-            .When(x => !string.IsNullOrEmpty(x.Occupation)); 
-        
-        RuleFor(x => x.Address)
-            .SetValidator(new AddressRequestValidator()) 
-            .When(x => x.Address != null);
+            .When(x => !string.IsNullOrEmpty(x.Occupation));
         
         RuleFor(x => x.RegisterNumber)
             .Length(3, 50).WithMessage("O número de registro deve ter entre 3 e 50 caracteres.")

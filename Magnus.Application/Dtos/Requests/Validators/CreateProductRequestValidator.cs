@@ -6,10 +6,6 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
 {
     public CreateProductRequestValidator()
     {
-        RuleFor(x => x.Code)
-            .NotEmpty().WithMessage("O código do produto é obrigatório.")
-            .Length(1, 10).WithMessage("O código do produto deve ter entre 1 e 10 caracteres.");
-     
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("O nome do produto é obrigatório.")
             .Length(1, 100).WithMessage("O nome do produto deve ter entre 1 e 100 caracteres.");
@@ -21,8 +17,6 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
 
         RuleFor(x => x.Bars)
             .NotNull().WithMessage("A lista de barras não pode ser nula.");
-        RuleFor(x => x.PriceRule)
-            .SetValidator(new PriceRuleRequestValidator());
         RuleForEach(x => x.Bars)
             .SetValidator(new BarRequestValidator());
     }

@@ -16,6 +16,10 @@ public class SellerAppService(
 {
     public async Task AddSellerAsync(CreateSellerRequest request, CancellationToken cancellationToken)
     {
+        var sellerDb = await unitOfWork.Sellers.GetByExpressionAsync(
+            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        if (sellerDb is not null)
+            throw new ApplicationException("Já existe um vendedor com esse nome");
         var user = new User(new Email(request.Email), request.Password, request.Name, DateTime.Now,
             DateTime.Now.AddYears(1), true, UserType.Seller);
         var seller = mapper.Map<Seller>(request);

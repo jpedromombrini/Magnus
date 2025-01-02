@@ -14,9 +14,6 @@ public class ProductMap : IEntityTypeConfiguration<Product>
             .IsRequired()
             .HasColumnType("integer")
             .ValueGeneratedOnAdd();
-        builder.Property(x => x.Code)
-            .IsRequired()
-            .HasColumnType("varchar(10)");
         builder.Property(x => x.Name)
             .IsRequired()
             .HasColumnType("varchar(100)");

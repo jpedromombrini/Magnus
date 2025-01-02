@@ -18,13 +18,13 @@ public class DoctorController(
         return await doctorAppService.GetDoctorsAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<DoctorResponse>> GetDoctorsByFilterAsync([FromQuery] string filter,
+    [HttpGet("getbyname")]
+    public async Task<IEnumerable<DoctorResponse>> GetDoctorsByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await doctorAppService.GetDoctorsByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await doctorAppService.GetDoctorsByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

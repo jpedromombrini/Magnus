@@ -9,15 +9,25 @@ using Magnus.Core.Repositories;
 namespace Magnus.Application.Services;
 
 public class CostCenterGroupAppService(
-    IUnitOfWork unitOfWork, IMapper mapper) : ICostCenterGroupAppService
+    IUnitOfWork unitOfWork,
+    IMapper mapper) : ICostCenterGroupAppService
 {
     public async Task AddCostCenterGroupAsync(CreateCostCenterGroupRequest request, CancellationToken cancellationToken)
     {
+        var costCenterGroupDb =
+            await unitOfWork.CostCenterGroups.GetByExpressionAsync(x => x.Code == request.Code, cancellationToken);
+        if (costCenterGroupDb is not null)
+            throw new ApplicationException("Já existe um grupo de centro de custo com esse código");
+        costCenterGroupDb = await unitOfWork.CostCenterGroups.GetByExpressionAsync(
+            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        if (costCenterGroupDb is not null)
+            throw new ApplicationException("Já existe um grupo de centro de custo com esse nome");
         await unitOfWork.CostCenterGroups.AddAsync(mapper.Map<CostCenterGroup>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateCostCenterGroupAsync(Guid id, UpdateCostCenterGroupRequest request, CancellationToken cancellationToken)
+    public async Task UpdateCostCenterGroupAsync(Guid id, UpdateCostCenterGroupRequest request,
+        CancellationToken cancellationToken)
     {
         var costCenterGroup = await unitOfWork.CostCenterGroups.GetByIdAsync(id, cancellationToken);
         if (costCenterGroup is null)
@@ -27,12 +37,15 @@ public class CostCenterGroupAppService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsAsync(CancellationToken cancellationToken)
+    public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsAsync(
+        CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<CostCenterGroupResponse>>(await unitOfWork.CostCenterGroups.GetAllAsync(cancellationToken));
+        return mapper.Map<IEnumerable<CostCenterGroupResponse>>(
+            await unitOfWork.CostCenterGroups.GetAllAsync(cancellationToken));
     }
 
-    public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsByFilterAsync(Expression<Func<CostCenterGroup, bool>> predicate, CancellationToken cancellationToken)
+    public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsByFilterAsync(
+        Expression<Func<CostCenterGroup, bool>> predicate, CancellationToken cancellationToken)
     {
         return mapper.Map<IEnumerable<CostCenterGroupResponse>>(
             await unitOfWork.CostCenterGroups.GetAllByExpressionAsync(predicate, cancellationToken));

@@ -8,7 +8,8 @@ public class Email
     public string Address { get; }
     public Email(string address)
     {
-        if (string.IsNullOrEmpty(address) || address.Length < 5)
+        if (string.IsNullOrEmpty(address)) return;
+        if (address.Length < 5)
             throw new InvalidEmailException("E-mail inválido");
 
         Address = address.ToLower().Trim();
@@ -16,6 +17,8 @@ public class Email
 
         if (!Regex.IsMatch(address, pattern))
             throw new InvalidEmailException("E-mail inválido");
+
+
     }
     public override string ToString() => Address;
 }

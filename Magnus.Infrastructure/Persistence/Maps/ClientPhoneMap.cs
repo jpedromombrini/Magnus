@@ -14,7 +14,7 @@ public class ClientPhoneMap : IEntityTypeConfiguration<ClientPhone>
             .Property(x => x.Number)
             .HasColumnName("Number")
             .IsRequired()
-            .HasColumnType("varchar(14)");
+            .HasColumnType("varchar(15)");
         builder.Property(p => p.Description)
             .IsRequired()
             .HasColumnType("varchar(50)");

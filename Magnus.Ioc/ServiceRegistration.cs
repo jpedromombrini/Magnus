@@ -18,7 +18,7 @@ public static class ServiceRegistration
         services.AddScoped<IUserAppService, UserAppService>();
         services.AddScoped<IAuthAppService, AuthAppService>();
         services.AddScoped<IClientAppService, ClientAppAppService>();
-        services.AddScoped<IDoctorAppService, DoctorAppAppService>();
+        services.AddScoped<IDoctorAppService, DoctorAppService>();
         services.AddScoped<ISellerAppService, SellerAppService>();
         services.AddScoped<ISupplierAppService, SupplierAppService>();
         services.AddScoped<IReceiptAppService, ReceiptAppService>();
@@ -29,10 +29,12 @@ public static class ServiceRegistration
         services.AddScoped<IProductStockAppService, ProductStockAppService>();
         services.AddScoped<IInvoiceAppService, InvoiceAppService>();
         services.AddScoped<IPaymentAppService, PaymentAppService>();
+        services.AddScoped<IInvoicePaymentAppService, InvoicePaymentAppService>();
         #endregion
 
         #region Services Core
         services.AddScoped<ITransferWarehouseService, TransferWarehouseService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
         #endregion
         
         #region Repositories

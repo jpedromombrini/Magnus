@@ -14,6 +14,13 @@ public class CostCenterAppService(
 {
     public async Task AddCostCenterAsync(CreateCostCenterRequest request, CancellationToken cancellationToken)
     {
+        var costcenterDb =
+            await unitOfWork.CostCenters.GetByExpressionAsync(x => x.Code == request.Code, cancellationToken);
+        if (costcenterDb is not null)
+            throw new ApplicationException("Já existe um centro de custo com esse código");
+        costcenterDb = await unitOfWork.CostCenters.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        if (costcenterDb is not null)
+            throw new ApplicationException("Já existe um centro de custo com esse nome");
         await unitOfWork.CostCenters.AddAsync(mapper.Map<CostCenter>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

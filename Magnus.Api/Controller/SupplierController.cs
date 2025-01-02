@@ -8,7 +8,7 @@ namespace Magnus.Api.Controller;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
+
 public class SupplierController(
     ISupplierAppService supplierAppService) : ControllerBase
 {
@@ -18,13 +18,13 @@ public class SupplierController(
         return await supplierAppService.GetSuppliersAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<SupplierResponse>> GetSuppliersByFilterAsync([FromQuery] string filter,
+    [HttpGet("GetByName")]
+    public async Task<IEnumerable<SupplierResponse>> GetSuppliersByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await supplierAppService.GetSuppliersByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await supplierAppService.GetSuppliersByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

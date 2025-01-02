@@ -26,7 +26,7 @@ public class SupplierMap : IEntityTypeConfiguration<Supplier>
             .Property(x => x.Number)
             .HasColumnName("PhoneNumber")
             .IsRequired()
-            .HasColumnType("varchar(14)");       
+            .HasColumnType("varchar(15)");       
         builder.OwnsOne(x => x.Address)
             .Property(x => x.City)
             .HasColumnName("City")

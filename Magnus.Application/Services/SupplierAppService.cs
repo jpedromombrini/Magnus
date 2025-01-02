@@ -15,6 +15,19 @@ public class SupplierAppService(
 {
     public async Task AddSupplierAsync(CreateSupplierRequest request, CancellationToken cancellationToken)
     {
+        var supplierDb =
+            await unitOfWork.Suppliers.GetByExpressionAsync(x => x.Document.Value == request.Document,
+                cancellationToken);
+        if (supplierDb is not null)
+            throw new ApplicationException("Já existe um fornecedor com esse documento");
+        supplierDb =
+            await unitOfWork.Suppliers.GetByExpressionAsync(x => x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);
+        if (supplierDb is not null)
+            throw new ApplicationException("Já existe um fornecedor com esse email");
+        supplierDb = await unitOfWork.Suppliers.GetByExpressionAsync(
+            x => x.Name.Equals(request.Name, StringComparison.InvariantCultureIgnoreCase), cancellationToken);
+        if (supplierDb is not null)
+            throw new ApplicationException("Já existe um fornecedor com esse nome");
         await unitOfWork.Suppliers.AddAsync(mapper.Map<Supplier>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -25,7 +38,13 @@ public class SupplierAppService(
         if (supplierDb is null)
             throw new EntityNotFoundException(id);
         supplierDb.SetName(request.Name);
-        supplierDb.SetAddress(mapper.Map<Address>(request.Address));
+        if (!string.IsNullOrEmpty(request.ZipCode))
+        {
+            Address address = new(request.ZipCode, request.PublicPlace!, request.Number, request.Neighborhood!,
+                request.City!, request.State!, request.Complement!);
+            supplierDb.SetAddress(address);
+        }
+
         supplierDb.SetDocument(new Document(request.Document));
         supplierDb.SetEmail(new Email(request.Email));
         unitOfWork.Suppliers.Update(supplierDb);

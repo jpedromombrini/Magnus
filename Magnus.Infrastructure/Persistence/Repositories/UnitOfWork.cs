@@ -28,6 +28,7 @@ public class UnitOfWork : IUnitOfWork
         Invoices = new InvoiceRepository(_context);
         AccountsPayables = new AccountsPayableRepository(_context);
         Payments = new PaymentRepository(_context);
+        InvoicePayments = new InvoicePaymentRepository(_context);
     }
 
     public IProductRepository Products { get; }
@@ -48,6 +49,7 @@ public class UnitOfWork : IUnitOfWork
     public IInvoiceRepository Invoices { get; }
     public IAccountsPayableRepository AccountsPayables { get; }
     public IPaymentRepository Payments { get; }
+    public IInvoicePaymentRepository InvoicePayments { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {

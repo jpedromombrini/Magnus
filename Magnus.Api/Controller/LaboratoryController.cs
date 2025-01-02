@@ -18,13 +18,13 @@ public class LaboratoryController(
         return await laboratoryAppService.GetLaboratoriesAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<LaboratoryResponse>> GetProductsByFilterAsync([FromQuery] string filter,
+    [HttpGet("GetByName")]
+    public async Task<IEnumerable<LaboratoryResponse>> GetProductsByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await laboratoryAppService.GetLaboratoriesByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await laboratoryAppService.GetLaboratoriesByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

@@ -11,19 +11,19 @@ namespace Magnus.Api.Controller;
 [Authorize]
 public class PaymentController(IPaymentAppService paymentAppService) : ControllerBase
 {
-    [HttpGet("getall")]
+    [HttpGet]
     public async Task<IEnumerable<PaymentResponse>> GetAllPaymentsAsync(CancellationToken cancellationToken)
     {
         return await paymentAppService.GetPaymentsAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<PaymentResponse>> GetPaymentsByFilterAsync([FromQuery] string filter,
+    [HttpGet("getbyname")]
+    public async Task<IEnumerable<PaymentResponse>> GetPaymentsByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await paymentAppService.GetPaymentsByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await paymentAppService.GetPaymentsByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

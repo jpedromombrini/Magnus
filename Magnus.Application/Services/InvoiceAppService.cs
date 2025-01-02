@@ -17,29 +17,34 @@ public class InvoiceAppService(
     public async Task AddInvoiceAsync(CreateInvoiceRequest request, CancellationToken cancellationToken)
     {
         var invoice = mapper.Map<Invoice>(request);
-        var accountsPayables = mapper.Map<List<AccountsPayable>>(request.AccountsPayables);
+        var invoicePayment = mapper.Map<InvoicePayment>(request.Payment);
         if (invoice is null)
             throw new ApplicationException("Não foi possível converter o objeto");
+        var payment = await unitOfWork.Payments.GetByIdAsync(invoicePayment.PaymentId, cancellationToken);
+        if(payment is null)
+            throw new ApplicationException("Forma de pagamento não encontrada");
+        invoicePayment.SetPayment(payment);
         var invoiceDb = await unitOfWork.Invoices.GetByExpressionAsync(x => x.SupplierId == request.SupplierId
                                                                             && x.Number == request.Number
-                                                                            && x.Serie == request.Serie, cancellationToken);
+                                                                            && x.Serie == request.Serie,
+            cancellationToken);
         if (invoiceDb is not null)
             throw new ApplicationException("Já existe uma NF com esses dados");
 
         var supplier = await unitOfWork.Suppliers.GetByIdAsync(invoice.SupplierId, cancellationToken);
         if (supplier is null)
             throw new EntityNotFoundException(invoice.SupplierId);
-        
+
         invoice.SupplierName = supplier.Name;
-        decimal totalItemsValue = invoice.Items
+        var totalItemsValue = invoice.Items
             .Where(x => x.Bonus == false)
             .Sum(x => x.TotalValue);
-        decimal totalFinantialValue = accountsPayables.Sum(x => x.Value);
+        var totalFinantialValue = invoicePayment.Installments.Sum(x => x.Value);
         if (totalItemsValue == 0 || totalItemsValue != invoice.Value)
             throw new ApplicationException("O valor total dos items difere do valor total da nota");
-        if(totalFinantialValue == 0 || totalFinantialValue != invoice.Value)
+        if (totalFinantialValue == 0 || totalFinantialValue != invoice.Value)
             throw new ApplicationException("O valor total dos pagamentos difere do valor total da nota");
-        await invoiceService.CreateInvoiceAsync(invoice,accountsPayables, cancellationToken);
+        await invoiceService.CreateInvoiceAsync(invoice, invoicePayment, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -88,5 +93,6 @@ public class InvoiceAppService(
         if (invoiceDb is null)
             throw new EntityNotFoundException(id);
         await invoiceService.DeleteInvoiceAsync(invoiceDb, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

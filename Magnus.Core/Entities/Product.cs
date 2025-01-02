@@ -3,7 +3,6 @@ namespace Magnus.Core.Entities;
 public class Product : EntityBase
 {
     public int InternalCode { get; private set; }
-    public string Code { get; private set; }
     public string Name { get; private set; }
     public decimal Price { get; private set; }
     public PriceRule? PriceRule { get; private set; }
@@ -14,26 +13,14 @@ public class Product : EntityBase
     {
     }
 
-    public Product(string code, string name, decimal price, PriceRule? priceRule, List<Bar>? bars, Guid laboratoryId)
+    public Product(string name, decimal price, PriceRule? priceRule, List<Bar>? bars, Guid laboratoryId)
     {
-        SetCode(code);
         SetName(name);
         SetPrice(price);
         SetPriceRule(priceRule);
         SetBars(bars);
         SetLaboratoryId(laboratoryId);
     }
-
-    public void SetCode(string code)
-    {
-        if (string.IsNullOrEmpty(code))
-        {
-            throw new ArgumentNullException(nameof(code), "O código não pode ser nulo ou vazio.");
-        }
-
-        Code = code;
-    }
-
     public void SetName(string name)
     {
         if (string.IsNullOrEmpty(name))

@@ -6,4 +6,10 @@ public record SupplierResponse(
     string Document, 
     string Phone, 
     string Email,     
-   AddressResponse Address);
+    string ZipCode,
+    string PublicPlace,
+    int Number,
+    string Neighborhood,
+    string City,
+    string State,
+    string Complement);

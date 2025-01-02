@@ -15,7 +15,7 @@ public class Client : EntityBase
     public List<ClientPhone>? Phones { get; private set; } 
 
     private Client(){}
-    public Client(string name, Document document)
+    public Client(string name, Document document, string? email = null, string? occupation = null, DateOnly dateOfBirth = default , Address? address = null)
     {
         SetName(name);
         SetDocument(document);

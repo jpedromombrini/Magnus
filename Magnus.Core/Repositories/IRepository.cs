@@ -11,4 +11,5 @@ public interface IRepository<T> where T : EntityBase
     void Update(T entity);
     void Delete(T entity);
     Task<IEnumerable<T>> GetAllByExpressionAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
+    Task<T?> GetByExpressionAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
 }

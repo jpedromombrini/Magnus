@@ -14,6 +14,10 @@ public class ReceiptAppService(
 {
     public async Task AddReceiptAsync(CreateReceiptRequest request, CancellationToken cancellationToken)
     {
+        var receiptDb = await unitOfWork.Receipts.GetByExpressionAsync(
+            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        if (receiptDb is not null)
+            throw new ApplicationException("Já existe um Recebimento com esse nome");
         await unitOfWork.Receipts.AddAsync(mapper.Map<Receipt>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

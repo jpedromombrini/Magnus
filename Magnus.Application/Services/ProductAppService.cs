@@ -9,11 +9,15 @@ using Magnus.Core.Repositories;
 namespace Magnus.Application.Services;
 
 public class ProductAppService(
-   IUnitOfWork unitOfWork,
+    IUnitOfWork unitOfWork,
     IMapper mapper) : IProductAppService
 {
     public async Task AddProductAsync(CreateProductRequest request, CancellationToken cancellationToken)
     {
+        var productDb = await unitOfWork.Products.GetByExpressionAsync(
+            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        if (productDb is not null)
+            throw new ApplicationException("Já existe um produto com esse nome");
         await unitOfWork.Products.AddAsync(mapper.Map<Product>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

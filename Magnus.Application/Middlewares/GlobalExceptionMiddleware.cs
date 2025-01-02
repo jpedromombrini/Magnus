@@ -25,28 +25,27 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         _logger.LogError(exception, "Ocorreu uma exceção não tratada.");
         context.Response.ContentType = "application/json";
         
-        if (exception is EntityNotFoundException)
+        switch (exception)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.NotFound; 
-            var result = new
+            case EntityNotFoundException:
             {
-                message = exception.Message 
-            };
-            return context.Response.WriteAsJsonAsync(result);
-        }
-
-        if (exception is InvalidEmailException)
-        {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest; 
-            var result = new
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound; 
+                var result = new
+                {
+                    message = exception.Message 
+                };
+                return context.Response.WriteAsJsonAsync(result);
+            }
+            case InvalidEmailException:
+            default:
             {
-                message = exception.Message 
-            };
-            return context.Response.WriteAsJsonAsync(result);
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; 
+                var result = new 
+                {
+                    message = exception.Message 
+                };
+                return context.Response.WriteAsJsonAsync(result);
+            }
         }
-        
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; 
-        var genericResult = new { message = "Ocorreu um erro interno. Por favor, tente novamente mais tarde." };
-        return context.Response.WriteAsJsonAsync(genericResult);
     }
 }

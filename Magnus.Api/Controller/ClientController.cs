@@ -8,23 +8,23 @@ namespace Magnus.Api.Controller;
 
 [ApiController]
 [Route("[controller]")]
-[Authorize]
+
 public class ClientController(
     IClientAppService clientAppService) : ControllerBase
 {
-    [HttpGet("getall")]
+    [HttpGet]
     public async Task<IEnumerable<ClientResponse>> GetAllClientsAsync(CancellationToken cancellationToken)
     {
         return await clientAppService.GetClientsAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<ClientResponse>> GetClientsByFilterAsync([FromQuery] string filter,
+    [HttpGet("getbyname")]
+    public async Task<IEnumerable<ClientResponse>> GetClientsByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await clientAppService.GetClientsByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await clientAppService.GetClientsByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

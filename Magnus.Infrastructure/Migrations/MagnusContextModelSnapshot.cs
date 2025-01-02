@@ -59,6 +59,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("timestamp");
 
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uuid");
+
                     b.Property<decimal>("PaymentValue")
                         .HasColumnType("decimal(10,2)");
 
@@ -76,6 +79,8 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PaymentId");
 
                     b.ToTable("AccountsPayable", (string)null);
                 });
@@ -425,6 +430,61 @@ namespace Magnus.Infrastructure.Migrations
                     b.ToTable("InvoiceItem", (string)null);
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.InvoicePayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("InvoicePayment", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.InvoicePaymentInstallment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<DateOnly>("DueDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Installment")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Interest")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("InvoicePaymentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("PaymentDate")
+                        .HasColumnType("timestamp");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoicePaymentId");
+
+                    b.ToTable("InvoicePaymentInstallment", (string)null);
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Laboratory", b =>
                 {
                     b.Property<Guid>("Id")
@@ -444,6 +504,21 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Laboratory", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Payment", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.PriceRule", b =>
@@ -477,10 +552,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("varchar(10)");
 
                     b.Property<int>("InternalCode")
                         .ValueGeneratedOnAdd()
@@ -712,6 +783,17 @@ namespace Magnus.Infrastructure.Migrations
                     b.ToTable("Warehouse", (string)null);
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsPayable", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Payment");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.AccountsPayableOccurrence", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.AccountsPayable", "AccountsPayable")
@@ -841,7 +923,7 @@ namespace Magnus.Infrastructure.Migrations
 
                             b1.Property<string>("Number")
                                 .IsRequired()
-                                .HasColumnType("varchar(14)")
+                                .HasColumnType("varchar(15)")
                                 .HasColumnName("Number");
 
                             b1.HasKey("ClientPhoneId");
@@ -894,6 +976,36 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.InvoicePayment", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Invoice", "Invoice")
+                        .WithMany()
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Magnus.Core.Entities.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Payment");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.InvoicePaymentInstallment", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.InvoicePayment", "InvoicePayment")
+                        .WithMany("Installments")
+                        .HasForeignKey("InvoicePaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("InvoicePayment");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.PriceRule", b =>
@@ -1064,7 +1176,7 @@ namespace Magnus.Infrastructure.Migrations
 
                             b1.Property<string>("Number")
                                 .IsRequired()
-                                .HasColumnType("varchar(14)")
+                                .HasColumnType("varchar(15)")
                                 .HasColumnName("PhoneNumber");
 
                             b1.HasKey("SupplierId");
@@ -1159,6 +1271,11 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.InvoicePayment", b =>
+                {
+                    b.Navigation("Installments");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Product", b =>
