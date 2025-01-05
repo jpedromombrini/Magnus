@@ -16,7 +16,7 @@ public class UserAppService(
 {
     public async Task AddUserAsync(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var userDb = await unitOfWork.Users.GetByExpressionAsync(x => x.Name.Equals(request.Name, StringComparison.InvariantCultureIgnoreCase), cancellationToken);
+        var userDb = await unitOfWork.Users.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (userDb is not null)
             throw new ApplicationException("Já existe um usuário com esse nome");
         userDb = await unitOfWork.Users.GetByExpressionAsync(x => x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);

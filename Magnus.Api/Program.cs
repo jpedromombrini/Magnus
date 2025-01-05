@@ -6,6 +6,7 @@ using Magnus.Ioc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddCors(opt =>
     });
 });
 
+QuestPDF.Settings.License = LicenseType.Community;
 builder.Services.AddDbContext<MagnusContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

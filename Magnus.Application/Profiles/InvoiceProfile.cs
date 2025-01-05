@@ -11,6 +11,7 @@ public class InvoiceProfile : Profile
     {
         CreateMap<Invoice, CreateInvoiceRequest>().ReverseMap();
         CreateMap<Invoice, UpdateInvoiceRequest>().ReverseMap();
+        CreateMap<Invoice, InvoiceResponse>().ReverseMap();
         CreateMap<InvoiceItem, InvoiceItemRequest>().ReverseMap();
         CreateMap<InvoiceItem, InvoiceItemResponse>().ReverseMap();
     }

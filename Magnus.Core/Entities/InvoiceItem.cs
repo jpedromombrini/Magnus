@@ -72,9 +72,8 @@ public class InvoiceItem : EntityBase
 
     public void SetInvoice(Invoice invoice)
     {
-        if(invoice is null)
-            throw new ArgumentNullException(nameof(invoice));
-        if(invoice.Id == Guid.Empty)
+        ArgumentNullException.ThrowIfNull(invoice);
+        if (invoice.Id == Guid.Empty)
             throw new ArgumentException("O ID do pedido não pode ser um GUID vazio.");
         Invoice = invoice;
         InvoiceId = invoice.Id;

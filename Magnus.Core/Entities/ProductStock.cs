@@ -41,8 +41,6 @@ public class ProductStock : EntityBase
 
     public void SetWarehouseId(int warehouseId)
     {
-        if (warehouseId <= 0)
-            throw new ArgumentException("O WarehouseId deve ser maior que zero.");
         WarehouseId = warehouseId;
     }
 

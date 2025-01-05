@@ -119,7 +119,7 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(10,3)");
 
                     b.Property<Guid?>("ClientId")
                         .HasColumnType("uuid");
@@ -131,7 +131,7 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("RecordDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp");
 
                     b.Property<int>("Serie")
                         .HasColumnType("integer");
@@ -140,7 +140,7 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<decimal>("TotalValue")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(10,3)");
 
                     b.Property<Guid?>("TransferhouseId")
                         .HasColumnType("uuid");
@@ -156,7 +156,7 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditProducts");
+                    b.ToTable("AuditProduct", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Bar", b =>
@@ -337,6 +337,90 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Doctor", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Estimate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClientName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Code")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Code"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<decimal>("Freight")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Observation")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("varchar(300)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ValiditAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Estimates", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.EstimateItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid>("EstimateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<decimal>("TotalValue")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstimateId");
+
+                    b.ToTable("EstimateItem", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>
@@ -967,6 +1051,17 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("CostCenterGroup");
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.EstimateItem", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Estimate", "Estimate")
+                        .WithMany("Items")
+                        .HasForeignKey("EstimateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Estimate");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.InvoiceItem", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Invoice", "Invoice")
@@ -1266,6 +1361,11 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.CostCenterSubGroup", b =>
                 {
                     b.Navigation("CostCenters");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Estimate", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>

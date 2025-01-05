@@ -23,6 +23,6 @@ public interface IUnitOfWork : IDisposable
     IAccountsPayableRepository AccountsPayables { get; }
     IPaymentRepository Payments { get; }
     IInvoicePaymentRepository InvoicePayments { get; }
-
+    IEstimateRepository Estimates { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

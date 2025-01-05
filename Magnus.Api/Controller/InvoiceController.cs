@@ -23,7 +23,7 @@ public class InvoiceController(
         DateTime? finalDate,
         int number,
         int serie,
-        string key,
+        string? key,
         Guid supplierId,
         CancellationToken cancellationToken)
     {

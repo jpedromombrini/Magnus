@@ -21,7 +21,7 @@ public class InvoiceAppService(
         if (invoice is null)
             throw new ApplicationException("Não foi possível converter o objeto");
         var payment = await unitOfWork.Payments.GetByIdAsync(invoicePayment.PaymentId, cancellationToken);
-        if(payment is null)
+        if (payment is null)
             throw new ApplicationException("Forma de pagamento não encontrada");
         invoicePayment.SetPayment(payment);
         var invoiceDb = await unitOfWork.Invoices.GetByExpressionAsync(x => x.SupplierId == request.SupplierId

@@ -46,10 +46,6 @@ public class InvoiceService(
         await unitOfWork.Invoices.AddAsync(invoice, cancellationToken);
         await unitOfWork.AuditProducts.AddRangeAsync(audits, cancellationToken);
         invoicePayment.SetInvoice(invoice);
-        foreach (var pay in invoicePayment.Installments)
-        {
-            invoicePayment.AddInstallment(new InvoicePaymentInstallment(invoicePayment,pay.DueDate,null,pay.Value, pay.Discount, pay.Interest, pay.Installment));
-        }
         await unitOfWork.InvoicePayments.AddAsync(invoicePayment, cancellationToken);
     }
 

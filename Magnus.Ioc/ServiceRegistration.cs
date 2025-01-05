@@ -30,6 +30,7 @@ public static class ServiceRegistration
         services.AddScoped<IInvoiceAppService, InvoiceAppService>();
         services.AddScoped<IPaymentAppService, PaymentAppService>();
         services.AddScoped<IInvoicePaymentAppService, InvoicePaymentAppService>();
+        services.AddScoped<IEstimateAppService, EstimateAppService>();
         #endregion
 
         #region Services Core

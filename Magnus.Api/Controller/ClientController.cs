@@ -12,7 +12,7 @@ namespace Magnus.Api.Controller;
 public class ClientController(
     IClientAppService clientAppService) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("getall")]
     public async Task<IEnumerable<ClientResponse>> GetAllClientsAsync(CancellationToken cancellationToken)
     {
         return await clientAppService.GetClientsAsync(cancellationToken);

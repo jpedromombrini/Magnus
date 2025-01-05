@@ -31,7 +31,8 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<Payment> Payments { get; set; }
     public DbSet<InvoicePayment> InvoicePayments { get; set; }
     public DbSet<InvoicePaymentInstallment> InvoicePaymentInstallments { get; set; }
-    
+    public DbSet<Estimate> Estimates { get; set; }
+    public DbSet<EstimateItem> EstimateItems { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

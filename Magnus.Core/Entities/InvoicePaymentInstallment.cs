@@ -36,7 +36,7 @@ public class InvoicePaymentInstallment : EntityBase
     public void SetValue(decimal value)
     {
         if (value <= 0)
-            throw new ArgumentException("Informe um valor maior qur zero");
+            throw new ArgumentException("Informe um valor maior que zero");
         Value = value;
     }
 
