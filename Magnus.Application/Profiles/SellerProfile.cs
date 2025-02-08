@@ -11,17 +11,17 @@ public class SellerProfile : Profile
     {
         CreateMap<Seller, CreateSellerRequest>()
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.Address))
-            .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document.Value))
+            .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document != null ? src.Document.Value: null))
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone.Number))
             .ReverseMap();
         CreateMap<Seller, UpdateSellerRequest>()
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.Address))
-            .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document.Value))
+            .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document != null ? src.Document.Value: null))
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone.Number))
             .ReverseMap();
         CreateMap<Seller, SellerResponse>()
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.Address))
-            .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document.Value))
+            .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document != null ? src.Document.Value: null))
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone.Number))
             .ReverseMap();
     }

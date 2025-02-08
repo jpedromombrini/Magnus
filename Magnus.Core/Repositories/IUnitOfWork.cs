@@ -24,5 +24,7 @@ public interface IUnitOfWork : IDisposable
     IPaymentRepository Payments { get; }
     IInvoicePaymentRepository InvoicePayments { get; }
     IEstimateRepository Estimates { get; }
+    ISaleRepository Sales { get; }
+    ISaleReceiptRepository SaleReceipts { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

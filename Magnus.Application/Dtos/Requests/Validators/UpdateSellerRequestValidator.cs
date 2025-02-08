@@ -23,8 +23,5 @@ public class UpdateSellerRequestValidator : AbstractValidator<UpdateSellerReques
             .NotEmpty().WithMessage("O número de telefone não pode ser vazio.")
             .Must((number) => PhoneValidator.IsValidPhoneNumber(number))
             .WithMessage("Número de telefone inválido para o tipo selecionado.");
-        RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("A senha é obrigatória.")
-            .Length(3, 40).WithMessage("A senha deve ter entre 8 e 40 caracteres.");
     }
 }

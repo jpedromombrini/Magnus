@@ -45,12 +45,16 @@ public class EstimateItem : EntityBase
 
     public void SetTotalValue(decimal totalValue)
     {
-        if (totalValue <= 0)
+        if (totalValue <= 0m)
             throw new ArgumentNullException("Informe o valor total do produto");
-        if(Amount == 0)
-            throw new ArgumentNullException("Informe a quantidade do produto");
         TotalValue = totalValue;
-        Value = totalValue / Amount;
+    }
+
+    public void setValue(decimal value)
+    {
+        if(value <= 0m)
+            throw new ArgumentNullException("Informe o valor do produto");
+        Value = value;
     }
     
     public void SetDiscount(decimal discount)

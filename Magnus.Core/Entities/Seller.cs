@@ -5,16 +5,15 @@ namespace Magnus.Core.Entities;
 public class Seller : EntityBase
 {
     public string Name { get; private set; }
-    public Document Document { get; private set; }
+    public Document? Document { get; private set; }
     public Phone Phone { get; private set; }
     public Email Email { get; private set; }
     public Guid UserId { get; private set; }
 
     private Seller(){}
-    public Seller(string name, Document document, Phone phone, Email email, Guid userId)
+    public Seller(string name, Phone phone, Email email, Guid userId)
     {
         SetName(name);
-        SetDocument(document);
         SetPhone(phone);
         SetEmail(email);
         SetUserId(userId);

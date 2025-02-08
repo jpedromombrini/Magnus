@@ -10,38 +10,56 @@ public class ClientProfile : Profile
 {
     public ClientProfile()
     {
-        CreateMap<Client, CreateClientRequest>()
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.Address))
-            .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document.Value))
-            .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.Address.ZipCode))
-            .ForMember(dest => dest.PublicPlace, opt => opt.MapFrom(src => src.Address.PublicPlace))
-            .ForMember(dest => dest.Number, opt => opt.MapFrom(src => src.Address.Number))
-            .ForMember(dest => dest.Neighborhood, opt => opt.MapFrom(src => src.Address.Neighborhood))
-            .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Address.City))
-            .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.Address.State))
-            .ForMember(dest => dest.Complement, opt => opt.MapFrom(src => src.Address.Complement))
+        CreateMap<CreateClientRequest, Client>()
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email != null ? new Email(src.Email) : null))
+            .ForMember(dest => dest.Document, opt => opt.MapFrom(src => new Document(src.Document)))
+            .ForMember(dest => dest.Occupation, opt => opt.MapFrom(src => src.Occupation))
+            .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth.HasValue ? src.DateOfBirth.Value : default))
+            .ForMember(dest => dest.RegisterNumber, opt => opt.MapFrom(src => src.RegisterNumber))
+            .ForMember(dest => dest.SocialMedias, opt => opt.MapFrom(src => src.SocialMedias))
+            .ForMember(dest => dest.Phones, opt => opt.MapFrom(src => src.Phones))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.ZipCode != null || src.PublicPlace != null || src.Number.HasValue || src.Neighborhood != null || src.City != null || src.State != null || src.Complement != null
+                ? new Address(
+                    src.ZipCode, 
+                    src.PublicPlace, 
+                    src.Number ?? 0, 
+                    src.Neighborhood, 
+                    src.City, 
+                    src.State, 
+                    src.Complement) 
+                : null))
             .ReverseMap();
         CreateMap<Client, UpdateClientRequest>()
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.Address))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email != null ? src.Email.Address : null))
             .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document.Value))
-            .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.Address.ZipCode))
-            .ForMember(dest => dest.PublicPlace, opt => opt.MapFrom(src => src.Address.PublicPlace))
-            .ForMember(dest => dest.Number, opt => opt.MapFrom(src => src.Address.Number))
-            .ForMember(dest => dest.Neighborhood, opt => opt.MapFrom(src => src.Address.Neighborhood))
-            .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Address.City))
-            .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.Address.State))
-            .ForMember(dest => dest.Complement, opt => opt.MapFrom(src => src.Address.Complement))
+            .ForMember(dest => dest.ZipCode,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.ZipCode : null))
+            .ForMember(dest => dest.PublicPlace,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.PublicPlace : null))
+            .ForMember(dest => dest.Number, opt => opt.MapFrom(src => src.Address != null ? src.Address.Number : 0))
+            .ForMember(dest => dest.Neighborhood,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.Neighborhood : null))
+            .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Address != null ? src.Address.City : null))
+            .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.Address != null ? src.Address.State : null))
+            .ForMember(dest => dest.Complement,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.Complement : null))
+            .ForMember(dest => dest.Phones, opt => opt.MapFrom(src => MapPhones(src.Phones)))
             .ReverseMap();
         CreateMap<Client, ClientResponse>()
-            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email.Address))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email != null ? src.Email.Address : null))
             .ForMember(dest => dest.Document, opt => opt.MapFrom(src => src.Document.Value))
-            .ForMember(dest => dest.ZipCode, opt => opt.MapFrom(src => src.Address.ZipCode))
-            .ForMember(dest => dest.PublicPlace, opt => opt.MapFrom(src => src.Address.PublicPlace))
-            .ForMember(dest => dest.Number, opt => opt.MapFrom(src => src.Address.Number))
-            .ForMember(dest => dest.Neighborhood, opt => opt.MapFrom(src => src.Address.Neighborhood))
-            .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Address.City))
-            .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.Address.State))
-            .ForMember(dest => dest.Complement, opt => opt.MapFrom(src => src.Address.Complement))
+            .ForMember(dest => dest.ZipCode,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.ZipCode : null))
+            .ForMember(dest => dest.PublicPlace,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.PublicPlace : null))
+            .ForMember(dest => dest.Number, opt => opt.MapFrom(src => src.Address != null ? src.Address.Number : 0))
+            .ForMember(dest => dest.Neighborhood,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.Neighborhood : null))
+            .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Address != null ? src.Address.City : null))
+            .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.Address != null ? src.Address.State : null))
+            .ForMember(dest => dest.Complement,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.Complement : null))
+            .ForMember(dest => dest.Phones, opt => opt.MapFrom(src => MapPhones(src.Phones)))
             .ConstructUsing(src => new ClientResponse(
                 src.Id,
                 src.Name,
@@ -62,23 +80,23 @@ public class ClientProfile : Profile
             ))
             .ReverseMap();
     }
+
     private string? MapEmail(Email? email)
     {
         return email?.Address;
     }
-
     private string MapAddressField(string? field)
     {
-        return field ?? string.Empty;  
+        return field ?? string.Empty;
     }
-
     private List<ClientSocialMediaResponse> MapSocialMedias(List<ClientSocialMedia>? socialMedias)
     {
-        return socialMedias?.Select(sm => new ClientSocialMediaResponse(sm.Name, sm.Link)).ToList() ?? new List<ClientSocialMediaResponse>();
+        return socialMedias?.Select(sm => new ClientSocialMediaResponse(sm.Name, sm.Link)).ToList() ??
+               [];
     }
-
     private List<ClientPhoneResponse> MapPhones(List<ClientPhone>? phones)
     {
-        return phones?.Select(p => new ClientPhoneResponse(p.Phone.Number, p.Description)).ToList() ?? new List<ClientPhoneResponse>();
+        return phones?.Select(p => new ClientPhoneResponse(p.Phone.Number, p.Description)).ToList() ??
+               [];
     }
 }

@@ -27,7 +27,7 @@ public class TransferWarehouse : EntityBase
 
     public void SetUserId(Guid userId)
     {
-        if(userId != Guid.Empty)
+        if(userId == Guid.Empty)
             throw new ArgumentException("Informe o Id do usuário");
         UserId = userId;
     }

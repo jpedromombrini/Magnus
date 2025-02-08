@@ -32,6 +32,7 @@ public class ProductAppService(
         product.SetPrice(request.Price);
         product.SetName(request.Name);
         product.SetBars(bars);
+        product.SetDiscount(request.Discount);
         product.SetLaboratoryId(request.LaboratoryId);
         product.SetPriceRule(priceRule);
         unitOfWork.Products.Update(product);

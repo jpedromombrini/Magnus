@@ -14,7 +14,6 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
             .NotEmpty().WithMessage("O preço é obrigatório.")
             .GreaterThan(0).WithMessage("O preço deve ser maior que zero.")
             .LessThanOrEqualTo(9999999.99m).WithMessage("O preço deve ser menor ou igual a 9999999,99.");
-
         RuleFor(x => x.Bars)
             .NotNull().WithMessage("A lista de barras não pode ser nula.");
         RuleForEach(x => x.Bars)

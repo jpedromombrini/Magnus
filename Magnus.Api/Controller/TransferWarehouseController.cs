@@ -56,11 +56,11 @@ public class TransferWarehouseController(
     }
     
     [HttpPatch]
-    [Route("updatestatusitem/{id:guid}")]
-    public async Task UpdateStatusTransferWarehouseItemAsync(Guid id, [FromBody] UpdateStatusTransferWarehouseItemRequest request,
+    [Route("updatestatusitem")]
+    public async Task UpdateStatusTransferWarehouseItemAsync([FromBody] UpdateStatusTransferWarehouseItemRequest request,
         CancellationToken cancellationToken)
     {
-        await transferWarehouseAppService.UpdateTransferWarehouseItemStatusAsync(id, request, cancellationToken);
+        await transferWarehouseAppService.UpdateTransferWarehouseItemStatusAsync(request, cancellationToken);
     }
 
     [HttpPut("{id:guid}")]

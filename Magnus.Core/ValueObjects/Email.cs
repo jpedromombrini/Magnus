@@ -17,8 +17,6 @@ public class Email
 
         if (!Regex.IsMatch(address, pattern))
             throw new InvalidEmailException("E-mail inválido");
-
-
     }
     public override string ToString() => Address;
 }

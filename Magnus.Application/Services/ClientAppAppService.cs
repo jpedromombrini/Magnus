@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Runtime.InteropServices.JavaScript;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
@@ -15,16 +16,19 @@ public class ClientAppAppService(
 {
     public async Task AddClientAsync(CreateClientRequest request, CancellationToken cancellationToken)
     {
-        var clientDb = await unitOfWork.Clients.GetByExpressionAsync(x => x.Document.Value == request.Document, cancellationToken);
-        if(clientDb is not null)
+        var clientDb =
+            await unitOfWork.Clients.GetByExpressionAsync(x => x.Document.Value == request.Document, cancellationToken);
+        if (clientDb is not null)
             throw new ApplicationException("Já existe um cliente com esse documento");
-        clientDb = await unitOfWork.Clients.GetByExpressionAsync(x => x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);
-        if(clientDb is not null)
+        clientDb = await unitOfWork.Clients.GetByExpressionAsync(
+            x => x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);
+        if (clientDb is not null)
             throw new ApplicationException("Já existe um cliente com esse email");
-        clientDb = await unitOfWork.Clients.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
-        if(clientDb is not null)
+        clientDb = await unitOfWork.Clients.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(),
+            cancellationToken);
+        if (clientDb is not null)
             throw new ApplicationException("Já existe um cliente com esse nome");
-        
+
         await unitOfWork.Clients.AddAsync(mapper.Map<Client>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -41,15 +45,47 @@ public class ClientAppAppService(
                 request.City!, request.State!, request.Complement!);
             clientDb.SetAddress(address);
         }
-        
+        else
+        {
+            clientDb.SetAddress(null);
+        }
+
         if (!string.IsNullOrEmpty(request.RegisterNumber)) clientDb.SetRegisterNumber(request.RegisterNumber);
         if (request.Email is not null) clientDb.SetEmail(new Email(request.Email));
         if (!string.IsNullOrEmpty(request.Occupation)) clientDb.SetOccupation(request.Occupation);
         if (request.DateOfBirth != DateOnly.MinValue) clientDb.SetDateOfBirth(request.DateOfBirth);
-        if (request.Phones is not null) clientDb.SetPhones(mapper.Map<List<ClientPhone>>(request.Phones));
-        if (request.SocialMedias is not null)
-            clientDb.SetSocialMedias(mapper.Map<List<ClientSocialMedia>>(request.SocialMedias));
-
+        var phonesToRemove = clientDb.Phones.Where(
+            p => !request.Phones.Any(x => x.Number == p.Phone.Number));
+        foreach (var phone in request.Phones)
+        {
+            var existingPhone = clientDb.Phones.SingleOrDefault(p => p.Phone.Number == phone.Number);
+            if (existingPhone != null)
+            {
+                existingPhone.SetPhone(new Phone(phone.Number));
+                existingPhone.SetDescription(phone.Description);
+            }
+            else
+            {
+                clientDb.AddPhone(mapper.Map<ClientPhone>(phone));
+            }
+        }
+        var socialToRemove = clientDb.SocialMedias.Where(
+            s => !request.SocialMedias.Any(x => x.Name == s.Name));
+        foreach (var socialMedia in request.SocialMedias)
+        {
+            var existingSocialMedia = clientDb.SocialMedias.SingleOrDefault(s => s.Name == socialMedia.Name);
+            if (existingSocialMedia != null)
+            {
+                existingSocialMedia.SetName(socialMedia.Name);
+                existingSocialMedia.SetLink(socialMedia.Link);
+            }
+            else
+            {
+                clientDb.AddSocialMedia(mapper.Map<ClientSocialMedia>(socialMedia));
+            }
+        }
+        unitOfWork.Clients.DeletePhonesRange(phonesToRemove);
+        unitOfWork.Clients.DeleteSocialMediasRange(socialToRemove);
         unitOfWork.Clients.Update(clientDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

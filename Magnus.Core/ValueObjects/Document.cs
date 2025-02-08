@@ -8,9 +8,7 @@ public class Document
 
     public Document(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            throw new ArgumentException("O valor do documento não pode ser nulo ou vazio.");
-
+        if (string.IsNullOrWhiteSpace(value)) return;
         value = value.Replace(".", "").Replace("-", "").Replace("/", "").Trim(); 
 
         if (!IsValid(value))

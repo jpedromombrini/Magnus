@@ -20,13 +20,12 @@ public class SellerMap : IEntityTypeConfiguration<Seller>
         builder.OwnsOne(x => x.Document)
             .Property(x => x.Value)
             .HasColumnName("Document")
-            .IsRequired()
             .HasColumnType("varchar(14)");
         builder.OwnsOne(x => x.Phone)
             .Property(x => x.Number)
             .HasColumnName("Number")
             .IsRequired()
-            .HasColumnType("varchar(14)"); 
+            .HasColumnType("varchar(15)"); 
         builder.Property(x => x.UserId)
             .IsRequired();
     }

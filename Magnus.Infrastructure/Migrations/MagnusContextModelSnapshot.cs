@@ -384,6 +384,8 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Estimates", (string)null);
                 });
 
@@ -637,6 +639,9 @@ namespace Magnus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<int>("InternalCode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
@@ -704,6 +709,143 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Receipt", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Sale", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<int>("Document")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Document"));
+
+                    b.Property<decimal>("FinantialDiscount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sale", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.SaleItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<Guid>("SaleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateOnly>("Validity")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SaleId");
+
+                    b.ToTable("SaleItem", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.SaleReceipt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReceiptId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SaleId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReceiptId");
+
+                    b.HasIndex("SaleId");
+
+                    b.ToTable("SaleReceipt", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.SaleReceiptInstallment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateOnly>("DueDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Installment")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Interest")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateTime?>("PaymentDate")
+                        .HasColumnType("timestamp");
+
+                    b.Property<byte[]>("ProofImage")
+                        .HasColumnType("bytea");
+
+                    b.Property<Guid>("SaleReceiptId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SaleReceiptId");
+
+                    b.ToTable("SaleReceiptInstallments", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Seller", b =>
@@ -819,10 +961,10 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("FinalDate")
-                        .HasColumnType("timestamptz");
+                        .HasColumnType("timestamp");
 
                     b.Property<DateTime>("InitialDate")
-                        .HasColumnType("timestamptz");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1051,6 +1193,17 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("CostCenterGroup");
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.Estimate", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.EstimateItem", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Estimate", "Estimate")
@@ -1114,6 +1267,47 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.SaleItem", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Sale", "Sale")
+                        .WithMany("Items")
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sale");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.SaleReceipt", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Receipt", "Receipt")
+                        .WithMany()
+                        .HasForeignKey("ReceiptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Magnus.Core.Entities.Sale", "Sale")
+                        .WithMany("Receipts")
+                        .HasForeignKey("SaleId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.Navigation("Receipt");
+
+                    b.Navigation("Sale");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.SaleReceiptInstallment", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.SaleReceipt", "SaleReceipt")
+                        .WithMany("Installments")
+                        .HasForeignKey("SaleReceiptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SaleReceipt");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Seller", b =>
                 {
                     b.OwnsOne("Magnus.Core.ValueObjects.Document", "Document", b1 =>
@@ -1159,7 +1353,7 @@ namespace Magnus.Infrastructure.Migrations
 
                             b1.Property<string>("Number")
                                 .IsRequired()
-                                .HasColumnType("varchar(14)")
+                                .HasColumnType("varchar(15)")
                                 .HasColumnName("Number");
 
                             b1.HasKey("SellerId");
@@ -1170,8 +1364,7 @@ namespace Magnus.Infrastructure.Migrations
                                 .HasForeignKey("SellerId");
                         });
 
-                    b.Navigation("Document")
-                        .IsRequired();
+                    b.Navigation("Document");
 
                     b.Navigation("Email")
                         .IsRequired();
@@ -1383,6 +1576,18 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("Bars");
 
                     b.Navigation("PriceRule");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Sale", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("Receipts");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.SaleReceipt", b =>
+                {
+                    b.Navigation("Installments");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.TransferWarehouse", b =>

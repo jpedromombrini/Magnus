@@ -9,7 +9,7 @@ namespace Magnus.Infrastructure.Persistence.Repositories;
 public class InvoiceRepository(MagnusContext context) : Repository<Invoice>(context), IInvoiceRepository
 {
     private readonly MagnusContext _context = context;
-    public async Task<Invoice?> GetByExpressionAsync(Expression<Func<Invoice, bool>> predicate, CancellationToken cancellationToken)
+    public override async Task<Invoice?> GetByExpressionAsync(Expression<Func<Invoice, bool>> predicate, CancellationToken cancellationToken)
     {
         return await _context.Invoices.FirstOrDefaultAsync(predicate, cancellationToken);
     }

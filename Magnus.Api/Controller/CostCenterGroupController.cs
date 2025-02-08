@@ -19,14 +19,14 @@ public class CostCenterGroupController(
         return await costCenterGroupAppService.GetCostCenterGroupsAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsByFilterAsync([FromQuery] string filter,
+    [HttpGet("getbyname")]
+    public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
         return await costCenterGroupAppService.GetCostCenterGroupsByFilterAsync(
-            x => x.Name.ToLower().Contains(filter.ToLower()),
+            x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

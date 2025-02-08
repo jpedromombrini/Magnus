@@ -33,6 +33,10 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<InvoicePaymentInstallment> InvoicePaymentInstallments { get; set; }
     public DbSet<Estimate> Estimates { get; set; }
     public DbSet<EstimateItem> EstimateItems { get; set; }
+    public DbSet<Sale> Sales { get; set; }
+    public DbSet<SaleItem> SaleItems { get; set; }
+    public DbSet<SaleReceipt> SaleReceipts { get; set; }
+    public DbSet<SaleReceiptInstallment> SaleReceiptInstallments { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());

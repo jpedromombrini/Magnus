@@ -47,4 +47,14 @@ public class ClientRepository(MagnusContext context) : Repository<Client>(contex
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
             
     }
+
+    public void DeletePhonesRange(IEnumerable<ClientPhone> items)
+    {
+        _context.ClientPhones.RemoveRange(items);
+    }
+
+    public void DeleteSocialMediasRange(IEnumerable<ClientSocialMedia> items)
+    {
+        _context.ClientSocialMedias.RemoveRange(items);
+    }
 };

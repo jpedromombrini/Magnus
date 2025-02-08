@@ -11,7 +11,5 @@ public class UpdateReceiptRequestValidator : AbstractValidator<UpdateReceiptRequ
             .Length(1,100).WithMessage("Informe um nome com no máximo 100 caracteres");
         RuleFor(x => x.Increase)
             .NotEmpty().WithMessage("Informe o acrescimo");
-        RuleFor(x => x.InInstallments)
-            .NotEmpty().WithMessage("Informe se é Parcelado");
     }
 }

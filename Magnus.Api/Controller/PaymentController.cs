@@ -11,7 +11,7 @@ namespace Magnus.Api.Controller;
 [Authorize]
 public class PaymentController(IPaymentAppService paymentAppService) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("getall")]
     public async Task<IEnumerable<PaymentResponse>> GetAllPaymentsAsync(CancellationToken cancellationToken)
     {
         return await paymentAppService.GetPaymentsAsync(cancellationToken);

@@ -26,6 +26,9 @@ builder.Services.AddDbContext<MagnusContext>(options =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
     options.UseNpgsql(connectionString);  
 });
+var secretKey = builder.Configuration["Jwt:SecretKey"];
+if(string.IsNullOrEmpty(secretKey))
+    throw new ArgumentException("The secret key is required.");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -37,7 +40,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true, 
             ValidIssuer = builder.Configuration["Jwt:Issuer"], 
             ValidAudience = builder.Configuration["Jwt:Audience"], 
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])) 
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)) 
         };
     });
 builder.Services.AddApplicationServices();  
@@ -49,17 +52,18 @@ builder.Services.AddSwaggerConfiguration();
 
 var app = builder.Build();
 
-app.UseMiddleware<GlobalExceptionMiddleware>();
+
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseHttpsRedirection();
 app.UseCors("default");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpsRedirection();
+app.UseMiddleware<GlobalExceptionMiddleware>();
 app.MapControllers(); 
 
 app.Run();

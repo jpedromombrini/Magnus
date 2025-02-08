@@ -15,7 +15,7 @@ public class Client : EntityBase
     public List<ClientPhone>? Phones { get; private set; } 
 
     private Client(){}
-    public Client(string name, Document document, string? email = null, string? occupation = null, DateOnly dateOfBirth = default , Address? address = null)
+    public Client(string name, Document document)
     {
         SetName(name);
         SetDocument(document);
@@ -49,7 +49,7 @@ public class Client : EntityBase
         DateOfBirth = dateOfBirth;
     }
 
-    public void SetAddress(Address address)
+    public void SetAddress(Address? address)
     {
         Address = address;
     }
@@ -58,13 +58,25 @@ public class Client : EntityBase
         RegisterNumber = registerNumber ?? string.Empty; 
     }
     
-    public void SetSocialMedias(List<ClientSocialMedia> socialMedias)
+    public void SetSocialMedias(List<ClientSocialMedia>? socialMedias)
     {
         SocialMedias = socialMedias ?? throw new ArgumentNullException(nameof(socialMedias), "Redes sociais não podem ser nulas.");
     }
     
-    public void SetPhones(List<ClientPhone> phones)
+    public void SetPhones(List<ClientPhone>? phones)
     {
         Phones = phones ?? throw new ArgumentNullException(nameof(phones), "Telefones não podem ser nulos.");
+    }
+
+    public void AddPhone(ClientPhone phone)
+    {
+        Phones ??= [];
+        Phones?.Add(phone);
+    }
+
+    public void AddSocialMedia(ClientSocialMedia socialMedia)
+    {
+        SocialMedias ??= [];
+        SocialMedias.Add(socialMedia);
     }
 }

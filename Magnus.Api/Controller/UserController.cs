@@ -16,14 +16,24 @@ public class UserController(IUserAppService userAppService) : ControllerBase
     {
         return await userAppService.GetUsersAsync(cancellationToken);
     }
-
-    [HttpGet]
-    public async Task<IEnumerable<UserResponse>> GetUsersByFilterAsync([FromQuery] string filter,
+    
+    [HttpGet("GetByName")]
+    public async Task<IEnumerable<UserResponse>> GetUsersByNameAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await userAppService.GetUsersByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await userAppService.GetUsersByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
+            cancellationToken);
+    }
+
+    [HttpGet("GetByEmail")]
+    public async Task<IEnumerable<UserResponse>> GetUsersByFilterAsync([FromQuery] string email,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(email))
+            return [];
+        return await userAppService.GetUsersByFilterAsync(x => x.Email.Address.ToLower().Contains(email.ToLower()),
             cancellationToken);
     }
 

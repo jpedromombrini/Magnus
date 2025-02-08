@@ -38,7 +38,8 @@ public class SellerAppService(
             throw new EntityNotFoundException(id);
         sellerDb.SetName(request.Name);
         sellerDb.SetEmail(new Email(request.Email));
-        sellerDb.SetDocument(new Document(request.Password));
+        if(!string.IsNullOrEmpty(request.Document))
+            sellerDb.SetDocument(new Document(request.Document));
         sellerDb.SetPhone(new Phone(request.Phone));
         unitOfWork.Sellers.Update(sellerDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -66,7 +67,11 @@ public class SellerAppService(
         var sellerDb = await unitOfWork.Sellers.GetByIdAsync(id, cancellationToken);
         if (sellerDb is null)
             throw new EntityNotFoundException(id);
+        var userDb = await unitOfWork.Users.GetByIdAsync(sellerDb.UserId, cancellationToken);
+        if (userDb is null)
+            throw new EntityNotFoundException("Nenhum usuário encontrado");
         unitOfWork.Sellers.Delete(sellerDb);
+        unitOfWork.Users.Delete(userDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

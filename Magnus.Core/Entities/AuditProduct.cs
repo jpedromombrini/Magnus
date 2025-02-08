@@ -86,8 +86,8 @@ public class AuditProduct : EntityBase
 
     public void SetSerie(int serie)
     {
-        if (serie <= 0)
-            throw new ArgumentException("A série deve ser maior que zero.");
+        if (serie < 0)
+            throw new ArgumentException("A série deve ser maior ou igual a zero.");
         Serie = serie;
     }
 

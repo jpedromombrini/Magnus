@@ -45,12 +45,12 @@ public class EstimateAppService(
         foreach (var itemRequest in request.Items)
         {
             var existingItem = estimateDb.Items.SingleOrDefault(item => item.ProductId == itemRequest.ProductId);
-
             if (existingItem != null)
             {
                 existingItem.SetProductName(itemRequest.ProductName); 
                 existingItem.SetAmount(itemRequest.Amount); 
                 existingItem.SetDiscount(itemRequest.Discount);
+                existingItem.setValue(itemRequest.Value);
                 existingItem.SetTotalValue(itemRequest.TotalValue);
             }
             else

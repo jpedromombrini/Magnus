@@ -1,3 +1,4 @@
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Magnus.Application.Dtos.Requests.Validators;
 using Magnus.Application.Services;
@@ -31,6 +32,8 @@ public static class ServiceRegistration
         services.AddScoped<IPaymentAppService, PaymentAppService>();
         services.AddScoped<IInvoicePaymentAppService, InvoicePaymentAppService>();
         services.AddScoped<IEstimateAppService, EstimateAppService>();
+        services.AddScoped<ISaleAppService, SaleAppService>();
+        services.AddScoped<IWarehouseAppService, WarehouseAppService>();
         #endregion
 
         #region Services Core
@@ -43,8 +46,9 @@ public static class ServiceRegistration
         #endregion
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-        services.AddFluentValidation(fv =>
-            fv.RegisterValidatorsFromAssembly(typeof(CreateProductRequestValidator).Assembly));
+        services.AddFluentValidationAutoValidation();
+        services.AddFluentValidationClientsideAdapters();
+        services.AddValidatorsFromAssemblyContaining<CreateProductRequestValidator>();
 
         return services;
     }

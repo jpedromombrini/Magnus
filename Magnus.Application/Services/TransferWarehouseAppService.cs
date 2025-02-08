@@ -18,6 +18,9 @@ public class TransferWarehouseAppService(
     public async Task AddTransferWarehouseAsync(CreateTransferWarehouseRequest request,
         CancellationToken cancellationToken)
     {
+        var user = await unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        if (user == null)
+            throw new EntityNotFoundException("Usuário não encontrado");
         await unitOfWork.TransferWarehouses.AddAsync(mapper.Map<TransferWarehouse>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -45,38 +48,37 @@ public class TransferWarehouseAppService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task UpdateTransferWarehouseItemStatusAsync(Guid transferId,
-        UpdateStatusTransferWarehouseItemRequest request,
+    public async Task UpdateTransferWarehouseItemStatusAsync(UpdateStatusTransferWarehouseItemRequest request,
         CancellationToken cancellationToken)
     {
-        var transferDb = await unitOfWork.TransferWarehouses.GetByIdAsync(transferId, cancellationToken);
+        var transferItemDb = await unitOfWork.TransferWarehouses.GetItemByIdAsync(request.Id, cancellationToken);
+        if (transferItemDb is null)
+            throw new EntityNotFoundException("Não foi possível encontrar o item");
+        var transferDb = await unitOfWork.TransferWarehouses.GetByIdAsync(transferItemDb.TransferWarehouse.Id, cancellationToken);
         if (transferDb is null)
-            throw new EntityNotFoundException(transferId);
-
-        var transferWarehouseItem = transferDb.Items.Find(x => x.Id == request.Id);
-        if (transferWarehouseItem is null)
-            throw new EntityNotFoundException(request.Id);
-        switch (transferWarehouseItem.Status)
+            throw new EntityNotFoundException("Não foi possível encontrar a transferência");
+        
+        switch (transferItemDb.Status)
         {
             case TransferWarehouseItemStatus.Requested when
                 request.Status == TransferWarehouseItemStatus.Transferred:
-                await transferWarehouseService.ConfirmTransferWarehouse(transferWarehouseItem, transferId,
+                await transferWarehouseService.ConfirmTransferWarehouse(transferItemDb, transferDb.Id,
                     transferDb.WarehouseOriginId, transferDb.WarehouseDestinyId, cancellationToken);
                 break;
             case TransferWarehouseItemStatus.Transferred when
                 request.Status == TransferWarehouseItemStatus.Refused:
-                await transferWarehouseService.CancelTransferWarehouse(transferWarehouseItem, transferId,
+                await transferWarehouseService.CancelTransferWarehouse(transferItemDb, transferDb.Id,
                     transferDb.WarehouseOriginId, transferDb.WarehouseDestinyId, cancellationToken);
                 break;
             case TransferWarehouseItemStatus.Refused when
                 request.Status == TransferWarehouseItemStatus.Transferred:
-                await transferWarehouseService.ConfirmTransferWarehouse(transferWarehouseItem, transferId,
+                await transferWarehouseService.ConfirmTransferWarehouse(transferItemDb, transferDb.Id,
                     transferDb.WarehouseOriginId, transferDb.WarehouseDestinyId, cancellationToken);
                 break;
         }
 
-        transferWarehouseItem.SetStatus(request.Status);
-        unitOfWork.TransferWarehouses.UpdateStatusAsync(transferWarehouseItem);
+        transferItemDb.SetStatus(request.Status);
+        unitOfWork.TransferWarehouses.UpdateStatusAsync(transferItemDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

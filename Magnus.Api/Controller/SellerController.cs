@@ -18,13 +18,13 @@ public class SellerController(
         return await sellerAppService.GetSellersAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<SellerResponse>> GetSellersByFilterAsync([FromQuery] string filter,
+    [HttpGet("GetByName")]
+    public async Task<IEnumerable<SellerResponse>> GetSellersByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await sellerAppService.GetSellersByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await sellerAppService.GetSellersByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

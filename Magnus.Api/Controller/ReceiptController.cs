@@ -18,13 +18,13 @@ public class ReceiptController(
         return await receiptAppService.GetReceiptsAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<ReceiptResponse>> GetReceiptsByFilterAsync([FromQuery] string filter,
+    [HttpGet("GetByName")]
+    public async Task<IEnumerable<ReceiptResponse>> GetReceiptsByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await receiptAppService.GetReceiptsByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await receiptAppService.GetReceiptsByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

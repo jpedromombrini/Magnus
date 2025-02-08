@@ -18,13 +18,13 @@ public class CostCenterController(
         return await costCenterAppService.GetCostCentersAsync(cancellationToken);
     }
 
-    [HttpGet]
-    public async Task<IEnumerable<CostCenterResponse>> GetCostCentersByFilterAsync([FromQuery] string filter,
+    [HttpGet("GetByName")]
+    public async Task<IEnumerable<CostCenterResponse>> GetCostCentersByFilterAsync([FromQuery] string name,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(filter))
+        if (string.IsNullOrEmpty(name))
             return [];
-        return await costCenterAppService.GetCostCentersByFilterAsync(x => x.Name.ToLower().Contains(filter.ToLower()),
+        return await costCenterAppService.GetCostCentersByFilterAsync(x => x.Name.ToLower().Contains(name.ToLower()),
             cancellationToken);
     }
 

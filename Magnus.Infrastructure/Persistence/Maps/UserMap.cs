@@ -19,9 +19,9 @@ public class UserMap : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasColumnType("varchar(100)");
         builder.Property(x => x.InitialDate)
-            .HasColumnType("timestamptz");
+            .HasColumnType("timestamp");
         builder.Property(x => x.FinalDate)
-            .HasColumnType("timestamptz");
+            .HasColumnType("timestamp");
         builder.Property(x => x.Password)
             .IsRequired()
             .HasColumnType("varchar(40)");

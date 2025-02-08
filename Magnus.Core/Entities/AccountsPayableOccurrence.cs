@@ -18,7 +18,6 @@ public class AccountsPayableOccurrence : EntityBase
         string userName,
         string occurrence)
     {
-        
         SetAccountsPayable(accountsPayable);
         SetUserId(userId);
         SetUserName(userName);
