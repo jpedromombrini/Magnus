@@ -25,13 +25,15 @@ public class EstimateController(
         Guid clientId,
         Guid userId,
         string? description,
+        int code,
         CancellationToken cancellationToken)
     {
         return await estimateAppService.GetEstimatesByFilterAsync(x =>
-                x.CreatedAt >= initialDate &&
-                x.CreatedAt <= finalDate &&
+                x.CreatedAt.Date >= initialDate.Date &&
+                x.CreatedAt.Date <= finalDate.Date &&
                 (clientId == Guid.Empty || x.ClientId == clientId) &&
                 (userId == Guid.Empty || x.UserId == userId) &&
+                (code == 0 || x.Code == code) &&
                 (string.IsNullOrEmpty(description) || x.Description.ToLower().Contains(description.ToLower())),
             cancellationToken);
     }

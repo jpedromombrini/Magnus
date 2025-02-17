@@ -16,7 +16,5 @@ public class TransferWarehouseItemRequestValidator : AbstractValidator<TransferW
         RuleFor(x => x.Amount)
             .GreaterThan(0).WithMessage("A quantidade deve ser maior que 0.");
         
-        RuleFor(x => x.Validity)
-            .NotEmpty().WithMessage("A validade é obrigatória.");
     }
 }

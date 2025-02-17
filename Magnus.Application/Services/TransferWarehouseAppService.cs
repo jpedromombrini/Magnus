@@ -21,7 +21,9 @@ public class TransferWarehouseAppService(
         var user = await unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null)
             throw new EntityNotFoundException("Usuário não encontrado");
-        await unitOfWork.TransferWarehouses.AddAsync(mapper.Map<TransferWarehouse>(request), cancellationToken);
+        var transferWarehouse = mapper.Map<TransferWarehouse>(request);
+        transferWarehouse.SetCreatedAt();
+        await unitOfWork.TransferWarehouses.AddAsync(transferWarehouse, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
     

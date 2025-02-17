@@ -27,20 +27,29 @@ public class ProductAppService(
         var product = await unitOfWork.Products.GetByIdAsync(id, cancellation);
         if (product is null)
             throw new EntityNotFoundException(id);
-        var bars = mapper.Map<List<Bar>>(request.Bars);
-        var priceRule = mapper.Map<PriceRule>(request.PriceRule);
         product.SetPrice(request.Price);
         product.SetName(request.Name);
-        product.SetBars(bars);
         product.SetDiscount(request.Discount);
         product.SetLaboratoryId(request.LaboratoryId);
-        product.SetPriceRule(priceRule);
+        foreach (var barRequest in from barRequest in request.Bars
+                 let existingBar = product.Bars.SingleOrDefault(
+                     x => x.Code == barRequest.Code)
+                 where existingBar is null
+                 select barRequest)
+        {
+            product.AddBar(new Bar(product.Id, barRequest.Code, product));
+        }
+
+        var barsToRemove = product.Bars.Where(item => request.Bars.All(requestItem => requestItem.Code != item.Code))
+            .ToList();
+        unitOfWork.Products.DeleteBarsRange(barsToRemove);
         unitOfWork.Products.Update(product);
         await unitOfWork.SaveChangesAsync(cancellation);
     }
 
     public async Task<IEnumerable<ProductResponse>> GetProductsAsync(CancellationToken cancellationToken)
     {
+        var products = await unitOfWork.Products.GetAllAsync(cancellationToken);
         return mapper.Map<IEnumerable<ProductResponse>>(await unitOfWork.Products.GetAllAsync(cancellationToken));
     }
 

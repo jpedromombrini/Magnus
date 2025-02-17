@@ -32,6 +32,7 @@ public class UnitOfWork : IUnitOfWork
         Estimates = new EstimateRepository(_context);
         Sales = new SaleRepository(_context);
         SaleReceipts = new SaleReceiptRepository(_context);
+        AppConfigurations = new AppConfigurationRepository(_context);
     }
 
     public IProductRepository Products { get; }
@@ -56,6 +57,7 @@ public class UnitOfWork : IUnitOfWork
     public IEstimateRepository Estimates { get; }
     public ISaleRepository Sales { get; }
     public ISaleReceiptRepository SaleReceipts { get; }
+    public IAppConfigurationRepository AppConfigurations { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {

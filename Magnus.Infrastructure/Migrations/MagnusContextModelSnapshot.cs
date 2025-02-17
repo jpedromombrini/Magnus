@@ -112,6 +112,20 @@ namespace Magnus.Infrastructure.Migrations
                     b.ToTable("AccountsPayableOccurrence", (string)null);
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.AppConfiguration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AmountToDiscount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppConfiguration", (string)null);
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.AuditProduct", b =>
                 {
                     b.Property<Guid>("Id")
@@ -213,7 +227,6 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id");
@@ -605,32 +618,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Payment", (string)null);
-                });
-
-            modelBuilder.Entity("Magnus.Core.Entities.PriceRule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("From")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(10,2)");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId")
-                        .IsUnique();
-
-                    b.ToTable("PriceRule", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Product", b =>
@@ -1256,17 +1243,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("InvoicePayment");
                 });
 
-            modelBuilder.Entity("Magnus.Core.Entities.PriceRule", b =>
-                {
-                    b.HasOne("Magnus.Core.Entities.Product", "Product")
-                        .WithOne("PriceRule")
-                        .HasForeignKey("Magnus.Core.Entities.PriceRule", "ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("Magnus.Core.Entities.SaleItem", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Sale", "Sale")
@@ -1574,8 +1550,6 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.Product", b =>
                 {
                     b.Navigation("Bars");
-
-                    b.Navigation("PriceRule");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Sale", b =>

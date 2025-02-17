@@ -6,4 +6,6 @@ public record TransferWarehouseItemResponse(
     int ProductInternalCode,
     string ProductName,
     decimal Amount,
-    DateOnly Validity);
+    DateOnly Validity,
+    string TransferWarehouseOriginName,
+    string TransferWarehouseDestinyName);

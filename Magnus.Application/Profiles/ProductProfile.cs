@@ -11,8 +11,6 @@ public class ProductProfile : Profile
     {
         CreateMap<Bar, BarResponse>().ReverseMap();
         CreateMap<BarRequest, Bar>().ReverseMap();
-        CreateMap<PriceRule, PriceRuleResponse>().ReverseMap();
-        CreateMap<PriceRule, PriceRuleRequest>().ReverseMap();
         CreateMap<Product, ProductResponse>().ReverseMap();
         CreateMap<CreateProductRequest, Product>().ReverseMap();
     }

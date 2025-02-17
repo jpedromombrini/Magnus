@@ -13,6 +13,21 @@ public class TransferWarehouseProfile : Profile
         CreateMap<TransferWarehouse, UpdateTransferWarehouseRequest>().ReverseMap();
         CreateMap<TransferWarehouse, TransferWarehouseResponse>().ReverseMap();
         CreateMap<TransferWarehouseItem, TransferWarehouseItemRequest>().ReverseMap();
-        CreateMap<TransferWarehouseItem, TransferWarehouseItemResponse>().ReverseMap();
+        CreateMap<TransferWarehouseItem, TransferWarehouseItemResponse>()
+            .ForMember(dest => dest.TransferWarehouseDestinyName,
+                opt => opt.MapFrom(src => src.TransferWarehouse.WarehouseDestinyName))
+            .ForMember(dest => dest.TransferWarehouseOriginName,
+                opt => opt.MapFrom(src => src.TransferWarehouse.WarehouseOriginName))
+            .ConstructUsing(src => new TransferWarehouseItemResponse(
+                src.Id,
+                src.ProductId,
+                src.ProductInternalCode,
+                src.ProductName,
+                src.Amount,
+                src.Validity,
+                src.TransferWarehouse.WarehouseOriginName,
+                src.TransferWarehouse.WarehouseDestinyName
+                ))
+            .ReverseMap();
     }
 }

@@ -27,7 +27,5 @@ public class ProductMap : IEntityTypeConfiguration<Product>
             .WithOne(x => x.Product)            
             .HasForeignKey(x => x.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasOne(x => x.PriceRule)            
-            .WithOne(x => x.Product);        
     }
 }

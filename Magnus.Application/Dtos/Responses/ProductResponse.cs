@@ -5,6 +5,6 @@ public record ProductResponse(
     int InternalCode,
     string Name,
     decimal Price,
-    PriceRuleResponse? PriceRule,
+    decimal Discount,
     List<BarResponse> Bars,
     Guid LaboratoryId);

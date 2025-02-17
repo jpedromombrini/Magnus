@@ -24,7 +24,8 @@ public class ProductStockController(
 
     [HttpGet]
     [Route("getbalance/{productId}")]
-    public async Task<decimal> GetBalanceProductStocksByFilterAsync([FromQuery] Guid productId,
+    public async Task<decimal> GetBalanceProductStocksByFilterAsync(
+        [FromRoute] Guid productId,
         [FromQuery] int warehouseId,
         CancellationToken cancellationToken)
     {

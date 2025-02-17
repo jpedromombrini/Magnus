@@ -28,8 +28,35 @@ public class ClientAppAppService(
             cancellationToken);
         if (clientDb is not null)
             throw new ApplicationException("Já existe um cliente com esse nome");
+        Client client = new(request.Name, new Document(request.Document));
+        if (!string.IsNullOrEmpty(request.RegisterNumber)) client.SetRegisterNumber(request.RegisterNumber);
+        if (request.Email is not null) client.SetEmail(new Email(request.Email));
+        if (!string.IsNullOrEmpty(request.Occupation)) client.SetOccupation(request.Occupation);
+        if (request.DateOfBirth != DateOnly.MinValue) client.SetDateOfBirth(request.DateOfBirth);
+        if (!string.IsNullOrEmpty(request.ZipCode))
+        {
+            Address address = new(request.ZipCode, request.PublicPlace!, request.Number, request.Neighborhood!,
+                request.City!, request.State!, request.Complement!);
+            client.SetAddress(address);
+        }
+        else
+        {
+            client.SetAddress(null);
+        }
+        await unitOfWork.Clients.AddAsync(client, cancellationToken);
+        if (request.Phones is { Count: > 0 })
+        {
+            foreach (var phone in request.Phones)
+                client.AddPhone(new ClientPhone(client.Id, new Phone(phone.Number), phone.Description));
+        }
 
-        await unitOfWork.Clients.AddAsync(mapper.Map<Client>(request), cancellationToken);
+        if (request.SocialMedias is { Count: > 0 })
+        {
+            foreach (var socialMedia in request.SocialMedias)
+            {
+                client.AddSocialMedia(new ClientSocialMedia(client.Id, socialMedia.Name, socialMedia.Link));
+            }
+        }
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -49,7 +76,7 @@ public class ClientAppAppService(
         {
             clientDb.SetAddress(null);
         }
-
+        
         if (!string.IsNullOrEmpty(request.RegisterNumber)) clientDb.SetRegisterNumber(request.RegisterNumber);
         if (request.Email is not null) clientDb.SetEmail(new Email(request.Email));
         if (!string.IsNullOrEmpty(request.Occupation)) clientDb.SetOccupation(request.Occupation);

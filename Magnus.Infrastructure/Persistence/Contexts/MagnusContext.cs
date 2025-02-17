@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 namespace Magnus.Infrastructure.Persistence.Contexts;
 public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(options)
 {
+    #region Contexts
     public DbSet<Product> Products { get; set; }
     public DbSet<Laboratory> Laboratories { get; set; }
     public DbSet<Bar> Bars { get; set; }
-    public DbSet<PriceRule> PriceRules { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<ClientPhone> ClientPhones { get; set; }
@@ -37,14 +37,11 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<SaleItem> SaleItems { get; set; }
     public DbSet<SaleReceipt> SaleReceipts { get; set; }
     public DbSet<SaleReceiptInstallment> SaleReceiptInstallments { get; set; }
+    public DbSet<AppConfiguration> AppConfigurations { get; set; }
+    #endregion
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         base.OnModelCreating(modelBuilder);
-    }
-
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
-    {
-        return base.SaveChangesAsync(cancellationToken);
     }
 }

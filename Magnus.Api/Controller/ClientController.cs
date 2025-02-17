@@ -1,6 +1,7 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
+using Magnus.Core.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,8 @@ namespace Magnus.Api.Controller;
 [Route("[controller]")]
 
 public class ClientController(
-    IClientAppService clientAppService) : ControllerBase
+    IClientAppService clientAppService,
+    IConfiguration configuration) : ControllerBase
 {
     [HttpGet("getall")]
     public async Task<IEnumerable<ClientResponse>> GetAllClientsAsync(CancellationToken cancellationToken)
@@ -39,6 +41,13 @@ public class ClientController(
     {
         await clientAppService.AddClientAsync(request, cancellationToken);
     }
+    [HttpPost("external")]
+    [AllowAnonymous]
+    public async Task AddClientAnonimousAsync([FromBody] CreateClientRequest request, CancellationToken cancellationToken)
+    {
+        ValidateCsrfToken();
+        await clientAppService.AddClientAsync(request, cancellationToken);
+    }
 
     [HttpPut("{id:guid}")]
     public async Task UpdateClientAsync(Guid id, [FromBody] UpdateClientRequest request,
@@ -51,5 +60,16 @@ public class ClientController(
     public async Task DeleteClientAsync(Guid id, CancellationToken cancellationToken)
     {
         await clientAppService.DeleteClientAsync(id, cancellationToken);
+    }
+    private void ValidateCsrfToken()
+    {
+        var token = Request.Headers["X-CSRF-Token"].FirstOrDefault();
+        var storageToken = configuration.GetSection("CsrfToken").Value;
+        if(string.IsNullOrEmpty(token))
+            throw new AuthenticationException("Nenhum token identificado na requisição");
+        if (string.IsNullOrEmpty(storageToken))
+            throw new AuthenticationException("Nenhum storage token configurado");
+        if(token != storageToken)
+            throw new AuthenticationException("Token enviado difere do configurado");
     }
 }

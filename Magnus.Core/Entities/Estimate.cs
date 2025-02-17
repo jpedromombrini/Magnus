@@ -71,6 +71,7 @@ public class Estimate : EntityBase
 
     public void AddItem(EstimateItem item)
     {
+        Items ??= [];
         Items.Add(item);
     }
 

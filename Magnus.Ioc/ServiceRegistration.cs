@@ -2,6 +2,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Magnus.Application.Dtos.Requests.Validators;
 using Magnus.Application.Services;
+using Magnus.Core.Entities;
 using Magnus.Core.Repositories;
 using Magnus.Core.Servicos;
 using Magnus.Infrastructure.Persistence.Repositories;
@@ -34,6 +35,7 @@ public static class ServiceRegistration
         services.AddScoped<IEstimateAppService, EstimateAppService>();
         services.AddScoped<ISaleAppService, SaleAppService>();
         services.AddScoped<IWarehouseAppService, WarehouseAppService>();
+        services.AddScoped<IAppConfigurationService, AppConfigurationService>();
         #endregion
 
         #region Services Core

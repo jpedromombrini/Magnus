@@ -6,7 +6,6 @@ public class Product : EntityBase
     public string Name { get; private set; }
     public decimal Price { get; private set; }
     public decimal Discount { get; private set; }
-    public PriceRule? PriceRule { get; private set; }
     public List<Bar>? Bars { get; private set; }
     public Guid LaboratoryId { get; private set; }
 
@@ -14,11 +13,10 @@ public class Product : EntityBase
     {
     }
 
-    public Product(string name, decimal price, PriceRule? priceRule, List<Bar>? bars, Guid laboratoryId)
+    public Product(string name, decimal price, List<Bar>? bars, Guid laboratoryId)
     {
         SetName(name);
         SetPrice(price);
-        SetPriceRule(priceRule);
         SetBars(bars);
         SetLaboratoryId(laboratoryId);
     }
@@ -36,14 +34,15 @@ public class Product : EntityBase
         Price = price;
     }
 
-    public void SetPriceRule(PriceRule? priceRule)
-    {
-        PriceRule = priceRule;
-    }
-
     public void SetBars(List<Bar>? bars)
     {
         Bars = bars ?? [];
+    }
+
+    public void AddBar(Bar bar)
+    {
+        Bars ??= [];
+        Bars.Add(bar);
     }
 
     public void SetLaboratoryId(Guid laboratoryId)

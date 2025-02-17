@@ -15,7 +15,7 @@ public class TransferWarehouse : EntityBase
     
     public TransferWarehouse(Guid userId, string userName, int warehouseOriginId, string warehouseOriginName, int warehouseDestinyId, string warehouseDestinyName)
     {
-        CreatedAt = DateTime.Now;
+        SetCreatedAt();
         SetUserId(userId);
         SetUserName(userName);
         SetWarehouseOriginId(warehouseOriginId);
@@ -70,6 +70,11 @@ public class TransferWarehouse : EntityBase
     public void AddItem(TransferWarehouseItem item)
     {
         Items.Add(item);   
+    }
+
+    public void SetCreatedAt()
+    {
+        CreatedAt = DateTime.Now;
     }
 
     public void ResetItems()

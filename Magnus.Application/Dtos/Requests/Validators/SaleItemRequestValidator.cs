@@ -24,8 +24,5 @@ public class SaleItemRequestValidator : AbstractValidator<SaleItemRequest>
         RuleFor(x => x.TotalPrice)
             .GreaterThan(0)
             .WithMessage("Informe um valor total");
-        RuleFor(x => x.Validity)
-            .NotEmpty()
-            .WithMessage("Informe a validade");
     }
 }
