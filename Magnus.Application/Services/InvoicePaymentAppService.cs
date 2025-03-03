@@ -1,5 +1,6 @@
 using AutoMapper;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Repositories;
 
 namespace Magnus.Application.Services;

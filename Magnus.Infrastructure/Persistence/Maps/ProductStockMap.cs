@@ -10,9 +10,6 @@ public class ProductStockMap : IEntityTypeConfiguration<ProductStock>
     {
         builder.ToTable("ProductStock");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.ValidityDate)
-            .IsRequired()
-            .HasColumnType("date");
         builder.Property(x => x.Amount)
             .IsRequired()
             .HasColumnType("decimal(10,3)");

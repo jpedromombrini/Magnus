@@ -1,3 +1,5 @@
+using Magnus.Core.Enumerators;
+
 namespace Magnus.Application.Dtos.Responses;
 
 public record SaleResponse(
@@ -8,5 +10,7 @@ public record SaleResponse(
     string ClientName,
     Guid UserId,
     decimal Value,
+    decimal FinantialDiscount,
+    SaleStatus Status,
     List<SaleItemResponse> Items,
     List<SaleReceiptResponse> Receipts);

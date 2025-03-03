@@ -1,6 +1,8 @@
+using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Enumerators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,38 +23,10 @@ public class SaleController(
 
     [HttpGet("getbyfilter")]
     public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(
-        DateTime initialDate,
-        DateTime finalDate,
-        Guid clientId,
-        Guid userId,
-        int document,
-        string status,
+        [FromQuery] GetSaleFilter filter,
         CancellationToken cancellationToken)
     {
-        if (status.Equals("todos", StringComparison.CurrentCultureIgnoreCase))
-        {
-            return await saleAppService.GetSalesByFilterAsync(x =>
-                    x.CreateAt.Date >= initialDate.Date &&
-                    x.CreateAt.Date <= finalDate.Date &&
-                    (clientId == Guid.Empty || x.ClientId == clientId) &&
-                    (userId == Guid.Empty || x.UserId == userId) &&
-                    (document == 0 || x.Document == document),
-                cancellationToken);
-        }
-        var queryStatus = status switch
-        {
-            "Abertos" => SaleStatus.Open,
-            "Faturados" => SaleStatus.Invoiced,
-            _ => SaleStatus.Open
-        };
-        return await saleAppService.GetSalesByFilterAsync(x =>
-                x.CreateAt.Date >= initialDate.Date &&
-                x.CreateAt.Date <= finalDate.Date &&
-                (clientId == Guid.Empty || x.ClientId == clientId) &&
-                (userId == Guid.Empty || x.UserId == userId) &&
-                (document == 0 || x.Document == document) &&
-                (x.Status == queryStatus),
-            cancellationToken);
+        return await saleAppService.GetSalesByFilterAsync(filter, cancellationToken);
     }
 
     [HttpGet("{id:guid}")]
@@ -65,6 +39,12 @@ public class SaleController(
     public async Task AddSaleAsync([FromBody] CreateSaleRequest request, CancellationToken cancellationToken)
     {
         await saleAppService.AddSaleAsync(request, cancellationToken);
+    }
+
+    [HttpPost("invoice")]
+    public async Task InvoiceSaleAsync(InvoiceSaleRequest request, CancellationToken cancellationToken)
+    {
+        await saleAppService.Invoice(request.Id, cancellationToken);
     }
 
     [HttpPut("{id:guid}")]

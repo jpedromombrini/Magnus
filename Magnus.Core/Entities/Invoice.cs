@@ -4,24 +4,36 @@ namespace Magnus.Core.Entities;
 
 public class Invoice : EntityBase
 {
-    public int Number { get; set; }
-    public int Serie { get; set; }
-    public string Key { get; set; }
-    public DateTime DateEntry { get; set; }
-    public DateTime Date { get; set; }
-    public Guid SupplierId { get; set; }
-    public string SupplierName { get; set; }
-    public decimal Freight { get; set; }
-    public decimal Deduction { get; set; }
-    public decimal Value { get; set; }
-    public string Observation { get; set; }
-    public InvoiceSituation InvoiceSituation { get; set; }
-    public List<InvoiceItem> Items { get; set; }
-    public Guid? DoctorId { get; set; }
+    public int Number { get; private set; }
+    public int Serie { get; private set; }
+    public string Key { get; private set; }
+    public DateTime DateEntry { get; private set; }
+    public DateTime Date { get; private set; }
+    public Guid SupplierId { get; private set; }
+    public string SupplierName { get; private set; }
+    public decimal Freight { get; private set; }
+    public decimal Deduction { get; private set; }
+    public decimal Value { get; private set; }
+    public string Observation { get; private set; }
+    public InvoiceSituation InvoiceSituation { get; private set; }
+    public List<InvoiceItem> Items { get; private set; }
+    public Guid? DoctorId { get; private set; }
 
-    public Invoice(int number, int serie, string key, DateTime dateEntry, DateTime date, Guid supplierId,
-        string supplierName, decimal freight, decimal deduction, decimal value, string observation,
-        InvoiceSituation invoiceSituation, Guid? doctorId)
+    private Invoice(){}
+    public Invoice(
+        int number, 
+        int serie,
+        string key,
+        DateTime dateEntry,
+        DateTime date,
+        Guid supplierId,
+        string supplierName,
+        decimal freight,
+        decimal deduction,
+        decimal value,
+        string observation,
+        InvoiceSituation invoiceSituation, 
+        Guid? doctorId)
     {
         SetNumber(number);
         SetSerie(serie);

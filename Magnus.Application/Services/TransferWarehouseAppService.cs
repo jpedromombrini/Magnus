@@ -2,11 +2,12 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
-using Magnus.Core.Servicos;
+using Magnus.Core.Services.Interfaces;
 
 namespace Magnus.Application.Services;
 
@@ -77,6 +78,10 @@ public class TransferWarehouseAppService(
                 await transferWarehouseService.ConfirmTransferWarehouse(transferItemDb, transferDb.Id,
                     transferDb.WarehouseOriginId, transferDb.WarehouseDestinyId, cancellationToken);
                 break;
+            case TransferWarehouseItemStatus.Canceled:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
 
         transferItemDb.SetStatus(request.Status);

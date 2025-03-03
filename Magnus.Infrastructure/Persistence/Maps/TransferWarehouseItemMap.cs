@@ -18,9 +18,6 @@ public class TransferWarehouseItemMap : IEntityTypeConfiguration<TransferWarehou
         builder.Property(x => x.Amount)
             .IsRequired()
             .HasColumnType("decimal(10,3)");
-        builder.Property(x => x.Validity)
-            .IsRequired()
-            .HasColumnType("date");
         builder.HasOne(x => x.TransferWarehouse)  
             .WithMany()  
             .HasForeignKey(x => x.TransferWarehouseId)  

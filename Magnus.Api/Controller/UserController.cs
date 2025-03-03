@@ -1,6 +1,7 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
+using Magnus.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,7 +10,8 @@ namespace Magnus.Api.Controller;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class UserController(IUserAppService userAppService) : ControllerBase
+public class UserController(
+    IUserAppService userAppService) : ControllerBase
 {
     [HttpGet("getall")]
     public async Task<IEnumerable<UserResponse>> GetAllUsersAsync(CancellationToken cancellationToken)

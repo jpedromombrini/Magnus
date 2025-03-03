@@ -2,10 +2,10 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Magnus.Application.Services;
 

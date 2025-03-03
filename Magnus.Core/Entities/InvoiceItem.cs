@@ -4,23 +4,21 @@ public class InvoiceItem : EntityBase
 {
     public Guid ProductId { get; private  set; }
     public int ProductInternalCode { get; private set; }
-    public string ProductName { get; private set; } 
-    public decimal Amount { get; private set; }
+    public string ProductName { get; private set; }
+    public int Amount { get; private set; }
     public decimal TotalValue { get; private set; }
-    public DateOnly Validity { get; private set; }
     public bool Bonus { get; private set; }
     public Guid InvoiceId { get; set; }
     public Invoice Invoice { get; set; }
     private InvoiceItem(){}
-    public InvoiceItem(Guid productId, int productInternalCode, string productName, decimal amount, decimal totalValue,
-        DateOnly validity, bool bonus)
+    public InvoiceItem(Guid productId, int productInternalCode, string productName, int amount, decimal totalValue,
+        bool bonus)
     {
         SetProductId(productId);
         SetProductInternalCode(productInternalCode);
         SetProductName(productName);
         SetAmount(amount);
         SetTotalValue(totalValue);
-        SetValidity(validity);
         SetBonus(bonus);
     }
     public void SetProductId(Guid productId)
@@ -44,7 +42,7 @@ public class InvoiceItem : EntityBase
         ProductName = productName;
     }
 
-    public void SetAmount(decimal amount)
+    public void SetAmount(int amount)
     {
         if (amount < 0)
             throw new ArgumentException("A quantidade não pode ser negativa.");
@@ -56,13 +54,6 @@ public class InvoiceItem : EntityBase
         if (totalValue < 0)
             throw new ArgumentException("O valor total não pode ser negativo.");
         TotalValue = totalValue;
-    }
-
-    public void SetValidity(DateOnly validity)
-    {
-        if (validity > DateOnly.FromDateTime(DateTime.Now))
-            throw new ArgumentException("A validade não pode ser uma data no futuro.");
-        Validity = validity;
     }
 
     public void SetBonus(bool bonus)

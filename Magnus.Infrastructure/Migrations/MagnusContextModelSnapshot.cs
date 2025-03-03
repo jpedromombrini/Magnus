@@ -147,6 +147,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<DateTime>("RecordDate")
                         .HasColumnType("timestamp");
 
+                    b.Property<Guid?>("SaleId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Serie")
                         .HasColumnType("integer");
 
@@ -161,9 +164,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<int>("Type")
                         .HasColumnType("integer");
-
-                    b.Property<DateOnly>("Validity")
-                        .HasColumnType("date");
 
                     b.Property<int>("WarehouseId")
                         .HasColumnType("integer");
@@ -519,9 +519,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<decimal>("TotalValue")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<DateOnly>("Validity")
-                        .HasColumnType("date");
-
                     b.HasKey("Id");
 
                     b.HasIndex("InvoiceId");
@@ -662,9 +659,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateOnly>("ValidityDate")
-                        .HasColumnType("date");
-
                     b.Property<int>("WarehouseId")
                         .HasColumnType("integer");
 
@@ -763,9 +757,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(10,2)");
-
-                    b.Property<DateOnly>("Validity")
-                        .HasColumnType("date");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(10,2)");
@@ -927,9 +918,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<Guid>("TransferWarehouseId")
                         .HasColumnType("uuid");
-
-                    b.Property<DateOnly>("Validity")
-                        .HasColumnType("date");
 
                     b.HasKey("Id");
 

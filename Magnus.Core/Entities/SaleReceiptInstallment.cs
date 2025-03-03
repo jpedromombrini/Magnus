@@ -12,10 +12,7 @@ public class SaleReceiptInstallment : EntityBase
     public int Installment { get; private set; }
     public byte[]? ProofImage { get; private set; }
 
-    private SaleReceiptInstallment()
-    {
-    }
-
+    private SaleReceiptInstallment(){}
     public SaleReceiptInstallment(SaleReceipt saleReceipt, DateOnly dueDate, DateTime? paymentDate, decimal value,
         decimal discount, decimal interest, int installment, byte[]? proofImage)
     {
@@ -78,5 +75,11 @@ public class SaleReceiptInstallment : EntityBase
     public void SetProofImage(byte[]? proofImage)
     {
         ProofImage = proofImage;
+    }
+
+    public decimal GetRealValue()
+    {
+        if (Value == 0m) return Value;
+        return Value + Interest - Discount;
     }
 }

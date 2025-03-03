@@ -24,7 +24,6 @@ public class TransferWarehouseProfile : Profile
                 src.ProductInternalCode,
                 src.ProductName,
                 src.Amount,
-                src.Validity,
                 src.TransferWarehouse.WarehouseOriginName,
                 src.TransferWarehouse.WarehouseDestinyName
                 ))

@@ -7,5 +7,4 @@ public record SaleItemResponse(
     int Amount,
     decimal Value,
     decimal TotalPrice,
-    decimal Discount,
-    DateOnly Validity);
+    decimal Discount);

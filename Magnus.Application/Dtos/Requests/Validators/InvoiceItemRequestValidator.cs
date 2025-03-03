@@ -18,8 +18,5 @@ public class InvoiceItemRequestValidator : AbstractValidator<InvoiceItemRequest>
             .GreaterThan(0).WithMessage("A quantidade deve ser maior que 0.")
             .ScalePrecision(3, 12).WithMessage("A quantidade deve ter até 3 casas decimais e até 12 dígitos.");
 
-        RuleFor(x => x.Validity)
-            .NotEmpty().WithMessage("A data de validade é obrigatória.");
-
     }
 }

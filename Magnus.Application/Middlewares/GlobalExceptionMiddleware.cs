@@ -36,7 +36,6 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
                 };
                 return context.Response.WriteAsJsonAsync(result);
             }
-            case InvalidEmailException:
             default:
             {
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; 

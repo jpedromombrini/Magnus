@@ -1,11 +1,13 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
-using Magnus.Core.Servicos;
+using Magnus.Core.Services.Interfaces;
 
 namespace Magnus.Application.Services;
 
@@ -35,7 +37,7 @@ public class InvoiceAppService(
         if (supplier is null)
             throw new EntityNotFoundException(invoice.SupplierId);
 
-        invoice.SupplierName = supplier.Name;
+        invoice.SetSupplierName(supplier.Name);
         var totalItemsValue = invoice.Items
             .Where(x => x.Bonus == false)
             .Sum(x => x.TotalValue);
@@ -75,11 +77,17 @@ public class InvoiceAppService(
         return mapper.Map<IEnumerable<InvoiceResponse>>(await unitOfWork.Invoices.GetAllAsync(cancellationToken));
     }
 
-    public async Task<IEnumerable<InvoiceResponse>> GetInvoicesByFilterAsync(Expression<Func<Invoice, bool>> predicate,
+    public async Task<IEnumerable<InvoiceResponse>> GetInvoicesByFilterAsync(GetInvoiceFilter filter,
         CancellationToken cancellationToken)
     {
         return mapper.Map<IEnumerable<InvoiceResponse>>(
-            await unitOfWork.Invoices.GetAllByExpressionAsync(predicate, cancellationToken));
+            await unitOfWork.Invoices.GetAllByExpressionAsync(x =>
+                (filter.InitialDate == null || x.DateEntry.Date >= filter.InitialDate)
+                && (filter.FinalDate == null || x.DateEntry.Date <= filter.FinalDate)
+                && (filter.Number == 0 || x.Number == filter.Number)
+                && (filter.Serie == 0 || x.Serie == filter.Serie)
+                && (string.IsNullOrEmpty(filter.Key) || x.Key == filter.Key)
+                && (filter.SupplierId == Guid.Empty || x.SupplierId == filter.SupplierId), cancellationToken));
     }
 
     public async Task<InvoiceResponse> GetInvoiceByIdAsync(Guid id, CancellationToken cancellationToken)

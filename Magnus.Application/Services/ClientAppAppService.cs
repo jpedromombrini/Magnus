@@ -3,6 +3,7 @@ using System.Runtime.InteropServices.JavaScript;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
@@ -21,7 +22,7 @@ public class ClientAppAppService(
         if (clientDb is not null)
             throw new ApplicationException("Já existe um cliente com esse documento");
         clientDb = await unitOfWork.Clients.GetByExpressionAsync(
-            x => x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);
+            x => x.Email != null && request.Email != null && x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);
         if (clientDb is not null)
             throw new ApplicationException("Já existe um cliente com esse email");
         clientDb = await unitOfWork.Clients.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(),
@@ -81,38 +82,50 @@ public class ClientAppAppService(
         if (request.Email is not null) clientDb.SetEmail(new Email(request.Email));
         if (!string.IsNullOrEmpty(request.Occupation)) clientDb.SetOccupation(request.Occupation);
         if (request.DateOfBirth != DateOnly.MinValue) clientDb.SetDateOfBirth(request.DateOfBirth);
-        var phonesToRemove = clientDb.Phones.Where(
-            p => !request.Phones.Any(x => x.Number == p.Phone.Number));
-        foreach (var phone in request.Phones)
+        if (clientDb.Phones != null)
         {
-            var existingPhone = clientDb.Phones.SingleOrDefault(p => p.Phone.Number == phone.Number);
-            if (existingPhone != null)
+            var phonesToRemove = clientDb.Phones.Where(
+                p => request.Phones != null && request.Phones.All(x => x.Number != p.Phone.Number));
+            if (request.Phones != null)
+                foreach (var phone in request.Phones)
+                {
+                    var existingPhone = clientDb.Phones.SingleOrDefault(p => p.Phone.Number == phone.Number);
+                    if (existingPhone != null)
+                    {
+                        existingPhone.SetPhone(new Phone(phone.Number));
+                        existingPhone.SetDescription(phone.Description);
+                    }
+                    else
+                    {
+                        clientDb.AddPhone(mapper.Map<ClientPhone>(phone));
+                    }
+                }
+
+            if (clientDb.SocialMedias != null)
             {
-                existingPhone.SetPhone(new Phone(phone.Number));
-                existingPhone.SetDescription(phone.Description);
-            }
-            else
-            {
-                clientDb.AddPhone(mapper.Map<ClientPhone>(phone));
+                var socialToRemove = clientDb.SocialMedias.Where(
+                    s => request.SocialMedias != null && request.SocialMedias.All(x => x.Name != s.Name));
+                if (request.SocialMedias != null)
+                    foreach (var socialMedia in request.SocialMedias)
+                    {
+                        var existingSocialMedia =
+                            clientDb.SocialMedias.SingleOrDefault(s => s.Name == socialMedia.Name);
+                        if (existingSocialMedia != null)
+                        {
+                            existingSocialMedia.SetName(socialMedia.Name);
+                            existingSocialMedia.SetLink(socialMedia.Link);
+                        }
+                        else
+                        {
+                            clientDb.AddSocialMedia(mapper.Map<ClientSocialMedia>(socialMedia));
+                        }
+                    }
+
+                unitOfWork.Clients.DeletePhonesRange(phonesToRemove);
+                unitOfWork.Clients.DeleteSocialMediasRange(socialToRemove);
             }
         }
-        var socialToRemove = clientDb.SocialMedias.Where(
-            s => !request.SocialMedias.Any(x => x.Name == s.Name));
-        foreach (var socialMedia in request.SocialMedias)
-        {
-            var existingSocialMedia = clientDb.SocialMedias.SingleOrDefault(s => s.Name == socialMedia.Name);
-            if (existingSocialMedia != null)
-            {
-                existingSocialMedia.SetName(socialMedia.Name);
-                existingSocialMedia.SetLink(socialMedia.Link);
-            }
-            else
-            {
-                clientDb.AddSocialMedia(mapper.Map<ClientSocialMedia>(socialMedia));
-            }
-        }
-        unitOfWork.Clients.DeletePhonesRange(phonesToRemove);
-        unitOfWork.Clients.DeleteSocialMediasRange(socialToRemove);
+
         unitOfWork.Clients.Update(clientDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

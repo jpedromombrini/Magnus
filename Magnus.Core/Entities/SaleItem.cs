@@ -8,13 +8,12 @@ public class SaleItem : EntityBase
     public decimal Value { get; private set; }
     public decimal TotalPrice { get; private set; }
     public decimal Discount { get; private set; }
-    public DateOnly Validity { get; private set; }
     public Guid SaleId { get; set; }
     public Sale Sale { get; set; }
 
     private SaleItem(){}
     
-    public SaleItem(Guid productId, string productName, int amount, decimal value, decimal totalPrice, decimal discount, DateOnly validity)
+    public SaleItem(Guid productId, string productName, int amount, decimal value, decimal totalPrice, decimal discount)
     {
         SetProductId(productId);
         SetProductName(productName);
@@ -22,7 +21,6 @@ public class SaleItem : EntityBase
         SetValue(value);
         SetTotalPrice(totalPrice);
         SetDiscount(discount);
-        SetValidity(validity);
     }
 
     public void SetProductId(Guid productId)
@@ -63,10 +61,5 @@ public class SaleItem : EntityBase
         if(totalPrice <=0)
             throw new ArgumentOutOfRangeException("Informe o Preço total");
         TotalPrice = totalPrice;
-    }
-
-    public void SetValidity(DateOnly validity)
-    {
-        Validity = validity;
     }
 }

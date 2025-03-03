@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
@@ -14,7 +15,7 @@ public class LaboratoryAppService(
 {
     public async Task AddLaboratoryAsync(CreateLaboratoryRequest request, CancellationToken cancellationToken)
     {
-        var laboratoryDb = await unitOfWork.Laboratories.GetAllByExpressionAsync(
+        var laboratoryDb = await unitOfWork.Laboratories.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (laboratoryDb is not null)
             throw new ApplicationException("Já existe um laboratório com esse nome");

@@ -7,15 +7,17 @@ public class TransferWarehouseItem : EntityBase
     public Guid ProductId { get; private set; }
     public int ProductInternalCode { get; private set; }
     public string ProductName { get; private set; }
-    public decimal Amount { get; private set; }
+    public int Amount { get; private set; }
     public Guid TransferWarehouseId { get; private set; }
     public TransferWarehouseItemStatus Status { get; private set; }
-    public TransferWarehouse TransferWarehouse { get; private set; } 
-    public DateOnly Validity { get; private set; }
+    public TransferWarehouse TransferWarehouse { get; private set; }
 
-    private TransferWarehouseItem(){}
-    
-    public TransferWarehouseItem(Guid productId, int productInternalCode, string productName, decimal amount, Guid transferWarehouseId, TransferWarehouseItemStatus status, TransferWarehouse transferWarehouse, DateOnly validity)
+    private TransferWarehouseItem()
+    {
+    }
+
+    public TransferWarehouseItem(Guid productId, int productInternalCode, string productName, int amount,
+        Guid transferWarehouseId, TransferWarehouseItemStatus status, TransferWarehouse transferWarehouse)
     {
         SetProductId(productId);
         SetProductInternalCode(productInternalCode);
@@ -25,12 +27,11 @@ public class TransferWarehouseItem : EntityBase
         SetStatus(status);
         SetStatus(status);
         SetTransferWarehouse(transferWarehouse);
-        SetValidity(validity);
     }
 
     public void SetProductId(Guid productId)
     {
-        if(productId != Guid.Empty)
+        if (productId != Guid.Empty)
             throw new ArgumentException("Informe o Id do produto");
         ProductId = productId;
     }
@@ -40,17 +41,16 @@ public class TransferWarehouseItem : EntityBase
         if (productInternalCode <= 0)
             throw new ArgumentException("Informe o código do produto");
         ProductInternalCode = productInternalCode;
-        
     }
 
     public void SetProductName(string productName)
     {
-        if(string.IsNullOrWhiteSpace(productName))
+        if (string.IsNullOrWhiteSpace(productName))
             throw new ArgumentException("Informe o nome do produto");
         ProductName = productName;
     }
 
-    public void SetAmount(decimal amount)
+    public void SetAmount(int amount)
     {
         if (amount <= 0)
             throw new ArgumentException("Informe a quantidade do produto");
@@ -59,7 +59,7 @@ public class TransferWarehouseItem : EntityBase
 
     public void SetTransferWarehouseId(Guid transferWarehouseId)
     {
-        if(transferWarehouseId != Guid.Empty)
+        if (transferWarehouseId != Guid.Empty)
             throw new ArgumentException("Informe o Id do depósito");
         TransferWarehouseId = transferWarehouseId;
     }
@@ -72,10 +72,5 @@ public class TransferWarehouseItem : EntityBase
     public void SetTransferWarehouse(TransferWarehouse transferWarehouse)
     {
         TransferWarehouse = transferWarehouse;
-    }
-
-    public void SetValidity(DateOnly validity)
-    {
-        Validity = validity;
     }
 }

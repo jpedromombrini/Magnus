@@ -19,8 +19,5 @@ public class InvoiceItemMap : IEntityTypeConfiguration<InvoiceItem>
         builder.Property(x => x.Amount)
             .IsRequired()
             .HasColumnType("decimal(12,3)");
-        builder.Property(x => x.Validity)
-            .IsRequired()
-            .HasColumnType("date");
     }
 }

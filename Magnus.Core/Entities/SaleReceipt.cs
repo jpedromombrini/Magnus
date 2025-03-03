@@ -25,6 +25,7 @@ public class SaleReceipt : EntityBase
 
     public void SetReceipt(Receipt receipt)
     {
+        ArgumentNullException.ThrowIfNull(receipt);
         if (receipt.Id == Guid.Empty)
             throw new ArgumentNullException("Informe o Id do recebimento");
         ReceiptId = receipt.Id;

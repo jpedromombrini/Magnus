@@ -2,9 +2,10 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Magnus.Application.Dtos.Requests.Validators;
 using Magnus.Application.Services;
-using Magnus.Core.Entities;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Repositories;
-using Magnus.Core.Servicos;
+using Magnus.Core.Services;
+using Magnus.Core.Services.Interfaces;
 using Magnus.Infrastructure.Persistence.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -39,8 +40,12 @@ public static class ServiceRegistration
         #endregion
 
         #region Services Core
-        services.AddScoped<ITransferWarehouseService, TransferWarehouseService>();
+        services.AddScoped<IAuditProductService, AuditProductService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IProductStockService, ProductStockService>();
+        services.AddScoped<ISaleService, SaleService>();
+        services.AddScoped<ITransferWarehouseService, TransferWarehouseService>();
+        services.AddScoped<IWarehouseService, WarehouseService>();
         #endregion
         
         #region Repositories

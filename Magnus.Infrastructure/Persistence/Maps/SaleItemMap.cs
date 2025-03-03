@@ -25,9 +25,6 @@ public class SaleItemMap : IEntityTypeConfiguration<SaleItem>
             .HasColumnType("decimal(10,2)");
         builder.Property(x => x.Amount)
             .IsRequired();
-        builder.Property(x => x.Validity)
-            .IsRequired()
-            .HasColumnType("date");
         builder.HasOne(si => si.Sale)
             .WithMany(s => s.Items)
             .HasForeignKey(si => si.SaleId);

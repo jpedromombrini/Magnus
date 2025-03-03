@@ -1,6 +1,8 @@
+using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
+using Magnus.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,23 +21,10 @@ public class InvoiceController(
     }
 
     [HttpGet]
-    public async Task<IEnumerable<InvoiceResponse>> GetInvoicesByFilterAsync(DateTime? initialDate,
-        DateTime? finalDate,
-        int number,
-        int serie,
-        string? key,
-        Guid supplierId,
+    public async Task<IEnumerable<InvoiceResponse>> GetInvoicesByFilterAsync(GetInvoiceFilter filter,
         CancellationToken cancellationToken)
     {
-       
-        return await invoiceAppService.GetInvoicesByFilterAsync(x =>
-                (initialDate == null || x.DateEntry.Date >= initialDate)
-                && (finalDate == null || x.DateEntry.Date <= finalDate)
-                && (number == 0 || x.Number == number)
-                && (serie == 0 || x.Serie == serie)
-                && (string.IsNullOrEmpty(key) || x.Key == key)
-                && (supplierId == Guid.Empty || x.SupplierId == supplierId),
-            cancellationToken);
+        return await invoiceAppService.GetInvoicesByFilterAsync(filter, cancellationToken);
     }
 
     [HttpGet("{id:guid}")]

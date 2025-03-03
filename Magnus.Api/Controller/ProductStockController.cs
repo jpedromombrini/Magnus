@@ -1,5 +1,6 @@
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
+using Magnus.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

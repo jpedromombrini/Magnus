@@ -7,7 +7,7 @@ public class AuditProduct : EntityBase
     public Guid ProductId { get; private set; }
     public DateTime RecordDate { get; private set; }
     public int Document { get; private set; }
-    public decimal Amount { get; private set; }
+    public int Amount { get; private set; }
     public decimal TotalValue { get; private set; }
     public AuditProductType Type { get; private set; }
     public Guid? SupplierId { get; private set; }
@@ -15,15 +15,11 @@ public class AuditProduct : EntityBase
     public int WarehouseId { get; private set; }
     public Guid? TransferhouseId { get; private set; }
     public Guid? ClientId { get; private set; }
-    public DateOnly Validity { get; private set; }
+    public Guid? SaleId { get; private set; }
+    private AuditProduct(){}
 
-    private AuditProduct()
-    {
-    }
-
-    public AuditProduct(Guid productId, DateTime recordDate, int document, decimal amount, decimal totalValue,
-        AuditProductType type, Guid? supplierId, int serie, int warehouseId, Guid? transferhouseId, Guid? clientId,
-        DateOnly validity)
+    public AuditProduct(Guid productId, DateTime recordDate, int document, int amount, decimal totalValue,
+        AuditProductType type, Guid? supplierId, int serie, int warehouseId, Guid? transferhouseId, Guid? clientId,  Guid? saleId)
     {
         SetProductId(productId);
         SetRecordDate(recordDate);
@@ -36,7 +32,7 @@ public class AuditProduct : EntityBase
         SetWarehouseId(warehouseId);
         SetTransferhouseId(transferhouseId);
         SetClientId(clientId);
-        SetValidity(validity);
+        SetSaleId(saleId);
     }
 
     public void SetProductId(Guid productId)
@@ -58,7 +54,7 @@ public class AuditProduct : EntityBase
         Document = document;
     }
 
-    public void SetAmount(decimal amount)
+    public void SetAmount(int amount)
     {
         if (amount <= 0)
             throw new ArgumentException("A quantidade deve ser maior que zero.");
@@ -112,10 +108,10 @@ public class AuditProduct : EntityBase
         ClientId = clientId;
     }
 
-    public void SetValidity(DateOnly validity)
+    public void SetSaleId(Guid? saleId)
     {
-        if (validity == default)
-            throw new ArgumentException("A validade não pode ser nula.");
-        Validity = validity;
+        if (saleId.HasValue && saleId == Guid.Empty)
+            throw new ArgumentException("O ClientId não pode ser vazio.");
+        SaleId = saleId;
     }
 }
