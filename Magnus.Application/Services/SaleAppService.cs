@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Core.Entities;
@@ -24,6 +25,7 @@ public class SaleAppService(
         var sale = mapper.Map<Sale>(request);
         sale.SetCreateAt(DateTime.Now);
         sale.SetClientName(clientDb.Name);
+        sale.SetStatus(SaleStatus.Open);
         await unitOfWork.Sales.AddAsync(sale, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -95,11 +97,28 @@ public class SaleAppService(
         return mapper.Map<IEnumerable<SaleResponse>>(await unitOfWork.Sales.GetAllAsync(cancellationToken));
     }
 
-    public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(Expression<Func<Sale, bool>> predicate,
+    public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(GetInvoiceFilter filter,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<SaleResponse>>(
-            await unitOfWork.Sales.GetAllByExpressionAsync(predicate, cancellationToken));
+        if (filter.Status == SaleStatus.All)
+        {
+            return mapper.Map<IEnumerable<SaleResponse>>(await unitOfWork.Sales.GetAllByExpressionAsync(x =>
+                    x.CreateAt.Date >= filter.InitialDate.Date &&
+                    x.CreateAt.Date <= filter.FinalDate.Date &&
+                    (filter.ClientId == Guid.Empty || x.ClientId == filter.ClientId) &&
+                    (filter.UserId == Guid.Empty || x.UserId == filter.UserId) &&
+                    (filter.Document == 0 || x.Document == filter.Document),
+                cancellationToken));
+        }
+      
+        return mapper.Map<IEnumerable<SaleResponse>>(await unitOfWork.Sales.GetAllByExpressionAsync(x =>
+                x.CreateAt.Date >= filter.InitialDate.Date &&
+                x.CreateAt.Date <= filter.FinalDate.Date &&
+                (filter.ClientId == Guid.Empty || x.ClientId == filter.ClientId) &&
+                (filter.UserId == Guid.Empty || x.UserId == filter.UserId) &&
+                (filter.Document == 0 || x.Document == filter.Document) &&
+                (x.Status == filter.Status),
+            cancellationToken)) ;
     }
 
     public async Task<SaleResponse> GetSaleByIdAsync(Guid id, CancellationToken cancellationToken)

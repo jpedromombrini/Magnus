@@ -14,7 +14,7 @@ public class LaboratoryAppService(
 {
     public async Task AddLaboratoryAsync(CreateLaboratoryRequest request, CancellationToken cancellationToken)
     {
-        var laboratoryDb = await unitOfWork.Laboratories.GetAllByExpressionAsync(
+        var laboratoryDb = await unitOfWork.Laboratories.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (laboratoryDb is not null)
             throw new ApplicationException("Já existe um laboratório com esse nome");

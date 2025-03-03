@@ -14,20 +14,24 @@ public class ClientProfile : Profile
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email != null ? new Email(src.Email) : null))
             .ForMember(dest => dest.Document, opt => opt.MapFrom(src => new Document(src.Document)))
             .ForMember(dest => dest.Occupation, opt => opt.MapFrom(src => src.Occupation))
-            .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth.HasValue ? src.DateOfBirth.Value : default))
+            .ForMember(dest => dest.DateOfBirth,
+                opt => opt.MapFrom(src => src.DateOfBirth != DateOnly.MinValue ? src.DateOfBirth : default))
             .ForMember(dest => dest.RegisterNumber, opt => opt.MapFrom(src => src.RegisterNumber))
             .ForMember(dest => dest.SocialMedias, opt => opt.MapFrom(src => src.SocialMedias))
             .ForMember(dest => dest.Phones, opt => opt.MapFrom(src => src.Phones))
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.ZipCode != null || src.PublicPlace != null || src.Number.HasValue || src.Neighborhood != null || src.City != null || src.State != null || src.Complement != null
-                ? new Address(
-                    src.ZipCode, 
-                    src.PublicPlace, 
-                    src.Number ?? 0, 
-                    src.Neighborhood, 
-                    src.City, 
-                    src.State, 
-                    src.Complement) 
-                : null))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src =>
+                !string.IsNullOrEmpty(src.ZipCode) || !string.IsNullOrEmpty(src.PublicPlace) || src.Number > 0 ||
+                !string.IsNullOrEmpty(src.Neighborhood) || !string.IsNullOrEmpty(src.City) ||
+                !string.IsNullOrEmpty(src.State) || !string.IsNullOrEmpty(src.Complement)
+                    ? new Address(
+                        src.ZipCode,
+                        src.PublicPlace,
+                        src.Number,
+                        src.Neighborhood,
+                        src.City,
+                        src.State,
+                        src.Complement)
+                    : null))
             .ReverseMap();
         CreateMap<Client, UpdateClientRequest>()
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email != null ? src.Email.Address : null))
@@ -85,15 +89,18 @@ public class ClientProfile : Profile
     {
         return email?.Address;
     }
+
     private string MapAddressField(string? field)
     {
         return field ?? string.Empty;
     }
+
     private List<ClientSocialMediaResponse> MapSocialMedias(List<ClientSocialMedia>? socialMedias)
     {
         return socialMedias?.Select(sm => new ClientSocialMediaResponse(sm.Name, sm.Link)).ToList() ??
                [];
     }
+
     private List<ClientPhoneResponse> MapPhones(List<ClientPhone>? phones)
     {
         return phones?.Select(p => new ClientPhoneResponse(p.Phone.Number, p.Description)).ToList() ??
