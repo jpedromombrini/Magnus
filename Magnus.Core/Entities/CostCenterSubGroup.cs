@@ -18,8 +18,8 @@ public class CostCenterSubGroup : EntityBase
     {
         if(string.IsNullOrEmpty(code))
             throw new ArgumentNullException("O código não pode ser nulo.");
-        if(code.Length != 2)
-            throw new ArgumentNullException("O código deve ter 2 caracteres.");
+        if(code.Length != 5)
+            throw new ArgumentNullException("O código deve ter 5 caracteres.");
         Code = code;
     }
 
@@ -32,7 +32,7 @@ public class CostCenterSubGroup : EntityBase
     public void AddCostCenter(CostCenter costCenter)
     {
         if (costCenter == null)
-            throw new ArgumentException("Informe o CEntro de custo");
+            throw new ArgumentException("Informe o Centro de custo");
         CostCenters?.Add(costCenter);
     }
     public void SetCostCenterGroup(CostCenterGroup costCenterGroup)
