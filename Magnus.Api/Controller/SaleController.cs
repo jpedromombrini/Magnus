@@ -2,7 +2,6 @@ using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
-using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Enumerators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +22,7 @@ public class SaleController(
 
     [HttpGet("getbyfilter")]
     public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(
-        [FromQuery] GetSaleFilter filter,
+        [FromQuery] GetInvoiceFilter filter,
         CancellationToken cancellationToken)
     {
         return await saleAppService.GetSalesByFilterAsync(filter, cancellationToken);
@@ -39,12 +38,6 @@ public class SaleController(
     public async Task AddSaleAsync([FromBody] CreateSaleRequest request, CancellationToken cancellationToken)
     {
         await saleAppService.AddSaleAsync(request, cancellationToken);
-    }
-
-    [HttpPost("invoice")]
-    public async Task InvoiceSaleAsync(InvoiceSaleRequest request, CancellationToken cancellationToken)
-    {
-        await saleAppService.Invoice(request.Id, cancellationToken);
     }
 
     [HttpPut("{id:guid}")]

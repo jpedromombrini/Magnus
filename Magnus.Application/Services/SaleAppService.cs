@@ -1,18 +1,16 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
-using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
-using Magnus.Core.Services.Interfaces;
 
 namespace Magnus.Application.Services;
 
 public class SaleAppService(
-    ISaleService saleService,
     IUnitOfWork unitOfWork,
     IMapper mapper) : ISaleAppService
 {
@@ -25,7 +23,9 @@ public class SaleAppService(
         if (userDb == null)
             throw new EntityNotFoundException("usuário não encontrado");
         var sale = mapper.Map<Sale>(request);
-        saleService.CreateSale(sale, clientDb, userDb);
+        sale.SetCreateAt(DateTime.Now);
+        sale.SetClientName(clientDb.Name);
+        sale.SetStatus(SaleStatus.Open);
         await unitOfWork.Sales.AddAsync(sale, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -35,29 +35,59 @@ public class SaleAppService(
         var saleDb = await unitOfWork.Sales.GetByIdAsync(id, cancellationToken);
         if (saleDb == null)
             throw new EntityNotFoundException(id.ToString());
-        
         var clientDb = await unitOfWork.Clients.GetByIdAsync(request.ClientId, cancellationToken);
         if (clientDb == null)
             throw new EntityNotFoundException("Cliente não encontrado");
-        
         var userDb = await unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (userDb == null)
             throw new EntityNotFoundException("usuário não encontrado");
-        var items = mapper.Map<IEnumerable<SaleItem>>(request.Items);
-        var receipts = mapper.Map<IEnumerable<SaleReceipt>>(request.Receipts);
-        saleService.UpdateSale(saleDb, clientDb, userDb, items, receipts, request.Value, request.FinantialDiscount);
-        unitOfWork.Sales.Update(saleDb);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-    }
 
-    public async Task Invoice(Guid id, CancellationToken cancellationToken)
-    {
-        var saleDb = await unitOfWork.Sales.GetByIdAsync(id, cancellationToken);
-        if (saleDb == null)
-            throw new EntityNotFoundException(id.ToString());
-        if(saleDb.Receipts.Count == 0)
-            throw new BusinessRuleException("Recebimento não encontrado");
-        await saleService.Invoice(saleDb, cancellationToken);
+        foreach (var itemRequest in request.Items)
+        {
+            var existingItem = saleDb.Items.SingleOrDefault(item => item.ProductId == itemRequest.ProductId);
+            if (existingItem != null)
+            {
+                existingItem.SetAmount(itemRequest.Amount);
+                existingItem.SetDiscount(itemRequest.Discount);
+                existingItem.SetValue(itemRequest.Value);
+                existingItem.SetValidity(itemRequest.Validity);
+                existingItem.SetTotalPrice(itemRequest.TotalPrice);
+            }
+            else
+            {
+                var newItem = mapper.Map<SaleItem>(itemRequest);
+                saleDb.AddItem(newItem);
+            }
+        }
+        
+        foreach (var saleReceiptRequest in request.Receipts)
+        {
+            var existingReceipt = saleDb.Receipts.SingleOrDefault(r => r.ReceiptId == saleReceiptRequest.ReceiptId);
+            if (existingReceipt != null)
+            {
+                foreach (var installment in saleReceiptRequest.Installments)
+                {
+                    existingReceipt.AddInstallment(mapper.Map<SaleReceiptInstallment>(installment));
+                }
+            }
+            else
+            {
+                var saleReceipt = new SaleReceipt(saleDb, mapper.Map<Receipt>(saleReceiptRequest));
+                foreach (var installment in saleReceiptRequest.Installments)
+                {
+                    saleReceipt.AddInstallment(mapper.Map<SaleReceiptInstallment>(installment));
+                }
+                saleDb.AddReceipt(saleReceipt);
+            }
+        }
+        var itemsToRemove = saleDb.Items
+            .Where(item => request.Items.All(requestItem => requestItem.ProductId != item.ProductId)).ToList();
+        unitOfWork.Sales.DeleteItensRange(itemsToRemove);
+
+        saleDb.SetClientId(request.ClientId);
+        saleDb.SetClientName(clientDb.Name);
+        saleDb.SetValue(request.Value);
+        saleDb.SetFinantialDiscount(request.FinantialDiscount);
         unitOfWork.Sales.Update(saleDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -67,7 +97,7 @@ public class SaleAppService(
         return mapper.Map<IEnumerable<SaleResponse>>(await unitOfWork.Sales.GetAllAsync(cancellationToken));
     }
 
-    public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(GetSaleFilter filter,
+    public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(GetInvoiceFilter filter,
         CancellationToken cancellationToken)
     {
         if (filter.Status == SaleStatus.All)
@@ -80,7 +110,7 @@ public class SaleAppService(
                     (filter.Document == 0 || x.Document == filter.Document),
                 cancellationToken));
         }
-
+      
         return mapper.Map<IEnumerable<SaleResponse>>(await unitOfWork.Sales.GetAllByExpressionAsync(x =>
                 x.CreateAt.Date >= filter.InitialDate.Date &&
                 x.CreateAt.Date <= filter.FinalDate.Date &&
@@ -88,18 +118,7 @@ public class SaleAppService(
                 (filter.UserId == Guid.Empty || x.UserId == filter.UserId) &&
                 (filter.Document == 0 || x.Document == filter.Document) &&
                 (x.Status == filter.Status),
-            cancellationToken));
-    }
-
-    private async Task FillReceipts(IEnumerable<SaleReceipt> receipts, CancellationToken cancellationToken)
-    {
-        foreach (var receipt in receipts)
-        {
-            var receiptDb = await unitOfWork.Receipts.GetByIdAsync(receipt.ReceiptId, cancellationToken);
-            if (receiptDb == null)
-                throw new EntityNotFoundException("Tipo recebimento não encontrado");
-            receipt.SetReceipt(receiptDb); 
-        }
+            cancellationToken)) ;
     }
 
     public async Task<SaleResponse> GetSaleByIdAsync(Guid id, CancellationToken cancellationToken)
