@@ -1,3 +1,5 @@
+using Magnus.Core.Enumerators;
+
 namespace Magnus.Application.Dtos.Responses;
 
 public record TransferWarehouseItemResponse(
@@ -5,6 +7,8 @@ public record TransferWarehouseItemResponse(
     Guid ProductId,
     int ProductInternalCode,
     string ProductName,
-    decimal Amount,
+    int Amount,
+    Guid TransferWarehouseId,
+    TransferWarehouseItemStatus Status,
     string TransferWarehouseOriginName,
     string TransferWarehouseDestinyName);

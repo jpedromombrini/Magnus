@@ -68,6 +68,11 @@ public class Sale : EntityBase
     {
         Receipts.Add(receipt);
     }
+
+    public void RemoveAllReceipts()
+    {
+        Receipts.Clear();
+    }
     public void SetStatus(SaleStatus status)
     {
         Status = status;

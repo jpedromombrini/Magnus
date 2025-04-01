@@ -15,13 +15,11 @@ public class SaleService(
         sale.SetClientName(client.Name);
         sale.SetUserId(user.Id);
         sale.SetCreateAt(DateTime.Now);
-        var saleStatus = SaleStatus.Open;
+        sale.SetStatus(SaleStatus.Open);
         if (sale is { Receipts.Count: > 0 })
         {
             ValidateReceipts(sale);
-            saleStatus = SaleStatus.FinantialPending;
         }
-        sale.SetStatus(saleStatus);
     }
 
     public void UpdateSale(Sale sale, Client client, User user,  IEnumerable<SaleItem> items, IEnumerable<SaleReceipt> receipts, decimal value, decimal finantialDiscount)
@@ -34,7 +32,7 @@ public class SaleService(
         sale.SetFinantialDiscount(finantialDiscount);
     }
 
-    private void UpdateItems(Sale sale, IEnumerable<SaleItem> items)
+    private static void UpdateItems(Sale sale, IEnumerable<SaleItem> items)
     {
         foreach (var item in items)
         {
@@ -59,8 +57,9 @@ public class SaleService(
             sale.RemoveItem(itemToRemove);
         }
     }
-    private void UpdateReceipts(Sale sale, IEnumerable<SaleReceipt> receipts)
+    private static void UpdateReceipts(Sale sale, IEnumerable<SaleReceipt> receipts)
     {
+        sale.RemoveAllReceipts();
         foreach (var saleReceiptRequest in receipts)
         {
             var saleReceipt = new SaleReceipt(sale, saleReceiptRequest.Receipt);

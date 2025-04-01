@@ -26,9 +26,11 @@ public class TransferWarehouseRepository(MagnusContext context)
     public async Task<IEnumerable<TransferWarehouseItem>> GetItemsByStatusAsync(
         Expression<Func<TransferWarehouseItem, bool>> predicate, CancellationToken cancellationToken)
     {
-        return await _context.TransferWarehouseItems.Where(predicate)
+        var data = await _context.TransferWarehouseItems.Where(predicate)
             .Include(x => x.TransferWarehouse)
             .ToListAsync(cancellationToken);
+
+        return data;
     }
 
     public override async Task<IEnumerable<TransferWarehouse>> GetAllByExpressionAsync(

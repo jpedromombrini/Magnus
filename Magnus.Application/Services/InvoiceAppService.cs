@@ -82,8 +82,8 @@ public class InvoiceAppService(
     {
         return mapper.Map<IEnumerable<InvoiceResponse>>(
             await unitOfWork.Invoices.GetAllByExpressionAsync(x =>
-                (filter.InitialDate == null || x.DateEntry.Date >= filter.InitialDate)
-                && (filter.FinalDate == null || x.DateEntry.Date <= filter.FinalDate)
+                (x.DateEntry.Date >= filter.InitialDate)
+                && (x.DateEntry.Date <= filter.FinalDate)
                 && (filter.Number == 0 || x.Number == filter.Number)
                 && (filter.Serie == 0 || x.Serie == filter.Serie)
                 && (string.IsNullOrEmpty(filter.Key) || x.Key == filter.Key)

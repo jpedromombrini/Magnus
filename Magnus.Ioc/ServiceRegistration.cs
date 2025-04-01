@@ -13,7 +13,7 @@ namespace Magnus.Ioc;
 
 public static class ServiceRegistration
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static void AddApplicationServices(this IServiceCollection services)
     {
         #region Services Application
         services.AddScoped<IProductAppService, ProductAppService>();
@@ -56,7 +56,5 @@ public static class ServiceRegistration
         services.AddFluentValidationAutoValidation();
         services.AddFluentValidationClientsideAdapters();
         services.AddValidatorsFromAssemblyContaining<CreateProductRequestValidator>();
-
-        return services;
     }
 }

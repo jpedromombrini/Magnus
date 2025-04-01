@@ -22,7 +22,7 @@ public class SaleController(
 
     [HttpGet("getbyfilter")]
     public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(
-        [FromQuery] GetInvoiceFilter filter,
+        [FromQuery] GetSaleFilter filter,
         CancellationToken cancellationToken)
     {
         return await saleAppService.GetSalesByFilterAsync(filter, cancellationToken);

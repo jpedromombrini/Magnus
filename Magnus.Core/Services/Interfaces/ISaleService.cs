@@ -5,6 +5,9 @@ namespace Magnus.Core.Services.Interfaces;
 public interface ISaleService
 {
     void CreateSale(Sale sale, Client client, User user);
-    void UpdateSale(Sale sale, Client client, User user,  IEnumerable<SaleItem> items, IEnumerable<SaleReceipt> receipts, decimal value, decimal finantialDiscount);
+
+    void UpdateSale(Sale sale, Client client, User user, IEnumerable<SaleItem> items, IEnumerable<SaleReceipt> receipts,
+        decimal value, decimal finantialDiscount);
+
     Task Invoice(Sale sale, CancellationToken cancellationToken);
 }

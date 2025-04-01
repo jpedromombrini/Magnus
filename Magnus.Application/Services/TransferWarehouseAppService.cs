@@ -27,7 +27,7 @@ public class TransferWarehouseAppService(
         await unitOfWork.TransferWarehouses.AddAsync(transferWarehouse, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
-    
+
     public async Task UpdateTransferWarehouseAsync(Guid id, UpdateTransferWarehouseRequest request,
         CancellationToken cancellationToken)
     {
@@ -57,10 +57,11 @@ public class TransferWarehouseAppService(
         var transferItemDb = await unitOfWork.TransferWarehouses.GetItemByIdAsync(request.Id, cancellationToken);
         if (transferItemDb is null)
             throw new EntityNotFoundException("Não foi possível encontrar o item");
-        var transferDb = await unitOfWork.TransferWarehouses.GetByIdAsync(transferItemDb.TransferWarehouse.Id, cancellationToken);
+        var transferDb =
+            await unitOfWork.TransferWarehouses.GetByIdAsync(transferItemDb.TransferWarehouse.Id, cancellationToken);
         if (transferDb is null)
             throw new EntityNotFoundException("Não foi possível encontrar a transferência");
-        
+
         switch (transferItemDb.Status)
         {
             case TransferWarehouseItemStatus.Requested when
@@ -106,8 +107,13 @@ public class TransferWarehouseAppService(
     public async Task<IEnumerable<TransferWarehouseItemResponse>> GetTransferWarehouseItemsByFilterAsync(
         Expression<Func<TransferWarehouseItem, bool>> predicate, CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<TransferWarehouseItemResponse>>(
-            await unitOfWork.TransferWarehouses.GetItemsByStatusAsync(predicate, cancellationToken));
+        List<TransferWarehouseItemResponse> response = [];
+        var transferItems = await unitOfWork.TransferWarehouses.GetItemsByStatusAsync(predicate, cancellationToken);
+        response.AddRange(transferItems.Select(item => new TransferWarehouseItemResponse(item.Id, item.ProductId,
+            item.ProductInternalCode, item.ProductName, item.Amount, item.TransferWarehouseId, item.Status,
+            item.TransferWarehouse.WarehouseOriginName, item.TransferWarehouse.WarehouseDestinyName)));
+
+        return response;
     }
 
     public async Task<TransferWarehouseResponse> GetTransferWarehouseByIdAsync(Guid id,

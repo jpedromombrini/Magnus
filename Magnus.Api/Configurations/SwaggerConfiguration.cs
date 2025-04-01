@@ -10,7 +10,7 @@ public static class SwaggerConfiguration
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Gravity API",
+                Title = "Magnus API",
                 Description = "Developed by João Pedro Mombrini",
                 Contact = new OpenApiContact { Name = "João Pedro Mombrini", Email = "joaopedromombrini@gmail.com" },
                 License = new OpenApiLicense { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }

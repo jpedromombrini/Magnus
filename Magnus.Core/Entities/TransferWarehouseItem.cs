@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Magnus.Core.Enumerators;
 
 namespace Magnus.Core.Entities;
