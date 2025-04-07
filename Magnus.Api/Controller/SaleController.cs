@@ -35,9 +35,14 @@ public class SaleController(
     }
 
     [HttpPost]
-    public async Task AddSaleAsync([FromBody] CreateSaleRequest request, CancellationToken cancellationToken)
+    public async Task AddSaleAsync([FromBody] CreateSaleRequest  request, CancellationToken cancellationToken)
     {
         await saleAppService.AddSaleAsync(request, cancellationToken);
+    }
+    [HttpPost("invoice")]
+    public async Task InvoiceSaleAsync([FromBody] InvoiceSaleRequest request, CancellationToken cancellationToken)
+    {
+        await saleAppService.InvoiceSaleAsync(request.Id, cancellationToken);
     }
 
     [HttpPut("{id:guid}")]

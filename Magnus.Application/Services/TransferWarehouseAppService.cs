@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
@@ -41,12 +42,7 @@ public class TransferWarehouseAppService(
         transferWarehouseDb.SetWarehouseDestinyName(request.WarehouseDestinyName);
         transferWarehouseDb.SetWarehouseOriginId(request.WarehouseOriginId);
         transferWarehouseDb.SetWarehouseOriginName(request.WarehouseOriginName);
-        transferWarehouseDb.ResetItems();
-        foreach (var item in items)
-        {
-            transferWarehouseDb.AddItem(item);
-        }
-
+        transferWarehouseService.UpdateTransferWarehouseItem(transferWarehouseDb, items);
         unitOfWork.TransferWarehouses.Update(transferWarehouseDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -67,6 +63,11 @@ public class TransferWarehouseAppService(
             case TransferWarehouseItemStatus.Requested when
                 request.Status == TransferWarehouseItemStatus.Transferred:
                 await transferWarehouseService.ConfirmTransferWarehouse(transferItemDb, transferDb.Id,
+                    transferDb.WarehouseOriginId, transferDb.WarehouseDestinyId, cancellationToken);
+                break;
+            case TransferWarehouseItemStatus.Requested when
+                request.Status == TransferWarehouseItemStatus.Refused:
+                await transferWarehouseService.CancelTransferWarehouse(transferItemDb, transferDb.Id,
                     transferDb.WarehouseOriginId, transferDb.WarehouseDestinyId, cancellationToken);
                 break;
             case TransferWarehouseItemStatus.Transferred when
@@ -93,34 +94,27 @@ public class TransferWarehouseAppService(
     public async Task<IEnumerable<TransferWarehouseResponse>> GetTransferWarehousesAsync(
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<TransferWarehouseResponse>>(
-            await unitOfWork.TransferWarehouses.GetAllAsync(cancellationToken));
+        return (await unitOfWork.TransferWarehouses.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<TransferWarehouseResponse>> GetTransferWarehouseByFilterAsync(
         Expression<Func<TransferWarehouse, bool>> predicate, CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<TransferWarehouseResponse>>(
-            await unitOfWork.TransferWarehouses.GetAllByExpressionAsync(predicate, cancellationToken));
+        return (await unitOfWork.TransferWarehouses.GetAllByExpressionAsync(predicate, cancellationToken))
+            .MapToResponse();
     }
 
     public async Task<IEnumerable<TransferWarehouseItemResponse>> GetTransferWarehouseItemsByFilterAsync(
         Expression<Func<TransferWarehouseItem, bool>> predicate, CancellationToken cancellationToken)
     {
-        List<TransferWarehouseItemResponse> response = [];
-        var transferItems = await unitOfWork.TransferWarehouses.GetItemsByStatusAsync(predicate, cancellationToken);
-        response.AddRange(transferItems.Select(item => new TransferWarehouseItemResponse(item.Id, item.ProductId,
-            item.ProductInternalCode, item.ProductName, item.Amount, item.TransferWarehouseId, item.Status,
-            item.TransferWarehouse.WarehouseOriginName, item.TransferWarehouse.WarehouseDestinyName)));
-
-        return response;
+        return (await unitOfWork.TransferWarehouses.GetItemsByStatusAsync(predicate, cancellationToken))
+            .MapToResponse();
     }
 
     public async Task<TransferWarehouseResponse> GetTransferWarehouseByIdAsync(Guid id,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<TransferWarehouseResponse>(
-            await unitOfWork.TransferWarehouses.GetByIdAsync(id, cancellationToken));
+        return (await unitOfWork.TransferWarehouses.GetByIdAsync(id, cancellationToken)).MapToResponse();
     }
 
     public async Task DeleteTransferWarehouseAsync(Guid id, CancellationToken cancellationToken)

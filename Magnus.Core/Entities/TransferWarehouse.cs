@@ -77,9 +77,9 @@ public class TransferWarehouse : EntityBase
         CreatedAt = DateTime.Now;
     }
 
-    public void ResetItems()
+    public void RemoveItem(TransferWarehouseItem transferWarehouseItem)
     {
-        Items.Clear();
+        Items.Remove(transferWarehouseItem);
     }
     
 }

@@ -4,4 +4,4 @@ public record TransferWarehouseItemRequest(
     Guid ProductId,
     int ProductInternalCode,
     string ProductName,
-    decimal Amount);
+    int Amount);

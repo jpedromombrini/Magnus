@@ -32,7 +32,7 @@ public class TransferWarehouseItem : EntityBase
 
     public void SetProductId(Guid productId)
     {
-        if (productId != Guid.Empty)
+        if (productId == Guid.Empty)
             throw new ArgumentException("Informe o Id do produto");
         ProductId = productId;
     }
@@ -60,7 +60,7 @@ public class TransferWarehouseItem : EntityBase
 
     public void SetTransferWarehouseId(Guid transferWarehouseId)
     {
-        if (transferWarehouseId != Guid.Empty)
+        if (transferWarehouseId == Guid.Empty)
             throw new ArgumentException("Informe o Id do depósito");
         TransferWarehouseId = transferWarehouseId;
     }

@@ -85,6 +85,34 @@ public class TransferWarehouseService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    public void UpdateTransferWarehouseItem(TransferWarehouse transferWarehouse, IEnumerable<TransferWarehouseItem> transferWarehouseItems)
+    {
+        foreach (var item in transferWarehouseItems)
+        {
+            var existingItem = transferWarehouse.Items.SingleOrDefault(x => x.ProductId == item.ProductId);
+            if (existingItem != null)
+            {
+                existingItem.SetAmount(item.Amount);
+                existingItem.SetStatus(item.Status);
+                existingItem.SetTransferWarehouse(transferWarehouse);
+                existingItem.SetTransferWarehouseId(transferWarehouse.Id);
+            }
+            else
+            {
+                item.SetTransferWarehouse(transferWarehouse);
+                item.SetTransferWarehouseId(transferWarehouse.Id);
+                transferWarehouse.AddItem(item);
+            }
+        }
+        var itemsToRemove = transferWarehouse.Items
+            .Where(existingItem => !transferWarehouseItems.Any(item => item.ProductId == existingItem.ProductId))
+            .ToList();
+        foreach (var itemToRemove in itemsToRemove)
+        {
+            transferWarehouse.RemoveItem(itemToRemove);
+        }
+    }
+
     private List<AuditProduct> CreateAuditProducts(TransferWarehouseItem transferWarehouseItem, Guid transferId,
         int originWarehouseId,
         int destinationWarehouseId)

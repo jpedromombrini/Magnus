@@ -10,7 +10,7 @@ namespace Magnus.Api.Controller;
 
 [ApiController]
 [Route("[controller]")]
-
+[Authorize]
 public class ClientController(
     IClientAppService clientAppService,
     IConfiguration configuration) : ControllerBase

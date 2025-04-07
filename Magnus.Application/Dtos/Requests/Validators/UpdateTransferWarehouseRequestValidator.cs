@@ -11,7 +11,8 @@ public class UpdateTransferWarehouseRequestValidator : AbstractValidator<UpdateT
         RuleFor(x => x.WarehouseDestinyId).NotEmpty().WithMessage("O ID do depósito de destino é obrigatório.");
         RuleFor(x => x.WarehouseDestinyName).NotEmpty().WithMessage("O nome do depósito de destino é obrigatório.")
             .MaximumLength(100);
-        RuleFor(x => x.WarehouseOriginId).NotEmpty().WithMessage("O ID do depósito de origem é obrigatório.");
+        RuleFor(x => x.WarehouseOriginId)
+            .GreaterThan(-1).WithMessage("O ID do depósito de origem é obrigatório.");
         RuleFor(x => x.WarehouseOriginName).NotEmpty().WithMessage("O nome do depósito de origem é obrigatório.")
             .MaximumLength(100);
         RuleForEach(x => x.Items)
