@@ -9,4 +9,4 @@ public record UpdateSaleRequest(
     decimal Value,
     decimal FinantialDiscount,
     List<SaleItemRequest> Items,
-    List<SaleReceiptRequest> Receipts);
+    List<UpdateSaleReceiptRequest> Receipts);

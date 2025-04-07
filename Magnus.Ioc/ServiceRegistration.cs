@@ -37,15 +37,21 @@ public static class ServiceRegistration
         services.AddScoped<ISaleAppService, SaleAppService>();
         services.AddScoped<IWarehouseAppService, WarehouseAppService>();
         services.AddScoped<IAppConfigurationService, AppConfigurationService>();
+        services.AddScoped<ISaleReceiptAppService, SaleReceiptAppService>();
+        services.AddScoped<IAuditProductAppService, AuditProductAppService>();
         #endregion
 
         #region Services Core
         services.AddScoped<IAuditProductService, AuditProductService>();
+        services.AddScoped<IClientService, ClientService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<IProductStockService, ProductStockService>();
         services.AddScoped<ISaleService, SaleService>();
+        services.AddScoped<ISaleReceiptService, SaleReceiptService>();
         services.AddScoped<ITransferWarehouseService, TransferWarehouseService>();
         services.AddScoped<IWarehouseService, WarehouseService>();
+        services.AddScoped<IReceiptService, ReceiptService>();
+        services.AddScoped<IUserService, UserService>();
         #endregion
         
         #region Repositories

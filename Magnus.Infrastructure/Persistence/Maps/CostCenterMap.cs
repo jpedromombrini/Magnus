@@ -15,6 +15,8 @@ public class CostCenterMap : IEntityTypeConfiguration<CostCenter>
             .HasColumnType("varchar(8)");
         builder.Property(x => x.Name)
             .IsRequired()
-            .HasColumnType("varchar(100)");   
+            .HasColumnType("varchar(100)");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

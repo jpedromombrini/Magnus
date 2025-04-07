@@ -1,3 +1,4 @@
+using System.Text;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
@@ -15,12 +16,14 @@ public class SaleProfile : Profile
 
         CreateMap<SaleItem, SaleItemRequest>().ReverseMap();
         CreateMap<SaleItem, SaleItemResponse>().ReverseMap();
-        
-        CreateMap<SaleReceipt, SaleReceiptRequest>().ReverseMap();
+
+        CreateMap<SaleReceipt, CreateSaleReceiptRequest>().ReverseMap();
+        CreateMap<SaleReceipt, UpdateSaleReceiptRequest>().ReverseMap();
         CreateMap<SaleReceipt, SaleReceiptResponse>().ReverseMap();
-        
-        CreateMap<SaleReceiptInstallment, SaleReceiptInstallmentRequest>().ReverseMap();
+
+        CreateMap<SaleReceiptInstallmentRequest, SaleReceiptInstallment>()
+            .ForMember(dest => dest.ProofImage, opt => opt.MapFrom(src => Convert.FromBase64String(src.ProofImage)));
+            
         CreateMap<SaleReceiptInstallment, SaleReceiptInstallmentResponse>().ReverseMap();
-        
     }
 }

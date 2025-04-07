@@ -22,5 +22,7 @@ public class InvoicePaymentMap : IEntityTypeConfiguration<InvoicePayment>
             .WithOne(x => x.InvoicePayment)
             .HasForeignKey(x => x.InvoicePaymentId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

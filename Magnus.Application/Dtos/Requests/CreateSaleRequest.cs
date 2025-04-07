@@ -11,4 +11,4 @@ public record CreateSaleRequest(
     decimal FinantialDiscount,
     SaleStatus Status,
     List<SaleItemRequest> Items,
-    List<SaleReceiptRequest>? Receipts);
+    List<CreateSaleReceiptRequest>? Receipts);

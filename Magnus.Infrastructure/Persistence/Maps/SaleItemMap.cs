@@ -28,5 +28,7 @@ public class SaleItemMap : IEntityTypeConfiguration<SaleItem>
         builder.HasOne(si => si.Sale)
             .WithMany(s => s.Items)
             .HasForeignKey(si => si.SaleId);
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

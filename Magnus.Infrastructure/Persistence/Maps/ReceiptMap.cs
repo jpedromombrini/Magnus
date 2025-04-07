@@ -13,5 +13,7 @@ public class ReceiptMap : IEntityTypeConfiguration<Receipt>
         builder.Property(x => x.Name)
             .IsRequired()
             .HasColumnType("varchar(100)");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

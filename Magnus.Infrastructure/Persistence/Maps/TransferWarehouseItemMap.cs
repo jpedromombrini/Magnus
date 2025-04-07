@@ -22,5 +22,7 @@ public class TransferWarehouseItemMap : IEntityTypeConfiguration<TransferWarehou
             .WithMany()  
             .HasForeignKey(x => x.TransferWarehouseId)  
             .OnDelete(DeleteBehavior.Cascade);  
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

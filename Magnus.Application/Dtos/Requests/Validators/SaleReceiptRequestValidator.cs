@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace Magnus.Application.Dtos.Requests.Validators;
 
-public class SaleReceiptRequestValidator : AbstractValidator<SaleReceiptRequest>
+public class SaleReceiptRequestValidator : AbstractValidator<CreateSaleReceiptRequest>
 {
     public SaleReceiptRequestValidator()
     {

@@ -18,5 +18,7 @@ public class ClientPhoneMap : IEntityTypeConfiguration<ClientPhone>
         builder.Property(p => p.Description)
             .IsRequired(false)
             .HasColumnType("varchar(50)");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

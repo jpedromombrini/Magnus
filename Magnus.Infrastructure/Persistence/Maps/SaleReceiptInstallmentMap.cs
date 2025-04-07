@@ -28,5 +28,7 @@ public class SaleReceiptInstallmentMap : IEntityTypeConfiguration<SaleReceiptIns
             .IsRequired();
         builder.Property(x => x.ProofImage)
             .HasColumnType("bytea");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

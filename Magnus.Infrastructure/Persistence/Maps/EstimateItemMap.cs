@@ -25,6 +25,8 @@ public class EstimateItemMap : IEntityTypeConfiguration<EstimateItem>
             .HasColumnType("decimal(10,2)");
         builder.Property(x => x.Amount)
             .IsRequired();
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
     
 }

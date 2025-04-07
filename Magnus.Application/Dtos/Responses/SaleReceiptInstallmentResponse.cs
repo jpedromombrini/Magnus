@@ -8,4 +8,5 @@ public record SaleReceiptInstallmentResponse(
     decimal Value,
     decimal Discount,
     decimal Interest,
-    int Installment);
+    int Installment,
+    string? ProofImage);

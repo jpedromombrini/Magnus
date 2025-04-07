@@ -53,5 +53,7 @@ public class SupplierMap : IEntityTypeConfiguration<Supplier>
         builder.OwnsOne(x => x.Address)
             .Property(x => x.ZipCode)
             .HasColumnType("varchar(9)");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

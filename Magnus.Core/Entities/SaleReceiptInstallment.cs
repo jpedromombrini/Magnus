@@ -13,19 +13,25 @@ public class SaleReceiptInstallment : EntityBase
     public byte[]? ProofImage { get; private set; }
 
     private SaleReceiptInstallment(){}
-    public SaleReceiptInstallment(SaleReceipt saleReceipt, DateOnly dueDate, DateTime? paymentDate, decimal value,
-        decimal discount, decimal interest, int installment, byte[]? proofImage)
+    public SaleReceiptInstallment(Guid saleReceiptId, DateOnly dueDate, DateTime? paymentDate, decimal value,
+        decimal discount, decimal interest, int installment, string? proofImageBase64)
     {
-        SetSaleReceipt(saleReceipt);
+        SetSaleReceiptId(saleReceiptId);
         SetDueDate(dueDate);
         SetPaymentDate(paymentDate);
         SetValue(value);
         SetDiscount(discount);
         SetInterest(interest);
         SetInstallment(installment);
-        SetProofImage(proofImage);
+        SetProofImage(proofImageBase64);
     }
 
+    public void SetSaleReceiptId(Guid saleReceiptId)
+    {
+        if(saleReceiptId == Guid.Empty)
+            throw new ArgumentNullException("Informe o Id do recebimento");
+        SaleReceiptId = saleReceiptId;
+    }
     public void SetSaleReceipt(SaleReceipt saleReceipt)
     {
         if (saleReceipt.Id == Guid.Empty)
@@ -53,14 +59,14 @@ public class SaleReceiptInstallment : EntityBase
 
     public void SetDiscount(decimal discount)
     {
-        if (discount <= 0m)
+        if (discount < 0m)
             throw new ArgumentException("Informe o desconto");
         Discount = discount;
     }
 
     public void SetInterest(decimal interest)
     {
-        if (interest <= 0m)
+        if (interest < 0m)
             throw new ArgumentException("Informe o juros");
         Interest = interest;
     }
@@ -72,14 +78,22 @@ public class SaleReceiptInstallment : EntityBase
         Installment = installment;
     }
 
-    public void SetProofImage(byte[]? proofImage)
-    {
-        ProofImage = proofImage;
-    }
-
     public decimal GetRealValue()
     {
         if (Value == 0m) return Value;
         return Value + Interest - Discount;
+    }
+
+    public void SetProofImage(string? proofImageBase64)
+    {
+        if (string.IsNullOrEmpty(proofImageBase64)) return;
+        var base64Data = proofImageBase64[(proofImageBase64.IndexOf(',') + 1)..];
+        var proofImage = Convert.FromBase64String(base64Data);
+        ProofImage = proofImage;
+    }
+
+    public string? GetProofImageBase64()
+    {
+        return ProofImage == null ? null : $"data:image/jpeg;base64,{Convert.ToBase64String(ProofImage)}";
     }
 }

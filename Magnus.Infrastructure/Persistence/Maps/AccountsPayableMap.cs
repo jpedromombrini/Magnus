@@ -44,6 +44,8 @@ public class AccountsPayableMap: IEntityTypeConfiguration<AccountsPayable>
         builder.HasOne(x => x.Payment)
             .WithMany()
             .HasForeignKey(x => x.PaymentId);
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
 
     }
 }

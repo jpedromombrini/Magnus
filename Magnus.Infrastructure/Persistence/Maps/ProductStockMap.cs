@@ -18,5 +18,7 @@ public class ProductStockMap : IEntityTypeConfiguration<ProductStock>
         builder.Property(x => x.WarehouseName)
             .IsRequired()
             .HasColumnType("varchar(100)");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

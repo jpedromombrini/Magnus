@@ -33,5 +33,7 @@ public class InvoicePaymentInstallmentMap : IEntityTypeConfiguration<InvoicePaym
         
         builder.Property(x => x.Installment)
             .IsRequired();  
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

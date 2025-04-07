@@ -2,33 +2,50 @@ namespace Magnus.Core.Entities;
 
 public class SaleReceipt : EntityBase
 {
+    public Guid ClienteId { get; private set; }
+    public Guid UserId { get; private set; }
     public Guid SaleId { get; private set; }
-    public Sale Sale { get; private set; }
     public Guid ReceiptId { get; private set; }
     public Receipt Receipt { get; private set; }
     public List<SaleReceiptInstallment> Installments { get; private set; }
 
     private SaleReceipt() {}
-    public SaleReceipt(Sale sale, Receipt receipt)
+    public SaleReceipt(Guid clienteId, Guid userId, Guid saleId, Guid receiptId)
     {
-        SetSale(sale);
-        SetReceipt(receipt);
+        SetClientId(clienteId);
+        SetUserId(userId);
+        SetSaleId(saleId);
+        SetReceiptId(receiptId);
     }
 
-    public void SetSale(Sale sale)
+    public void SetSaleId(Guid saleId)
     {
-        if(sale.Id == Guid.Empty)
+        if(saleId == Guid.Empty)
             throw new ArgumentNullException("Informe o Id da venda");
-        SaleId = sale.Id;
-        Sale = sale;
+        SaleId = saleId;
+    }
+    public void SetClientId(Guid clientId)
+    {
+        if(clientId == Guid.Empty)
+            throw new ArgumentNullException("Informe o Id do cliente");
+        ClienteId = clientId;
+    }
+    public void SetUserId(Guid userId)
+    {
+        if(userId == Guid.Empty)
+            throw new ArgumentNullException("Informe o Id do Usuário");
+        UserId = userId;
+    }
+    public void SetReceiptId(Guid receiptId)
+    {
+        if(receiptId == Guid.Empty)
+            throw new ArgumentNullException("Informe o Id do Recebimento");
+        ReceiptId = receiptId;
     }
 
     public void SetReceipt(Receipt receipt)
     {
         ArgumentNullException.ThrowIfNull(receipt);
-        if (receipt.Id == Guid.Empty)
-            throw new ArgumentNullException("Informe o Id do recebimento");
-        ReceiptId = receipt.Id;
         Receipt = receipt;
     }
 

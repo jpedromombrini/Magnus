@@ -13,5 +13,7 @@ public class BarMap : IEntityTypeConfiguration<Bar>
         builder.Property(x => x.Code)
             .IsRequired()
             .HasColumnType("varchar(14)");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

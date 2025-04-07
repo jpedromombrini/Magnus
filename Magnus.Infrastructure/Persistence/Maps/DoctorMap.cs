@@ -19,5 +19,7 @@ public class DoctorMap : IEntityTypeConfiguration<Doctor>
             .HasColumnType("varchar(100)");
         builder.Property(x => x.Crm)
             .HasColumnType("varchar(20)");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

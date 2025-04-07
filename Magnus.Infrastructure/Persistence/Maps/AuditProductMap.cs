@@ -28,5 +28,7 @@ public class AuditProductMap: IEntityTypeConfiguration<AuditProduct>
         builder.Property(x => x.WarehouseId)
             .IsRequired()
             .HasColumnType("integer");
+        builder.Property(x => x.RowVersion)
+            .IsRowVersion();
     }
 }

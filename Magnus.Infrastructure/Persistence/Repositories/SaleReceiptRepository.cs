@@ -31,6 +31,16 @@ public class SaleReceiptRepository(MagnusContext context) : Repository<SaleRecei
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 
+    public async Task AddRangeAsync(IEnumerable<SaleReceipt> saleReceipts, CancellationToken cancellationToken)
+    {
+        await _context.SaleReceipts.AddRangeAsync(saleReceipts, cancellationToken);
+    }
+
+    public void RemoveRange(IEnumerable<SaleReceipt> saleReceipts)
+    {
+        _context.SaleReceipts.RemoveRange(saleReceipts);
+    }
+
     public override async Task<IEnumerable<SaleReceipt>> GetAllByExpressionAsync(Expression<Func<SaleReceipt, bool>> predicate, CancellationToken cancellationToken)
     {
         return await _context.SaleReceipts

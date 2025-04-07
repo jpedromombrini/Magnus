@@ -12,5 +12,4 @@ public record SaleResponse(
     decimal Value,
     decimal FinantialDiscount,
     SaleStatus Status,
-    List<SaleItemResponse> Items,
-    List<SaleReceiptResponse> Receipts);
+    List<SaleItemResponse> Items);
