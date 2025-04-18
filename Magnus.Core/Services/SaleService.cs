@@ -108,6 +108,38 @@ public class SaleService(
         return await unitOfWork.Sales.GetByExpressionAsync(x => x.Document == documentId, cancellationToken);
     }
 
+    public async Task CancelSale(Sale sale, CancellationToken cancellationToken)
+    {
+        if (sale.Status == SaleStatus.Invoiced)
+        {
+            await CancelInvoicedSale(sale, cancellationToken);
+        }
+        else
+        {
+            await CancelNotInvoicedSale(sale, cancellationToken);
+        }
+    }
+
+    private async Task CancelNotInvoicedSale(Sale sale, CancellationToken cancellationToken)
+    {
+        await RemoveReceipts(sale, cancellationToken);
+        unitOfWork.Sales.Delete(sale);
+    }
+
+    private async Task CancelInvoicedSale(Sale sale, CancellationToken cancellationToken)
+    {
+        await RemoveReceipts(sale, cancellationToken);
+    }
+
+    private async Task RemoveReceipts(Sale sale, CancellationToken cancellationToken)
+    {
+        var receipts = (await saleReceiptService.GetSaleReceiptsAsync(sale.Id, cancellationToken)).ToList();
+        if (receipts.Count > 0)
+        {
+            unitOfWork.SaleReceipts.RemoveRange(receipts);
+        }
+    }
+
     private async Task ValidateStockAsync(SaleItem item, int warehouseId, CancellationToken cancellationToken)
     {
         var stock = await productStockService.GetProductStockAsync(item.ProductId, warehouseId, cancellationToken);

@@ -52,6 +52,9 @@ public static class ServiceRegistration
         services.AddScoped<IWarehouseService, WarehouseService>();
         services.AddScoped<IReceiptService, ReceiptService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IProductPriceTableService, ProductPriceTableService>();
+        services.AddScoped<IBarService, BarService>();
         #endregion
         
         #region Repositories

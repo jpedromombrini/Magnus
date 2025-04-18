@@ -5,6 +5,6 @@ public record ProductResponse(
     int InternalCode,
     string Name,
     decimal Price,
-    decimal Discount,
     List<BarResponse> Bars,
-    Guid LaboratoryId);
+    Guid LaboratoryId,
+    List<ProductPriceTableResponse>? ProductPriceTable);

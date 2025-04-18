@@ -65,12 +65,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<decimal>("PaymentValue")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<Guid>("SupplierId")
                         .HasColumnType("uuid");
 
@@ -104,12 +98,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(500)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -132,12 +120,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<int>("AmountToDiscount")
                         .HasColumnType("integer");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -164,12 +146,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<DateTime>("RecordDate")
                         .HasColumnType("timestamp");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.Property<Guid?>("SaleId")
                         .HasColumnType("uuid");
@@ -210,12 +186,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
@@ -242,12 +212,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<string>("RegisterNumber")
                         .HasColumnType("varchar(10)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.HasKey("Id");
 
                     b.ToTable("Client", (string)null);
@@ -264,12 +228,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("varchar(50)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -295,12 +253,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -325,12 +277,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CostCenterSubGroupId");
@@ -351,12 +297,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -379,12 +319,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -412,12 +346,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -458,12 +386,6 @@ namespace Magnus.Infrastructure.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("varchar(300)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -502,12 +424,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.Property<decimal>("TotalValue")
                         .HasColumnType("decimal(10,2)");
@@ -557,12 +473,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(200)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<int>("Serie")
                         .HasColumnType("integer");
 
@@ -606,12 +516,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<decimal>("TotalValue")
                         .HasColumnType("decimal(10,2)");
 
@@ -633,12 +537,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<Guid>("PaymentId")
                         .HasColumnType("uuid");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -673,12 +571,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("timestamp");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<decimal>("Value")
                         .HasColumnType("numeric(18,2)");
 
@@ -705,12 +597,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.HasKey("Id");
 
                     b.ToTable("Laboratory", (string)null);
@@ -726,12 +612,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.HasKey("Id");
 
                     b.ToTable("Payment", (string)null);
@@ -742,9 +622,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("InternalCode")
                         .ValueGeneratedOnAdd()
@@ -762,15 +639,34 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.HasKey("Id");
 
                     b.ToTable("Product", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.ProductPriceTable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MaximumAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MinimalAmount")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductPriceTable", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.ProductStock", b =>
@@ -784,12 +680,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.Property<int>("WarehouseId")
                         .HasColumnType("integer");
@@ -818,12 +708,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -855,12 +739,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<decimal>("FinantialDiscount")
                         .HasColumnType("numeric");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -896,12 +774,6 @@ namespace Magnus.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<Guid>("SaleId")
                         .HasColumnType("uuid");
 
@@ -929,12 +801,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<Guid>("ReceiptId")
                         .HasColumnType("uuid");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.Property<Guid>("SaleId")
                         .HasColumnType("uuid");
@@ -973,12 +839,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<byte[]>("ProofImage")
                         .HasColumnType("bytea");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<Guid>("SaleReceiptId")
                         .HasColumnType("uuid");
 
@@ -1002,12 +862,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
@@ -1026,12 +880,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.HasKey("Id");
 
                     b.ToTable("Supplier", (string)null);
@@ -1045,12 +893,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -1097,12 +939,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -1139,12 +975,6 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(40)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
-
                     b.Property<int>("UserType")
                         .HasColumnType("integer");
 
@@ -1168,12 +998,6 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("bytea");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -1210,13 +1034,11 @@ namespace Magnus.Infrastructure.Migrations
 
             modelBuilder.Entity("Magnus.Core.Entities.Bar", b =>
                 {
-                    b.HasOne("Magnus.Core.Entities.Product", "Product")
+                    b.HasOne("Magnus.Core.Entities.Product", null)
                         .WithMany("Bars")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Client", b =>
@@ -1431,6 +1253,15 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("InvoicePayment");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.ProductPriceTable", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Product", null)
+                        .WithMany("ProductPriceTables")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.SaleItem", b =>
@@ -1732,6 +1563,8 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.Product", b =>
                 {
                     b.Navigation("Bars");
+
+                    b.Navigation("ProductPriceTables");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Sale", b =>

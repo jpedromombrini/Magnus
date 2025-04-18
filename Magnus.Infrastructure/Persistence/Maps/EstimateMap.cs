@@ -38,8 +38,6 @@ public class EstimateMap : IEntityTypeConfiguration<Estimate>
             .WithOne(x => x.Estimate)
             .HasForeignKey(x => x.EstimateId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
         
     }
 }

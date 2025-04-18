@@ -56,7 +56,5 @@ public class ClientMap : IEntityTypeConfiguration<Client>
             .HasColumnType("varchar(10)");
         builder.HasMany(x => x.SocialMedias);
         builder.HasMany(x => x.Phones);
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
     }
 }

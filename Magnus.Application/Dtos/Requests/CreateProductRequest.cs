@@ -4,7 +4,6 @@ public record CreateProductRequest(
     string Code,    
     string Name,
     decimal Price,
-    decimal Discount,
     List<BarRequest>? Bars,
-    Guid LaboratoryId
-);
+    Guid LaboratoryId,
+    List<ProductPriceTableRequest>? ProductPriceTable);

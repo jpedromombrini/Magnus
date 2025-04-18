@@ -20,8 +20,5 @@ public class CostCenterSubGroupMap : IEntityTypeConfiguration<CostCenterSubGroup
             .WithOne(x => x.CostCenterSubGroup)
             .HasForeignKey(x => x.CostCenterSubGroupId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
-
     }
 }

@@ -5,19 +5,18 @@ public class Product : EntityBase
     public int InternalCode { get; private set; }
     public string Name { get; private set; }
     public decimal Price { get; private set; }
-    public decimal Discount { get; private set; }
-    public List<Bar>? Bars { get; private set; }
+    public ICollection<Bar>? Bars { get; private set; }
     public Guid LaboratoryId { get; private set; }
+    public ICollection<ProductPriceTable>? ProductPriceTables { get; private set; }
 
     private Product()
     {
     }
 
-    public Product(string name, decimal price, List<Bar>? bars, Guid laboratoryId)
+    public Product(string name, decimal price, Guid laboratoryId)
     {
         SetName(name);
         SetPrice(price);
-        SetBars(bars);
         SetLaboratoryId(laboratoryId);
     }
     public void SetName(string name)
@@ -55,10 +54,16 @@ public class Product : EntityBase
         LaboratoryId = laboratoryId;
     }
 
-    public void SetDiscount(decimal discount)
+    public void AddProductPriceTable(ProductPriceTable priceTable)
     {
-        if(discount <0)
-            throw new ArgumentException("O desconto não pode ser negativo.");
-        Discount = discount;
+        ProductPriceTables ??= new List<ProductPriceTable>();
+        ProductPriceTables.Add(priceTable);
+    }
+
+    public void RemoveProductPriceTable(ProductPriceTable priceTable)
+    {
+        if(ProductPriceTables == null || ProductPriceTables.Count == 0)
+            return;
+        ProductPriceTables.Remove(priceTable);
     }
 }

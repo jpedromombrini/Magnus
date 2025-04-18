@@ -15,6 +15,7 @@ public class ProductRepository(MagnusContext context) : Repository<Product>(cont
             .AsNoTracking()
             .Where(predicate)
             .Include(x =>x.Bars)
+            .Include(x => x.ProductPriceTables)
             .ToListAsync(cancellationToken);
     }
 
@@ -23,18 +24,24 @@ public class ProductRepository(MagnusContext context) : Repository<Product>(cont
         return await _context.Products
             .AsNoTracking()
             .Include(x =>x.Bars)
+            .Include(x => x.ProductPriceTables)
             .ToListAsync(cancellationToken);
     }
 
     public override async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.Products
-            .AsNoTracking()
-            .Include(x =>x.Bars)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
-    public void DeleteBarsRange(IEnumerable<Bar> bars)
+    public void DeleteBarsRange(Guid productId)
     {
+        var bars = _context.Bars.Where(x => x.ProductId == productId);
         _context.Bars.RemoveRange(bars);
+    }
+
+    public void DeleteProductPriceTableRange(Guid productId)
+    {
+        var tables = _context.ProductPriceTables.Where(x => x.ProductId == productId);
+        _context.ProductPriceTables.RemoveRange(tables);
     }
 }

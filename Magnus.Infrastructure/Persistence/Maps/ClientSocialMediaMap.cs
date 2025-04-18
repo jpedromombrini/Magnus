@@ -16,7 +16,5 @@ public class ClientSocialMediaMap : IEntityTypeConfiguration<ClientSocialMedia>
         builder.Property(x => x.Link)
             .IsRequired()
             .HasColumnType("varchar(150)");
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
     }
 }

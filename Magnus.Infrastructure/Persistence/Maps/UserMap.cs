@@ -25,7 +25,5 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.Property(x => x.Password)
             .IsRequired()
             .HasColumnType("varchar(40)");
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
     }
 }

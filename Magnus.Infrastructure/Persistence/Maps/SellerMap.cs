@@ -28,7 +28,5 @@ public class SellerMap : IEntityTypeConfiguration<Seller>
             .HasColumnType("varchar(15)"); 
         builder.Property(x => x.UserId)
             .IsRequired();
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
     }
 }

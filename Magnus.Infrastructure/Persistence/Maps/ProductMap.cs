@@ -14,20 +14,11 @@ public class ProductMap : IEntityTypeConfiguration<Product>
             .IsRequired()
             .HasColumnType("integer")
             .ValueGeneratedOnAdd();
-        builder.Property(x => x.Discount)
-            .IsRequired()
-            .HasColumnType("decimal(10,2)");
         builder.Property(x => x.Name)
             .IsRequired()
             .HasColumnType("varchar(100)");
         builder.Property(x => x.Price)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
-        builder.HasMany(x => x.Bars)
-            .WithOne(x => x.Product)            
-            .HasForeignKey(x => x.ProductId)
-            .OnDelete(DeleteBehavior.Cascade);
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
     }
 }

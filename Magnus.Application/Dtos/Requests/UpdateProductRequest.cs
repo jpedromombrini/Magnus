@@ -5,6 +5,6 @@ public record UpdateProductRequest(
     int InternalCode,
     string Name,
     decimal Price,
-    decimal Discount,
     List<BarRequest>? Bars,
-    Guid LaboratoryId);
+    Guid LaboratoryId,
+    List<ProductPriceTableRequest>? ProductPriceTable);

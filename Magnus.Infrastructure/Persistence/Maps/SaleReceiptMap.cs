@@ -14,7 +14,5 @@ public class SaleReceiptMap : IEntityTypeConfiguration<SaleReceipt>
             .WithOne(si => si.SaleReceipt)
             .HasForeignKey(si => si.SaleReceiptId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
     }
 }

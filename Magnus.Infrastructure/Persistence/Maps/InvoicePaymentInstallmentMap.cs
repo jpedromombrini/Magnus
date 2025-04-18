@@ -32,8 +32,7 @@ public class InvoicePaymentInstallmentMap : IEntityTypeConfiguration<InvoicePaym
             .HasColumnType("numeric(18,2)");
         
         builder.Property(x => x.Installment)
-            .IsRequired();  
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
+            .IsRequired(); 
+        
     }
 }

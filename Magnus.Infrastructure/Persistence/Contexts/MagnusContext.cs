@@ -1,6 +1,7 @@
 using System.Reflection;
 using Magnus.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Magnus.Infrastructure.Persistence.Contexts;
 public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(options)
@@ -9,6 +10,7 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<Product> Products { get; set; }
     public DbSet<Laboratory> Laboratories { get; set; }
     public DbSet<Bar> Bars { get; set; }
+    public DbSet<ProductPriceTable> ProductPriceTables { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Client> Clients { get; set; }
     public DbSet<ClientPhone> ClientPhones { get; set; }

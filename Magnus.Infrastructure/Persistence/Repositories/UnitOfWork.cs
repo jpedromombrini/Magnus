@@ -33,6 +33,8 @@ public class UnitOfWork : IUnitOfWork
         Sales = new SaleRepository(_context);
         SaleReceipts = new SaleReceiptRepository(_context);
         AppConfigurations = new AppConfigurationRepository(_context);
+        ProductPriceTables = new ProductPriceTableRepository(_context);
+        Bars = new BarRepository(_context);
     }
 
     public IProductRepository Products { get; }
@@ -58,6 +60,9 @@ public class UnitOfWork : IUnitOfWork
     public ISaleRepository Sales { get; }
     public ISaleReceiptRepository SaleReceipts { get; }
     public IAppConfigurationRepository AppConfigurations { get; }
+    public IProductPriceTableRepository ProductPriceTables { get; set; }
+    public IBarRepository Bars { get; }
+
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
         return await _context.SaveChangesAsync(cancellationToken);

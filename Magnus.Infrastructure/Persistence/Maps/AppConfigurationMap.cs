@@ -10,7 +10,5 @@ public class AppConfigurationMap : IEntityTypeConfiguration<AppConfiguration>
     {
         builder.ToTable("AppConfiguration");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
     }
 }

@@ -18,7 +18,5 @@ public class AccountsPayableOccurrenceMap: IEntityTypeConfiguration<AccountsPaya
         builder.Property(x => x.Occurrence)
             .IsRequired()
             .HasColumnType("varchar(500)");
-        builder.Property(x => x.RowVersion)
-            .IsRowVersion();
     }
 }

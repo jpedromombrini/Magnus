@@ -12,4 +12,6 @@ public interface ISaleService
     Task Invoice(Sale sale, CancellationToken cancellationToken);
 
     Task<Sale?> GetSaleByDocument(int documentId, CancellationToken cancellationToken);
+    
+    Task CancelSale(Sale sale, CancellationToken cancellationToken);
 }
