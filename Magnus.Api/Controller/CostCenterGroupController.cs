@@ -1,3 +1,4 @@
+using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
@@ -20,15 +21,11 @@ public class CostCenterGroupController(
         return await costCenterGroupAppService.GetCostCenterGroupsAsync(cancellationToken);
     }
 
-    [HttpGet("getbyname")]
-    public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsByFilterAsync([FromQuery] string name,
+    [HttpGet("getbyfilter")]
+    public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsByFilterAsync([FromQuery] GetCostCenterFilter filter,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(name))
-            return [];
-        return await costCenterGroupAppService.GetCostCenterGroupsByFilterAsync(
-            x => x.Name.ToLower().Contains(name.ToLower()),
-            cancellationToken);
+        return await costCenterGroupAppService.GetCostCenterGroupsByFilterAsync(filter, cancellationToken);
     }
 
     [HttpGet("{id:guid}")]

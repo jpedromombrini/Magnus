@@ -13,10 +13,20 @@ public class CostCenterSubGroupMap : IEntityTypeConfiguration<CostCenterSubGroup
         builder.Property(x => x.Code)
             .IsRequired()
             .HasColumnType("varchar(5)");
+
         builder.Property(x => x.Name)
             .IsRequired()
             .HasColumnType("varchar(100)");
-        builder.HasMany(x =>x.CostCenters)
+
+        builder.Property(x => x.CostCenterGroupId)
+            .IsRequired();
+
+        builder.HasOne(x => x.CostCenterGroup)
+            .WithMany(x => x.CostCenterSubGroups)
+            .HasForeignKey(x => x.CostCenterGroupId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(x => x.CostCenters)
             .WithOne(x => x.CostCenterSubGroup)
             .HasForeignKey(x => x.CostCenterSubGroupId)
             .OnDelete(DeleteBehavior.Cascade);

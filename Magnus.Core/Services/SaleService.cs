@@ -13,17 +13,18 @@ public class SaleService(
     IClientService clientService,
     IUserService userService,
     ISaleReceiptService saleReceiptService,
+    IAccountsReceivableService accountsReceivableService,
     IUnitOfWork unitOfWork) : ISaleService
 {
     public async Task CreateAsync(Sale sale, CancellationToken cancellationToken)
     {
         var client = await clientService.GetByIdAsync(sale.ClientId, cancellationToken);
-        if(client is null)
+        if (client is null)
             throw new BusinessRuleException("Cliente não encontrado");
         var user = await userService.GetUserByIdAsync(sale.UserId, cancellationToken);
-        if(user is null)
+        if (user is null)
             throw new BusinessRuleException("Usuário não encontrado");
-        
+
         sale.SetClientName(client.Name);
         sale.SetUserId(user.Id);
         sale.SetCreateAt(DateTime.Now);
@@ -31,13 +32,13 @@ public class SaleService(
     }
 
     public async Task UpdateSale(
-        Sale sale, 
+        Sale sale,
         Client client,
-        User user,  
+        User user,
         IEnumerable<SaleItem> items,
-        IEnumerable<SaleReceipt> receipts, 
-        decimal value, 
-        decimal finantialDiscount, 
+        IEnumerable<SaleReceipt> receipts,
+        decimal value,
+        decimal finantialDiscount,
         CancellationToken cancellationToken)
     {
         sale.SetClientId(client.Id);
@@ -47,7 +48,6 @@ public class SaleService(
         ValidateFinantial(sale, receipts);
         UpdateItems(sale, items);
         await UpdateReceipts(sale, receipts, cancellationToken);
-        
     }
 
     private static void UpdateItems(Sale sale, IEnumerable<SaleItem> items)
@@ -67,6 +67,7 @@ public class SaleService(
                 sale.AddItem(item);
             }
         }
+
         var itemsToRemove = sale.Items
             .Where(existingItem => !items.Any(item => item.ProductId == existingItem.ProductId))
             .ToList();
@@ -76,7 +77,8 @@ public class SaleService(
         }
     }
 
-    private async Task UpdateReceipts(Sale sale, IEnumerable<SaleReceipt> saleReceipts, CancellationToken cancellationToken)
+    private async Task UpdateReceipts(Sale sale, IEnumerable<SaleReceipt> saleReceipts,
+        CancellationToken cancellationToken)
     {
         await saleReceiptService.RevomeFromSaleAsync(sale.Id, cancellationToken);
         await saleReceiptService.AddRangeAsync(sale, saleReceipts, cancellationToken);
@@ -87,10 +89,10 @@ public class SaleService(
         if (sale.GetTotalItemValue() != sale.Value)
             throw new BusinessRuleException("Total do itens diferente do total do pedido");
         var receipts = await saleReceiptService.GetSaleReceiptsAsync(sale.Id, cancellationToken);
-        if(!receipts.Any())
+        if (!receipts.Any())
             throw new BusinessRuleException("Pedido sem financeiro");
         ValidateFinantial(sale, receipts);
-        
+
         var warehouse = await warehouseService.GetByUserIdAsync(sale.UserId, cancellationToken);
         if (warehouse == null)
             throw new BusinessRuleException("Nenhum depósito encontrado");
@@ -101,7 +103,7 @@ public class SaleService(
                 cancellationToken);
         await auditProductService.SaleMovimentAsync(sale, warehouse.Code, cancellationToken);
         sale.SetStatus(SaleStatus.Invoiced);
-    } 
+    }
 
     public async Task<Sale?> GetSaleByDocument(int documentId, CancellationToken cancellationToken)
     {
@@ -143,17 +145,31 @@ public class SaleService(
     private async Task ValidateStockAsync(SaleItem item, int warehouseId, CancellationToken cancellationToken)
     {
         var stock = await productStockService.GetProductStockAsync(item.ProductId, warehouseId, cancellationToken);
-        if(stock < item.Amount)
+        if (stock < item.Amount)
             throw new BusinessRuleException($"o Item {item.ProductName} sem estoque");
     }
 
     private static void ValidateFinantial(Sale sale, IEnumerable<SaleReceipt> receipts)
     {
         var totalInstallments = receipts
-            .SelectMany(receipt => receipt.Installments) 
+            .SelectMany(receipt => receipt.Installments)
             .Sum(installment => installment.Value - installment.Discount + installment.Interest);
         if (sale.GetRealValue() - totalInstallments != 0)
             throw new BusinessRuleException("Total das parcelas diverge do total do pedido");
     }
-    
+
+    private async Task GenerateAccountsReceivable(Client client, int document, IEnumerable<SaleReceipt> saleReceipts,
+        CancellationToken cancellationToken)
+    {
+        foreach (var saleReceipt in saleReceipts)
+        {
+            foreach (var installment in saleReceipt.Installments)
+            {
+                // DateOnly? paymentDate = installment.PaymentDate is DateTime dt ? DateOnly.FromDateTime(dt) : null;
+                // var account = new AccountsReceivable(installment.Id, client.Id, client.Name, document,
+                //     installment.DueDate, paymentDate, installment.PaymentValue, installment.Interest, installment.Discount, installment.Installment)
+                // await accountsReceivableService.CreateAsync()
+            }
+        }
+    }
 }

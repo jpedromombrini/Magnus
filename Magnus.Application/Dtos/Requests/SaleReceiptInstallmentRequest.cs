@@ -4,6 +4,7 @@ public record SaleReceiptInstallmentRequest(
     Guid SaleReceiptId,
     DateOnly DueDate,
     DateTime? PaymentDate,
+    decimal PaymentValue,
     decimal Value,
     decimal Discount,
     decimal Interest,

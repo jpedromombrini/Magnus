@@ -1,17 +1,19 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
+using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
 
 namespace Magnus.Application.Services;
 
 public class CostCenterGroupAppService(
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : ICostCenterGroupAppService
+    IUnitOfWork unitOfWork) : ICostCenterGroupAppService
 {
     public async Task AddCostCenterGroupAsync(CreateCostCenterGroupRequest request, CancellationToken cancellationToken)
     {
@@ -23,7 +25,7 @@ public class CostCenterGroupAppService(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (costCenterGroupDb is not null)
             throw new ApplicationException("Já existe um grupo de centro de custo com esse nome");
-        await unitOfWork.CostCenterGroups.AddAsync(mapper.Map<CostCenterGroup>(request), cancellationToken);
+        await unitOfWork.CostCenterGroups.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -34,6 +36,7 @@ public class CostCenterGroupAppService(
         if (costCenterGroup is null)
             throw new EntityNotFoundException(id);
         costCenterGroup.SetName(request.Name);
+        costCenterGroup.SetCostCenterGroupType(request.CostcenterGroupType);
         unitOfWork.CostCenterGroups.Update(costCenterGroup);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -41,15 +44,17 @@ public class CostCenterGroupAppService(
     public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsAsync(
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<CostCenterGroupResponse>>(
-            await unitOfWork.CostCenterGroups.GetAllAsync(cancellationToken));
+        return (await unitOfWork.CostCenterGroups.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<CostCenterGroupResponse>> GetCostCenterGroupsByFilterAsync(
-        Expression<Func<CostCenterGroup, bool>> predicate, CancellationToken cancellationToken)
+        GetCostCenterFilter filter, CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<CostCenterGroupResponse>>(
-            await unitOfWork.CostCenterGroups.GetAllByExpressionAsync(predicate, cancellationToken));
+        return (await unitOfWork.CostCenterGroups.GetAllByExpressionAsync(
+                x =>
+                    (string.IsNullOrEmpty(filter.Name) || x.Name.ToLower() == filter.Name.ToLower()) &&
+                    (filter.CostCenterGroupType == null || x.CostcenterGroupType == filter.CostCenterGroupType),
+                cancellationToken)).MapToResponse();
     }
 
     public async Task<CostCenterGroupResponse> GetCostCenterGroupByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -57,7 +62,7 @@ public class CostCenterGroupAppService(
         var costCenterGroup = await unitOfWork.CostCenterGroups.GetByIdAsync(id, cancellationToken);
         if (costCenterGroup is null)
             throw new EntityNotFoundException(id);
-        return mapper.Map<CostCenterGroupResponse>(costCenterGroup);
+        return costCenterGroup.MapToResponse();
     }
 
     public async Task DeleteCostCenterGroupAsync(Guid id, CancellationToken cancellationToken)

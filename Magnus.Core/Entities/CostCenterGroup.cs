@@ -1,15 +1,19 @@
+using Magnus.Core.Enumerators;
+
 namespace Magnus.Core.Entities;
 
 public class CostCenterGroup : EntityBase
 {
     public string Code { get; set; }
     public string Name { get; set; }
-    public List<CostCenterSubGroup>? CostCenterSubGroups { get; set; }
+    public CostcenterGroupType CostcenterGroupType { get; set; }
+    public ICollection<CostCenterSubGroup> CostCenterSubGroups { get; set; }
     
-    public CostCenterGroup(string code, string name)
+    public CostCenterGroup(string code, string name,  CostcenterGroupType costcenterGroupType)
     {
         SetCode(code);
         SetName(name);
+        SetCostCenterGroupType(costcenterGroupType);
         CostCenterSubGroups = [];
     }
     public void SetCode(string code)
@@ -33,5 +37,10 @@ public class CostCenterGroup : EntityBase
         if (costCenterSubGroup == null)
             throw new ArgumentException("Informe o SubGrupo");
         CostCenterSubGroups?.Add(costCenterSubGroup);
+    }
+
+    public void SetCostCenterGroupType(CostcenterGroupType costcenterGroupType)
+    {
+        CostcenterGroupType = costcenterGroupType;
     }
 }

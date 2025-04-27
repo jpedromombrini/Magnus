@@ -29,5 +29,6 @@ public interface IUnitOfWork : IDisposable
     IAppConfigurationRepository AppConfigurations { get; }
     IProductPriceTableRepository ProductPriceTables { get; }
     IBarRepository Bars { get; }
+    IAccountsReceivableRepository AccountsReceivables { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

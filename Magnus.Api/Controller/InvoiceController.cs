@@ -21,7 +21,7 @@ public class InvoiceController(
     }
 
     [HttpGet]
-    public async Task<IEnumerable<InvoiceResponse>> GetInvoicesByFilterAsync(GetInvoiceFilter filter,
+    public async Task<IEnumerable<InvoiceResponse>> GetInvoicesByFilterAsync([FromQuery] GetInvoiceFilter filter,
         CancellationToken cancellationToken)
     {
         return await invoiceAppService.GetInvoicesByFilterAsync(filter, cancellationToken);

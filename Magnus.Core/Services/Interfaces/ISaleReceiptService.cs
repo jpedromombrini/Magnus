@@ -8,5 +8,6 @@ public interface ISaleReceiptService
     Task AddRangeAsync(Sale sale, IEnumerable<SaleReceipt> saleReceipts, CancellationToken cancellationToken);
     Task RevomeFromSaleAsync(Guid saleId, CancellationToken cancellationToken);
     Task<IEnumerable<SaleReceipt>> GetSaleReceiptsAsync(Guid saleId, CancellationToken cancellationToken);
+    Task<SaleReceiptInstallment?> GetSaleReceiptInstallmentByIdAsync(Guid id, CancellationToken cancellationToken);
     
 }

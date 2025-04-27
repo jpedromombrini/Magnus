@@ -112,6 +112,66 @@ namespace Magnus.Infrastructure.Migrations
                     b.ToTable("AccountsPayableOccurrence", (string)null);
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsReceivable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClientName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<string>("CostCenter")
+                        .IsRequired()
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("Document")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("DueDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Installment")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Interest")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Observation")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateOnly?>("PaymentDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("PaymentValue")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<Guid?>("SaleReceiptInstallmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AccountsReceivable", (string)null);
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.AppConfiguration", b =>
                 {
                     b.Property<Guid>("Id")
@@ -270,7 +330,7 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(8)");
 
-                    b.Property<Guid?>("CostCenterSubGroupId")
+                    b.Property<Guid>("CostCenterSubGroupId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -294,6 +354,9 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(2)");
 
+                    b.Property<int>("CostcenterGroupType")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
@@ -313,7 +376,7 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(5)");
 
-                    b.Property<Guid?>("CostCenterGroupId")
+                    b.Property<Guid>("CostCenterGroupId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
@@ -836,6 +899,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("timestamp");
 
+                    b.Property<decimal>("PaymentValue")
+                        .HasColumnType("numeric");
+
                     b.Property<byte[]>("ProofImage")
                         .HasColumnType("bytea");
 
@@ -1177,7 +1243,8 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasOne("Magnus.Core.Entities.CostCenterSubGroup", "CostCenterSubGroup")
                         .WithMany("CostCenters")
                         .HasForeignKey("CostCenterSubGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CostCenterSubGroup");
                 });
@@ -1187,7 +1254,8 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasOne("Magnus.Core.Entities.CostCenterGroup", "CostCenterGroup")
                         .WithMany("CostCenterSubGroups")
                         .HasForeignKey("CostCenterGroupId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CostCenterGroup");
                 });

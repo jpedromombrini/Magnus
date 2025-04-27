@@ -13,8 +13,17 @@ public class CostCenterMap : IEntityTypeConfiguration<CostCenter>
         builder.Property(x => x.Code)
             .IsRequired()
             .HasColumnType("varchar(8)");
+
         builder.Property(x => x.Name)
             .IsRequired()
             .HasColumnType("varchar(100)");
+
+        builder.Property(x => x.CostCenterSubGroupId)
+            .IsRequired();
+
+        builder.HasOne(x => x.CostCenterSubGroup)
+            .WithMany(x => x.CostCenters)
+            .HasForeignKey(x => x.CostCenterSubGroupId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

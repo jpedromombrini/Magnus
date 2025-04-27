@@ -35,6 +35,7 @@ public class UnitOfWork : IUnitOfWork
         AppConfigurations = new AppConfigurationRepository(_context);
         ProductPriceTables = new ProductPriceTableRepository(_context);
         Bars = new BarRepository(_context);
+        AccountsReceivables = new AccountsReceivableRepository(_context);
     }
 
     public IProductRepository Products { get; }
@@ -62,6 +63,7 @@ public class UnitOfWork : IUnitOfWork
     public IAppConfigurationRepository AppConfigurations { get; }
     public IProductPriceTableRepository ProductPriceTables { get; set; }
     public IBarRepository Bars { get; }
+    public IAccountsReceivableRepository AccountsReceivables { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {

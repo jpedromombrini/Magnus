@@ -15,7 +15,7 @@ public static class SaleReceiptMapper
         foreach (var installment in request.Installments)
         {
             saleReceipt.AddInstallment(new SaleReceiptInstallment(saleReceipt.Id,
-                installment.DueDate, installment.PaymentDate, installment.Value, installment.Discount,
+                installment.DueDate, installment.PaymentDate, installment.PaymentValue, installment.Value, installment.Discount,
                 installment.Interest,
                 installment.Installment, installment.ProofImage));
         }
@@ -30,7 +30,7 @@ public static class SaleReceiptMapper
         foreach (var installment in request.Installments)
         {
             saleReceipt.AddInstallment(new SaleReceiptInstallment(saleReceipt.Id,
-                installment.DueDate, installment.PaymentDate, installment.Value, installment.Discount,
+                installment.DueDate, installment.PaymentDate,installment.PaymentValue, installment.Value, installment.Discount,
                 installment.Interest,
                 installment.Installment, installment.ProofImage));
         }

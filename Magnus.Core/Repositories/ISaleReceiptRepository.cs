@@ -6,4 +6,5 @@ public interface ISaleReceiptRepository : IRepository<SaleReceipt>
 {
     Task AddRangeAsync(IEnumerable<SaleReceipt> saleReceipts, CancellationToken cancellationToken);
     void RemoveRange(IEnumerable<SaleReceipt> saleReceipts);
+    Task<SaleReceiptInstallment?> GetSaleReceiptInstallmentByIdAsync(Guid id, CancellationToken cancellationToken);
 }

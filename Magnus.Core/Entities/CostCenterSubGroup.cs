@@ -2,16 +2,17 @@ namespace Magnus.Core.Entities;
 
 public class CostCenterSubGroup : EntityBase
 {
-    public string Code { get; set; } 
-    public string Name { get; set; } 
-    public Guid? CostCenterGroupId { get; set; }
-    public CostCenterGroup? CostCenterGroup { get; set; }
-    public List<CostCenter>? CostCenters { get; set; }
+    public string Code { get; private set; } 
+    public string Name { get; private set; } 
+    public Guid CostCenterGroupId { get; private set; }
+    public CostCenterGroup CostCenterGroup { get; private set; }
+    public ICollection<CostCenter> CostCenters { get; private set; }
     
-    public CostCenterSubGroup(string code, string name)
+    public CostCenterSubGroup(string code, string name, Guid costCenterGroupId)
     {
         SetCode(code);
         SetName(name);
+        SetCostCenterGroupId(costCenterGroupId);
         CostCenters = [];
     }
     public void SetCode(string code)
@@ -35,15 +36,16 @@ public class CostCenterSubGroup : EntityBase
             throw new ArgumentException("Informe o Centro de custo");
         CostCenters?.Add(costCenter);
     }
+
     public void SetCostCenterGroup(CostCenterGroup costCenterGroup)
     {
-        if (costCenterGroup == null)
-            throw new ArgumentException("Informe o SubGrupo");
-        
-        if (costCenterGroup.Id == Guid.Empty)
-            throw new ArgumentException("Informe o Id do SubGrupo");
-
         CostCenterGroup = costCenterGroup;
-        CostCenterGroupId = costCenterGroup.Id;
+    }
+    
+    public void SetCostCenterGroupId(Guid costCenterGroupId)
+    {
+        if (costCenterGroupId == Guid.Empty)
+            throw new ArgumentException("Informe o Id do SubGrupo");
+        CostCenterGroupId = costCenterGroupId;
     }
 }

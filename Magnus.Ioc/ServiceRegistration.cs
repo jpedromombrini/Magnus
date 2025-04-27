@@ -39,6 +39,7 @@ public static class ServiceRegistration
         services.AddScoped<IAppConfigurationService, AppConfigurationService>();
         services.AddScoped<ISaleReceiptAppService, SaleReceiptAppService>();
         services.AddScoped<IAuditProductAppService, AuditProductAppService>();
+        services.AddScoped<IAccountReceivableAppService, AccountReceivableAppService>();
         #endregion
 
         #region Services Core
@@ -55,6 +56,8 @@ public static class ServiceRegistration
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IProductPriceTableService, ProductPriceTableService>();
         services.AddScoped<IBarService, BarService>();
+        services.AddScoped<IAccountsReceivableService, AccountsReceivableService>();
+        services.AddScoped<ICostCenterService, CostCenterService>();
         #endregion
         
         #region Repositories

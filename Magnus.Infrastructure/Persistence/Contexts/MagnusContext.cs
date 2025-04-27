@@ -40,6 +40,7 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<SaleReceipt> SaleReceipts { get; set; }
     public DbSet<SaleReceiptInstallment> SaleReceiptInstallments { get; set; }
     public DbSet<AppConfiguration> AppConfigurations { get; set; }
+    public DbSet<AccountsReceivable> AccountsReceivables { get; set; }
     #endregion
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

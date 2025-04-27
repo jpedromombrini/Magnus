@@ -4,14 +4,14 @@ public class CostCenter : EntityBase
 {
     public string Code { get; private set; }
     public string Name { get; private set; }
-    public Guid? CostCenterSubGroupId { get; private set; }
-    public CostCenterSubGroup? CostCenterSubGroup { get; private set; }
-
+    public Guid CostCenterSubGroupId { get; private set; }
+    public CostCenterSubGroup CostCenterSubGroup { get; set; }
     private CostCenter(){}
-    public CostCenter(string code, string name)
+    public CostCenter(string code, string name, Guid costCenterSubGroupId)
     {
         SetCode(code);
         SetName(name);
+        SetCostCenterSubGroupId(costCenterSubGroupId);
     }
 
     public void SetCode(string code)
@@ -30,15 +30,11 @@ public class CostCenter : EntityBase
         Name = name;
     }
 
-    public void SetCostCenterSubGroup(CostCenterSubGroup costCenterSubGroup)
-    {
-        if (costCenterSubGroup == null)
-            throw new ArgumentException("Informe o SubGrupo");
-        
-        if (costCenterSubGroup.Id == Guid.Empty)
+    public void SetCostCenterSubGroupId(Guid costCenterSubGroupId)
+    {   
+        if (costCenterSubGroupId == Guid.Empty)
             throw new ArgumentException("Informe o Id do SubGrupo");
-
-        CostCenterSubGroup = costCenterSubGroup;
-        CostCenterSubGroupId = costCenterSubGroup.Id;
+        
+        CostCenterSubGroupId = costCenterSubGroupId;
     }
 }

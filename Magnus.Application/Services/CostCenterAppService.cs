@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
@@ -10,8 +11,7 @@ using Magnus.Core.Repositories;
 namespace Magnus.Application.Services;
 
 public class CostCenterAppService(
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : ICostCenterAppService
+    IUnitOfWork unitOfWork) : ICostCenterAppService
 {
     public async Task AddCostCenterAsync(CreateCostCenterRequest request, CancellationToken cancellationToken)
     {
@@ -22,7 +22,7 @@ public class CostCenterAppService(
         costcenterDb = await unitOfWork.CostCenters.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (costcenterDb is not null)
             throw new ApplicationException("Já existe um centro de custo com esse nome");
-        await unitOfWork.CostCenters.AddAsync(mapper.Map<CostCenter>(request), cancellationToken);
+        await unitOfWork.CostCenters.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -40,14 +40,13 @@ public class CostCenterAppService(
 
     public async Task<IEnumerable<CostCenterResponse>> GetCostCentersAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<CostCenterResponse>>(await unitOfWork.CostCenters.GetAllAsync(cancellationToken));
+        return (await unitOfWork.CostCenters.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<CostCenterResponse>> GetCostCentersByFilterAsync(
         Expression<Func<CostCenter, bool>> predicate, CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<CostCenterResponse>>(
-            await unitOfWork.CostCenters.GetAllByExpressionAsync(predicate, cancellationToken));
+        return (await unitOfWork.CostCenters.GetAllByExpressionAsync(predicate, cancellationToken)).MapToResponse();
     }
 
     public async Task<CostCenterResponse> GetCostCenterByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -55,7 +54,7 @@ public class CostCenterAppService(
         var costCenter = await unitOfWork.CostCenters.GetByIdAsync(id, cancellationToken);
         if (costCenter is null)
             throw new EntityNotFoundException(id);
-        return mapper.Map<CostCenterResponse>(costCenter);
+        return costCenter.MapToResponse();
     }
 
     public async Task DeleteCostCenterAsync(Guid id, CancellationToken cancellationToken)

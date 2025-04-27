@@ -6,19 +6,25 @@ public class SaleReceiptInstallment : EntityBase
     public SaleReceipt SaleReceipt { get; private set; }
     public DateOnly DueDate { get; private set; }
     public DateTime? PaymentDate { get; private set; }
+    public decimal PaymentValue { get; private set; }
     public decimal Value { get; private set; }
     public decimal Discount { get; private set; }
     public decimal Interest { get; private set; }
     public int Installment { get; private set; }
     public byte[]? ProofImage { get; private set; }
 
-    private SaleReceiptInstallment(){}
-    public SaleReceiptInstallment(Guid saleReceiptId, DateOnly dueDate, DateTime? paymentDate, decimal value,
+    private SaleReceiptInstallment()
+    {
+    }
+
+    public SaleReceiptInstallment(Guid saleReceiptId, DateOnly dueDate, DateTime? paymentDate, decimal paymentValue,
+        decimal value,
         decimal discount, decimal interest, int installment, string? proofImageBase64)
     {
         SetSaleReceiptId(saleReceiptId);
         SetDueDate(dueDate);
         SetPaymentDate(paymentDate);
+        SetPaymentValue(paymentValue);
         SetValue(value);
         SetDiscount(discount);
         SetInterest(interest);
@@ -28,10 +34,11 @@ public class SaleReceiptInstallment : EntityBase
 
     public void SetSaleReceiptId(Guid saleReceiptId)
     {
-        if(saleReceiptId == Guid.Empty)
+        if (saleReceiptId == Guid.Empty)
             throw new ArgumentNullException("Informe o Id do recebimento");
         SaleReceiptId = saleReceiptId;
     }
+
     public void SetSaleReceipt(SaleReceipt saleReceipt)
     {
         if (saleReceipt.Id == Guid.Empty)
@@ -48,6 +55,11 @@ public class SaleReceiptInstallment : EntityBase
     public void SetPaymentDate(DateTime? paymentDate)
     {
         PaymentDate = paymentDate;
+    }
+
+    public void SetPaymentValue(decimal paymentValue)
+    {
+        PaymentValue = paymentValue;
     }
 
     public void SetValue(decimal value)

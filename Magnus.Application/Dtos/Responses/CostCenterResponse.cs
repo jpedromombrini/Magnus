@@ -4,5 +4,5 @@ public record CostCenterResponse(
     Guid Id,
     string Code,
     string Name,
-    Guid? CostCenterSubGroupId,
-    CostCenterSubGroupResponse? CostCenterSubGroup);
+    Guid CostCenterSubGroupId,
+    CostCenterSubGroupResponse CostCenterSubGroup);

@@ -36,6 +36,11 @@ public class CostCenterSubGroupController(
     {
         return await costCenterSubGroupAppService.GetCostCenterSubGroupByIdAsync(id, cancellationToken);
     }
+    [HttpGet("getbygroupid/{groupId:guid}")]
+    public async Task<IEnumerable<CostCenterSubGroupResponse>> GetCostCenterGroupByIdAsync(Guid groupId, CancellationToken cancellationToken)
+    {
+        return await costCenterSubGroupAppService.GetCostCenterSubGroupsByFilterAsync(x => x.CostCenterGroupId == groupId, cancellationToken);
+    }
 
     [HttpPost]
     public async Task AddCostCenterSubGroupAsync([FromBody] CreateCostCenterSubGroupRequest request,

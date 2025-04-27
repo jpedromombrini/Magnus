@@ -7,6 +7,6 @@ public record GetInvoiceFilter(
     Guid SupplierId,
     int Number,
     int Serie,
-    string Key);
+    string? Key);
 
     
