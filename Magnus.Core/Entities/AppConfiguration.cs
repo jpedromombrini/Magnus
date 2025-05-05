@@ -2,19 +2,19 @@ namespace Magnus.Core.Entities;
 
 public class AppConfiguration : EntityBase
 {
-    public int AmountToDiscount { get; private set; }
+    public string CostCenterSale { get; private set; }
 
     private AppConfiguration(){}
 
-    public AppConfiguration(int amountToDiscount)
+    public AppConfiguration(string costCenterSale)
     {
-        SetAmountToDiscount(amountToDiscount);
+        SetCostCenterSale(costCenterSale);
     }
 
-    public void SetAmountToDiscount(int amountToDiscount)
+    public void SetCostCenterSale(string costCenterSale)
     {
-        if(amountToDiscount < 0)
-            throw new ArgumentException("Quantidade para desconto não pode ser negativo.");
-        AmountToDiscount = amountToDiscount;
+        if(string.IsNullOrEmpty(costCenterSale))
+            throw new ArgumentNullException(nameof(costCenterSale));
+        CostCenterSale = costCenterSale;
     }
 }

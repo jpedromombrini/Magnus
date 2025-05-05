@@ -7,7 +7,8 @@ public record CreateEstimateRequest(
     string? ClientName,
     decimal Value,
     decimal Freight,
+    decimal FinantialDiscount,
     string Observation,
     Guid UserId,
-    List<EstimateItemRequest> Items
-);
+    IEnumerable<EstimateItemRequest> Items,
+    IEnumerable<EstimateReceiptRequest>? Receipts);

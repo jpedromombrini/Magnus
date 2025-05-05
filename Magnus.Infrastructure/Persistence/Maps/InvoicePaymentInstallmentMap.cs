@@ -13,26 +13,21 @@ public class InvoicePaymentInstallmentMap : IEntityTypeConfiguration<InvoicePaym
         builder.HasOne(x => x.InvoicePayment)
             .WithMany(x => x.Installments)
             .HasForeignKey(x => x.InvoicePaymentId)
-            .OnDelete(DeleteBehavior.Cascade);  
-        
+            .OnDelete(DeleteBehavior.Cascade);
         builder.Property(x => x.DueDate)
             .IsRequired();  
-
         builder.Property(x => x.PaymentDate)
             .HasColumnType("timestamp");  
-
         builder.Property(x => x.Value)
             .IsRequired()
-            .HasColumnType("numeric(18,2)");  
-
+            .HasColumnType("numeric(18,2)");
         builder.Property(x => x.Discount)
-            .HasColumnType("numeric(18,2)");  
-
+            .HasColumnType("numeric(18,2)");
         builder.Property(x => x.Interest)
             .HasColumnType("numeric(18,2)");
-        
         builder.Property(x => x.Installment)
-            .IsRequired(); 
+            .IsRequired();
+        
         
     }
 }

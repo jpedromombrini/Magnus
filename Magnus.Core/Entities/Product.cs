@@ -44,6 +44,12 @@ public class Product : EntityBase
         Bars.Add(bar);
     }
 
+    public void AddBars(IEnumerable<Bar> bars)
+    {
+        Bars ??= [];
+        Bars = bars.ToList();
+    }
+
     public void SetLaboratoryId(Guid laboratoryId)
     {
         if (laboratoryId == Guid.Empty)
@@ -56,8 +62,14 @@ public class Product : EntityBase
 
     public void AddProductPriceTable(ProductPriceTable priceTable)
     {
-        ProductPriceTables ??= new List<ProductPriceTable>();
+        ProductPriceTables ??= [];
         ProductPriceTables.Add(priceTable);
+    }
+
+    public void AddProductPriceTables(IEnumerable<ProductPriceTable> priceTables)
+    {
+        ProductPriceTables ??= [];
+        ProductPriceTables = priceTables.ToList();
     }
 
     public void RemoveProductPriceTable(ProductPriceTable priceTable)

@@ -5,6 +5,6 @@ public record ProductResponse(
     int InternalCode,
     string Name,
     decimal Price,
-    List<BarResponse> Bars,
+    IEnumerable<BarResponse>? Bars,
     Guid LaboratoryId,
-    List<ProductPriceTableResponse>? ProductPriceTable);
+    IEnumerable<ProductPriceTableResponse>? ProductPriceTable);

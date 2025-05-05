@@ -178,8 +178,9 @@ namespace Magnus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("AmountToDiscount")
-                        .HasColumnType("integer");
+                    b.Property<string>("CostCenterSale")
+                        .IsRequired()
+                        .HasColumnType("varchar(8)");
 
                     b.HasKey("Id");
 
@@ -441,12 +442,15 @@ namespace Magnus.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<decimal>("FinantialDiscount")
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<decimal>("Freight")
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<string>("Observation")
                         .IsRequired()
-                        .HasMaxLength(300)
+                        .HasMaxLength(500)
                         .HasColumnType("varchar(300)");
 
                     b.Property<Guid>("UserId")
@@ -499,6 +503,70 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasIndex("EstimateId");
 
                     b.ToTable("EstimateItem", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.EstimateReceipt", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ClienteId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EstimateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ReceiptId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstimateId");
+
+                    b.HasIndex("ReceiptId");
+
+                    b.ToTable("EstimateReceipt", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.EstimateReceiptInstallment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Discount")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateOnly>("DueDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("EstimateReceiptId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Installment")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Interest")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<DateTime?>("PaymentDate")
+                        .HasColumnType("timestamp");
+
+                    b.Property<decimal>("PaymentValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EstimateReceiptId");
+
+                    b.ToTable("EstimateReceiptInstallment", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>
@@ -928,7 +996,8 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(100)");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid?>("UserId")
+                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -1273,13 +1342,37 @@ namespace Magnus.Infrastructure.Migrations
 
             modelBuilder.Entity("Magnus.Core.Entities.EstimateItem", b =>
                 {
-                    b.HasOne("Magnus.Core.Entities.Estimate", "Estimate")
+                    b.HasOne("Magnus.Core.Entities.Estimate", null)
                         .WithMany("Items")
                         .HasForeignKey("EstimateId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.Navigation("Estimate");
+            modelBuilder.Entity("Magnus.Core.Entities.EstimateReceipt", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Estimate", null)
+                        .WithMany("Receipts")
+                        .HasForeignKey("EstimateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Magnus.Core.Entities.Receipt", "Receipt")
+                        .WithMany()
+                        .HasForeignKey("ReceiptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receipt");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.EstimateReceiptInstallment", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.EstimateReceipt", null)
+                        .WithMany("Installments")
+                        .HasForeignKey("EstimateReceiptId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.InvoiceItem", b =>
@@ -1502,7 +1595,6 @@ namespace Magnus.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("Address")
-                                .IsRequired()
                                 .HasColumnType("varchar(100)")
                                 .HasColumnName("Email");
 
@@ -1532,17 +1624,14 @@ namespace Magnus.Infrastructure.Migrations
                                 .HasForeignKey("SupplierId");
                         });
 
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("Address");
 
                     b.Navigation("Document")
                         .IsRequired();
 
-                    b.Navigation("Email")
-                        .IsRequired();
+                    b.Navigation("Email");
 
-                    b.Navigation("Phone")
-                        .IsRequired();
+                    b.Navigation("Phone");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.TransferWarehouseItem", b =>
@@ -1616,6 +1705,13 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.Estimate", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("Receipts");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.EstimateReceipt", b =>
+                {
+                    b.Navigation("Installments");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>

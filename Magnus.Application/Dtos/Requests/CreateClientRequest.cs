@@ -14,5 +14,5 @@ public record CreateClientRequest(
     string? State,
     string? Complement,
     string? RegisterNumber,
-    List<ClientSocialMediaRequest>? SocialMedias,
-    List<ClientPhoneRequest>? Phones); 
+    IEnumerable<ClientSocialMediaRequest>? SocialMedias,
+    IEnumerable<ClientPhoneRequest>? Phones); 

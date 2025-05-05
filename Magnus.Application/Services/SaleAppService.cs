@@ -28,25 +28,15 @@ public class SaleAppService(
             var receipts = request.Receipts.MapToEntity();
             await saleReceiptService.AddRangeAsync(sale, receipts, cancellationToken);
         }
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateSaleAsync(Guid id, UpdateSaleRequest request, CancellationToken cancellationToken)
     {
-        var saleDb = await unitOfWork.Sales.GetByIdAsync(id, cancellationToken);
-        if (saleDb == null)
-            throw new EntityNotFoundException(id.ToString());
-        var clientDb = await unitOfWork.Clients.GetByIdAsync(request.ClientId, cancellationToken);
-        if (clientDb == null)
-            throw new EntityNotFoundException("Cliente não encontrado");
-        var userDb = await unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (userDb == null)
-            throw new EntityNotFoundException("usuário não encontrado");
-        var items = mapper.Map<IEnumerable<SaleItem>>(request.Items);
-        var receipts = request.Receipts.MapToEntity();
-        await saleService.UpdateSale(saleDb, clientDb, userDb, items, receipts, request.Value,
-            request.FinantialDiscount, cancellationToken);
-        unitOfWork.Sales.Update(saleDb);
+        var sale = request.MapToEntity();
+        await saleService.UpdateSale(id, sale, cancellationToken);
+        unitOfWork.Sales.Update(sale);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

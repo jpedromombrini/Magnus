@@ -1,3 +1,3 @@
 namespace Magnus.Application.Dtos.Requests;
 
-public record BarRequest(string Code);
+public record BarRequest(Guid ProductId, string Code);

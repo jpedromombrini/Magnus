@@ -20,12 +20,12 @@ public class SupplierMap : IEntityTypeConfiguration<Supplier>
             .HasColumnType("varchar(14)");
         builder.OwnsOne(x => x.Email)
             .Property(x => x.Address)
+            .IsRequired(false)
             .HasColumnName("Email")
             .HasColumnType("varchar(100)");     
         builder.OwnsOne(x => x.Phone)
             .Property(x => x.Number)
             .HasColumnName("PhoneNumber")
-            .IsRequired()
             .HasColumnType("varchar(15)");       
         builder.OwnsOne(x => x.Address)
             .Property(x => x.City)

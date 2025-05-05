@@ -49,4 +49,14 @@ public class SaleRepository(MagnusContext context) : Repository<Sale>(context), 
     {
         _context.SaleReceipts.RemoveRange(receipts);
     }
+
+    public async Task AddItemsRangeAsync(IEnumerable<SaleItem> items, CancellationToken cancellationToken)
+    {
+        await _context.SaleItems.AddRangeAsync(items, cancellationToken);
+    }
+
+    public async Task AddReceiptsRangeAsync(IEnumerable<SaleReceipt> receipts, CancellationToken cancellationToken)
+    {
+        await _context.SaleReceipts.AddRangeAsync(receipts, cancellationToken);
+    }
 }

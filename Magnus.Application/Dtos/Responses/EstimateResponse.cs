@@ -10,8 +10,9 @@ public record EstimateResponse(
     string? ClientName,
     decimal Value,
     decimal Freight,
+    decimal FinantialDiscount,
     string Observation,
     Guid UserId,
     UserResponse User,
-    List<EstimateItemResponse> Items
-);
+    IEnumerable<EstimateItemResponse> Items,
+    IEnumerable<EstimateReceiptResponse>? Receipts);

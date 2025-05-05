@@ -15,5 +15,5 @@ public record ClientResponse(
     string? State,
     string? Complement,
     string? RegisterNumber,
-    List<ClientSocialMediaResponse>? SocialMedias,
-    List<ClientPhoneResponse>? Phones);
+    IEnumerable<ClientSocialMediaResponse>? SocialMedias,
+    IEnumerable<ClientPhoneResponse>? Phones);

@@ -9,17 +9,16 @@ public class EstimateItem : EntityBase
     public decimal Value { get; private set; }
     public decimal Discount { get; private set; }
     public Guid EstimateId { get; private set; }
-    public Estimate Estimate { get; private set; }
 
     private EstimateItem(){}
-    public EstimateItem(Guid productId, string productName, int amount, decimal totalValue, decimal discount, Estimate estimate)
+    public EstimateItem(Guid productId, string productName, int amount, decimal value, decimal totalValue, decimal discount)
     {
         SetProductId(productId);
         SetProductName(productName);
         SetAmount(amount);
+        setValue(value);
         SetTotalValue(totalValue);
         SetDiscount(discount);
-        SetEstimate(estimate);
     }
 
     public void SetProductId(Guid productId)
@@ -64,13 +63,12 @@ public class EstimateItem : EntityBase
         Discount = discount;
     }
 
-    public void SetEstimate(Estimate estimate)
+    public void SetEstimateId(Guid estimateId)
     {
-        ArgumentNullException.ThrowIfNull(estimate);
-        if (estimate.Id == Guid.Empty)
+        ArgumentNullException.ThrowIfNull(estimateId);
+        if (estimateId == Guid.Empty)
             throw new ArgumentException("O ID do Orçamento não pode ser um GUID vazio.");
-        Estimate = estimate;
-        EstimateId = estimate.Id;
+        EstimateId = estimateId;
     }
     
 }

@@ -7,7 +7,7 @@ public class SaleReceipt : EntityBase
     public Guid SaleId { get; private set; }
     public Guid ReceiptId { get; private set; }
     public Receipt Receipt { get; private set; }
-    public List<SaleReceiptInstallment> Installments { get; private set; }
+    public ICollection<SaleReceiptInstallment> Installments { get; private set; }
 
     private SaleReceipt() {}
     public SaleReceipt(Guid clienteId, Guid userId, Guid saleId, Guid receiptId)

@@ -1,3 +1,3 @@
 namespace Magnus.Application.Dtos.Responses;
 
-public record BarResponse(Guid Id, string Code);
+public record BarResponse(Guid Id, Guid ProductId, string Code);

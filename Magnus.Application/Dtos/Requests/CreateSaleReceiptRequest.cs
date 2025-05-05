@@ -6,4 +6,4 @@ public record CreateSaleReceiptRequest(
     int Document,
     Guid SaleId,
     Guid ReceiptId,
-    List<SaleReceiptInstallmentRequest> Installments);
+    IEnumerable<SaleReceiptInstallmentRequest> Installments);

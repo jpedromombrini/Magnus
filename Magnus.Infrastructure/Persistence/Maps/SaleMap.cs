@@ -28,5 +28,9 @@ public class SaleMap : IEntityTypeConfiguration<Sale>
             .WithOne(si => si.Sale)
             .HasForeignKey(si => si.SaleId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x =>x.Receipts)
+            .WithOne()
+            .HasForeignKey(x => x.ReceiptId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

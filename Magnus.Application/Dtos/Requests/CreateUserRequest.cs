@@ -1,3 +1,5 @@
+using Magnus.Core.Enumerators;
+
 namespace Magnus.Application.Dtos.Requests;
 
 public record CreateUserRequest(

@@ -27,50 +27,74 @@ public static class ProductMapper
 
     public static Product MapToEntity(this UpdateProductRequest request)
     {
-        List<Bar> bars = [];
-        List<ProductPriceTable> prices = [];
         Product product = new(request.Name, request.Price, request.LaboratoryId);
-        if (request.Bars is not null) bars.AddRange(request.Bars.Select(bar => new Bar(product.Id, bar.Code)));
         if (request.ProductPriceTable is not null)
-            prices.AddRange(request.ProductPriceTable.Select(productPrice =>
-                new ProductPriceTable(product.Id, productPrice.MinimalAmount,
-                    productPrice.MaximumAmount,
-                    productPrice.Price)));
-        foreach (var bar in bars) product.AddBar(bar);
-        foreach (var priceTable in prices) product.AddProductPriceTable(priceTable);
+            product.AddProductPriceTables(request.ProductPriceTable.MapToEntity());
+        if (request.Bars is not null)
+            product.AddBars(request.Bars.MapToEntity());
         return product;
     }
 
-    public static IEnumerable<Product> MapToEntity(this IEnumerable<CreateProductRequest> requests)
+    public static Bar MapToEntity(this BarRequest request)
     {
-        return requests.Select(MapToEntity).ToList();
+        return new Bar(request.ProductId, request.Code);
     }
 
-    public static IEnumerable<Product> MapToEntity(this IEnumerable<UpdateProductRequest> requests)
+    public static ProductPriceTable MapToEntity(this ProductPriceTableRequest request)
     {
-        return requests.Select(MapToEntity).ToList();
+        return new ProductPriceTable(request.ProductId, request.MinimalAmount, request.MaximumAmount, request.Price);
+    }
+
+    public static IEnumerable<ProductPriceTable> MapToEntity(this IEnumerable<ProductPriceTableRequest> requests)
+    {
+        return requests.Select(MapToEntity);
+    }
+
+    public static IEnumerable<Bar> MapToEntity(this IEnumerable<BarRequest> requests)
+    {
+        return requests.Select(MapToEntity);
     }
 
     #endregion
 
     #region Response
 
-    public static ProductResponse MapToResponse(this Product product)
+    public static ProductResponse MapToResponse(this Product entity)
     {
-        List<BarResponse> bars = [];
-        List<ProductPriceTableResponse> prices = [];
-        if (product.Bars is not null) bars.AddRange(product.Bars.Select(bar => new BarResponse(bar.Id, bar.Code)));
-        if (product.ProductPriceTables is not null)
-            prices.AddRange(product.ProductPriceTables.Select(price =>
-                new ProductPriceTableResponse(price.Id, price.ProductId, price.MinimalAmount, price.MaximumAmount,
-                    price.Price)));
-        return new ProductResponse(product.Id, product.InternalCode, product.Name, product.Price, bars,
-            product.LaboratoryId, prices);
+        IEnumerable<BarResponse>? bars = null;
+        IEnumerable<ProductPriceTableResponse>? prices = null;
+        if (entity.Bars is not null)
+            bars = entity.Bars.MapToEntity();
+        if (entity.ProductPriceTables is not null)
+            prices = entity.ProductPriceTables.MapToResponse();
+        return new ProductResponse(entity.Id, entity.InternalCode, entity.Name, entity.Price, bars,
+            entity.LaboratoryId, prices);
     }
 
-    public static IEnumerable<ProductResponse> MapToResponse(this IEnumerable<Product> requests)
+    public static IEnumerable<ProductResponse> MapToResponse(this IEnumerable<Product> entities)
     {
-        return requests.Select(MapToResponse).ToList();
+        return entities.Select(MapToResponse).ToList();
+    }
+
+    public static BarResponse MapToResponse(this Bar entity)
+    {
+        return new BarResponse(entity.Id, entity.ProductId, entity.Code);
+    }
+
+    public static ProductPriceTableResponse MapToResponse(this ProductPriceTable entity)
+    {
+        return new ProductPriceTableResponse(entity.Id, entity.ProductId, entity.MinimalAmount, entity.MaximumAmount,
+            entity.Price);
+    }
+
+    public static IEnumerable<ProductPriceTableResponse> MapToResponse(this IEnumerable<ProductPriceTable> entities)
+    {
+        return entities.Select(MapToResponse);
+    }
+
+    public static IEnumerable<BarResponse> MapToEntity(this IEnumerable<Bar> entities)
+    {
+        return entities.Select(MapToResponse).ToList();
     }
 
     #endregion

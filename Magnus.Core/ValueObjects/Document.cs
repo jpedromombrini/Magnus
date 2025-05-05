@@ -19,18 +19,12 @@ public class Document
     
     private bool IsValid(string value)
     {
-        if (value.Length == 11) 
+        return value.Length switch
         {
-            return IsCpfValid(value);
-        }
-        else if (value.Length == 14) 
-        {
-            return IsCnpjValid(value);
-        }
-        else
-        {
-            return false;
-        }
+            11 => IsCpfValid(value),
+            14 => IsCnpjValid(value),
+            _ => false
+        };
     }
     private bool IsCpfValid(string cpf)
     {
@@ -39,8 +33,7 @@ public class Document
         
         if (new string(cpf[0], 11) == cpf)
             return false;
-
-        // Validar o CPF utilizando o algoritmo de verificação
+        
         int[] multiplicadores1 = [10, 9, 8, 7, 6, 5, 4, 3, 2];
         int[] multiplicadores2 = [11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
 

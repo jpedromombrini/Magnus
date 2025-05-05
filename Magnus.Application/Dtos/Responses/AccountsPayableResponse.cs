@@ -16,4 +16,4 @@ string SupplierName,
  Guid? InvoiceId,
  Guid? UserPaymentId,
  bool Canceled,
- List<AccountsPayableOccurenceResponse>? Occurrences);
+ IEnumerable<AccountsPayableOccurenceResponse>? Occurrences);

@@ -7,6 +7,7 @@ public record UpdateSaleRequest(
     string ClientName,
     Guid UserId,
     decimal Value,
+    decimal Freight,
     decimal FinantialDiscount,
-    List<SaleItemRequest> Items,
-    List<UpdateSaleReceiptRequest> Receipts);
+    IEnumerable<SaleItemRequest> Items,
+    IEnumerable<UpdateSaleReceiptRequest>? Receipts);

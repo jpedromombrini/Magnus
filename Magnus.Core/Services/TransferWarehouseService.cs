@@ -21,14 +21,15 @@ public class TransferWarehouseService(
              cancellationToken);
         if (productStockOrigin is null)
             throw new EntityNotFoundException(transferWarehouseItem.ProductId);
-
+        
+        var productStockDestiny = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
+                x.WarehouseId == destinationWarehouseId &&
+                transferWarehouseItem.ProductId == x.ProductId,
+            cancellationToken);
+        
         productStockOrigin.DecreaseAmount(transferWarehouseItem.Amount);
         unitOfWork.ProductStocks.Update(productStockOrigin);
-
-        var productStockDestiny = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
-            x.WarehouseId == destinationWarehouseId &&
-            transferWarehouseItem.ProductId == x.ProductId,
-            cancellationToken);
+        
         if (productStockDestiny is null)
         {
             productStockDestiny = new ProductStock(transferWarehouseItem.ProductId,

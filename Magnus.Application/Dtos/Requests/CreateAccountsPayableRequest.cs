@@ -5,4 +5,4 @@ public record CreateAccountsPayableRequest(
     Guid SupplierId,
     string CostCenterCode,
     int Document,
-    List<AccountsPayableRequest> AccountsPayableRequests);
+    IEnumerable<AccountsPayableRequest> AccountsPayableRequests);

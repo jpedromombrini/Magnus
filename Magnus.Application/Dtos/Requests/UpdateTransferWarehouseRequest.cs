@@ -7,4 +7,4 @@ public record UpdateTransferWarehouseRequest(
     string WarehouseOriginName,
     int WarehouseDestinyId,
     string WarehouseDestinyName,
-    List<TransferWarehouseItemRequest> Items);
+    IEnumerable<TransferWarehouseItemRequest> Items);

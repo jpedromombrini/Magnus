@@ -25,7 +25,7 @@ public class ProductStock : EntityBase
 
     public void SetAmount(int amount)
     {
-        if (amount <= 0)
+        if (amount < 0)
             throw new ArgumentException("A quantidade deve ser maior que zero.");
         Amount = amount;
     }

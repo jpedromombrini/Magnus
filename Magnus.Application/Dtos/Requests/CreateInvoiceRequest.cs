@@ -15,6 +15,6 @@ public record CreateInvoiceRequest(
     decimal Value,
     string Observation,
     InvoiceSituation InvoiceSituation,
-    List<InvoiceItemRequest> Items,
+    IEnumerable<InvoiceItemRequest> Items,
     InvoicePaymentRequest Payment,
     Guid? DoctorId);

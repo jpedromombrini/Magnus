@@ -18,10 +18,9 @@ public class TransferWarehouseItemMap : IEntityTypeConfiguration<TransferWarehou
         builder.Property(x => x.Amount)
             .IsRequired()
             .HasColumnType("decimal(10,3)");
-        builder.HasOne(x => x.TransferWarehouse)  
-            .WithMany()  
-            .HasForeignKey(x => x.TransferWarehouseId)  
-            .OnDelete(DeleteBehavior.Cascade); 
-        
+        builder.HasOne(x => x.TransferWarehouse)
+            .WithMany()
+            .HasForeignKey(x => x.TransferWarehouseId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -8,6 +8,7 @@ using Magnus.Core.Services;
 using Magnus.Core.Services.Interfaces;
 using Magnus.Infrastructure.Persistence.Repositories;
 using Microsoft.Extensions.DependencyInjection;
+using AppConfigurationService = Magnus.Core.Services.AppConfigurationService;
 
 namespace Magnus.Ioc;
 
@@ -36,10 +37,11 @@ public static class ServiceRegistration
         services.AddScoped<IEstimateAppService, EstimateAppService>();
         services.AddScoped<ISaleAppService, SaleAppService>();
         services.AddScoped<IWarehouseAppService, WarehouseAppService>();
-        services.AddScoped<IAppConfigurationService, AppConfigurationService>();
+        services.AddScoped<IAppConfigurationAppService, AppConfigurationAppService>();
         services.AddScoped<ISaleReceiptAppService, SaleReceiptAppService>();
         services.AddScoped<IAuditProductAppService, AuditProductAppService>();
         services.AddScoped<IAccountReceivableAppService, AccountReceivableAppService>();
+        services.AddScoped<IStatisticsAppService, StatisticsAppService>();
         #endregion
 
         #region Services Core
@@ -58,6 +60,10 @@ public static class ServiceRegistration
         services.AddScoped<IBarService, BarService>();
         services.AddScoped<IAccountsReceivableService, AccountsReceivableService>();
         services.AddScoped<ICostCenterService, CostCenterService>();
+        services.AddScoped<IAppConfigurationService, AppConfigurationService>();
+        services.AddScoped<ISupplierService, SupplierService>();
+        services.AddScoped<ISellerService, SellerService>();
+        services.AddScoped<IEstimateService, EstimateService>();
         #endregion
         
         #region Repositories

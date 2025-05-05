@@ -3,7 +3,7 @@ using Magnus.Application.Dtos.Responses;
 
 namespace Magnus.Application.Services.Interfaces;
 
-public interface IAppConfigurationService
+public interface IAppConfigurationAppService
 {
     Task AddAppConfigurationAsync(CreateAppConfigurationRequest request, CancellationToken cancellationToken);
     Task UpdateAppConfigurationAsync(Guid id, UpdateAppConfigurationRequest request, CancellationToken cancellationToken);

@@ -4,6 +4,6 @@ public record CreateProductRequest(
     string Code,    
     string Name,
     decimal Price,
-    List<BarRequest>? Bars,
+    IEnumerable<BarRequest>? Bars,
     Guid LaboratoryId,
-    List<ProductPriceTableRequest>? ProductPriceTable);
+    IEnumerable<ProductPriceTableRequest>? ProductPriceTable);

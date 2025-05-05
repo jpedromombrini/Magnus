@@ -14,5 +14,5 @@ public record UpdateInvoiceRequest(  int Number,
     decimal Value,
     string Observation,
     InvoiceSituation InvoiceSituation,
-    List<InvoiceItemRequest> Items,
+    IEnumerable<InvoiceItemRequest> Items,
     Guid? DoctorId);

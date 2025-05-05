@@ -6,4 +6,4 @@ public record SaleReceiptResponse(
     Guid UserId,
     Guid SaleId,
     Guid ReceiptId,
-    List<SaleReceiptInstallmentResponse> Installments);
+    IEnumerable<SaleReceiptInstallmentResponse> Installments);

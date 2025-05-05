@@ -1,3 +1,5 @@
+using Magnus.Core.Exceptions;
+
 namespace Magnus.Core.Entities;
 
 public class Estimate : EntityBase
@@ -10,13 +12,19 @@ public class Estimate : EntityBase
     public string? ClientName { get; private set; }
     public decimal Value { get; private set; }
     public decimal Freight { get; private set; }
+    public decimal FinantialDiscount { get; private set; }
     public string Observation { get; set; }
     public Guid UserId { get; private set; }
-    public User User { get; set; }
-    public List<EstimateItem> Items { get; private set; }
+    public User User { get; private set; }
+    public ICollection<EstimateItem> Items { get; private set; }
+    public ICollection<EstimateReceipt>? Receipts { get; private set; }
 
-    private Estimate(){}
-    public Estimate(string description, DateTime validitAt, Guid? clientId, string? clientName, decimal value, decimal freight, Guid userId)
+    private Estimate()
+    {
+    }
+
+    public Estimate(string description, DateTime validitAt, Guid? clientId, string? clientName, decimal value,
+        decimal freight, decimal finantialDiscount, Guid userId)
     {
         SetCreatedAt(DateTime.Now);
         SetDescription(description);
@@ -25,14 +33,15 @@ public class Estimate : EntityBase
         SetClientName(clientName);
         SetValue(value);
         SetFreight(freight);
+        SetFinantialDiscount(finantialDiscount);
         SetUserId(userId);
-        Items = [];
     }
 
     public void SetDescription(string description)
     {
         Description = description;
     }
+
     public void SetValidity(DateTime validitAt)
     {
         ValiditAt = validitAt;
@@ -45,12 +54,12 @@ public class Estimate : EntityBase
 
     public void SetClientName(string? clientName)
     {
-        ClientName = clientName;   
+        ClientName = clientName;
     }
 
     public void SetValue(decimal value)
     {
-        if(value <= 0)
+        if (value <= 0)
             throw new ArgumentException("Valor deve ser maior que zero.");
         Value = value;
     }
@@ -59,6 +68,12 @@ public class Estimate : EntityBase
     {
         Freight = freight;
     }
+
+    public void SetFinantialDiscount(decimal finantialDiscount)
+    {
+        FinantialDiscount = finantialDiscount;
+    }
+
     public void SetObservation(string observation)
     {
         Observation = observation;
@@ -75,6 +90,21 @@ public class Estimate : EntityBase
         Items.Add(item);
     }
 
+    public void AddRangeItems(IEnumerable<EstimateItem> items)
+    {
+        Items ??= [];
+        foreach (var item in items)
+            Items.Add(item);
+    }
+
+    public void AddRangeReceipts(IEnumerable<EstimateReceipt> receipts)
+    {
+        Receipts ??= [];
+        foreach (var receipt in receipts)
+            Receipts.Add(receipt);
+    }
+
+
     public void ClearItems()
     {
         Items.Clear();
@@ -84,5 +114,10 @@ public class Estimate : EntityBase
     {
         CreatedAt = createdAt;
     }
-    
+
+    public void ValidateTotals()
+    {
+        if (FinantialDiscount > Value)
+            throw new BusinessRuleException("O desconto não pode ser maior que o valor do orçamento");
+    }
 }

@@ -45,13 +45,13 @@ public class ClientAppAppService(
             client.SetAddress(null);
         }
         await unitOfWork.Clients.AddAsync(client, cancellationToken);
-        if (request.Phones is { Count: > 0 })
+        if (request.Phones != null && request.Phones.Any())
         {
             foreach (var phone in request.Phones)
                 client.AddPhone(new ClientPhone(client.Id, new Phone(phone.Number), phone.Description));
         }
 
-        if (request.SocialMedias is { Count: > 0 })
+        if (request.SocialMedias != null && request.SocialMedias.Any())
         {
             foreach (var socialMedia in request.SocialMedias)
             {

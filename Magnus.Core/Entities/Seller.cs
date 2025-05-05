@@ -8,15 +8,14 @@ public class Seller : EntityBase
     public Document? Document { get; private set; }
     public Phone Phone { get; private set; }
     public Email Email { get; private set; }
-    public Guid UserId { get; private set; }
+    public Guid? UserId { get; private set; }
 
     private Seller(){}
-    public Seller(string name, Phone phone, Email email, Guid userId)
+    public Seller(string name, Phone phone, Email email)
     {
         SetName(name);
         SetPhone(phone);
         SetEmail(email);
-        SetUserId(userId);
     }
 
     public void SetName(string name)

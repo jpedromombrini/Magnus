@@ -17,7 +17,7 @@ public class EstimateMap : IEntityTypeConfiguration<Estimate>
         builder.Property(x => x.Observation)
             .IsRequired()
             .HasColumnType("varchar(300)")
-            .HasMaxLength(300);
+            .HasMaxLength(500);
         builder.Property(x => x.Code)
             .IsRequired()
             .HasColumnType("integer")
@@ -28,6 +28,9 @@ public class EstimateMap : IEntityTypeConfiguration<Estimate>
         builder.Property(x => x.Freight)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
+        builder.Property(x => x.FinantialDiscount)
+            .IsRequired()
+            .HasColumnType("decimal(10,2)");
         builder.Property(x => x.CreatedAt)
             .IsRequired()
             .HasColumnType("timestamp");
@@ -35,9 +38,13 @@ public class EstimateMap : IEntityTypeConfiguration<Estimate>
             .IsRequired()
             .HasColumnType("timestamp");
         builder.HasMany(x => x.Items)
-            .WithOne(x => x.Estimate)
+            .WithOne()
+            .HasForeignKey(x => x.EstimateId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.Receipts)
+            .WithOne()
             .HasForeignKey(x => x.EstimateId)
             .OnDelete(DeleteBehavior.Cascade);
-        
     }
 }

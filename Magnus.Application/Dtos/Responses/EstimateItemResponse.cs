@@ -1,6 +1,7 @@
 namespace Magnus.Application.Dtos.Responses;
 
 public record EstimateItemResponse(
+    Guid Id,
     Guid ProductId,
     string ProductName,
     int Amount,

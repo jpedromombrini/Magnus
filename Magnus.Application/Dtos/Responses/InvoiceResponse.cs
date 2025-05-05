@@ -15,4 +15,4 @@ public record InvoiceResponse( int Number,
     decimal Value,
     string Observation,
     InvoiceSituation InvoiceSituation,
-    List<InvoiceItemResponse> Items);
+    IEnumerable<InvoiceItemResponse> Items);

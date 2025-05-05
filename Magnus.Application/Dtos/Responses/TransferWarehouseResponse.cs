@@ -9,4 +9,4 @@ public record TransferWarehouseResponse(
     string WarehouseOriginName,
     int WarehouseDestinyId,
     string WarehouseDestinyName,
-    List<TransferWarehouseItemResponse> Items);
+    IEnumerable<TransferWarehouseItemResponse> Items);

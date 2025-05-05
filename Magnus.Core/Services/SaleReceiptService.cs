@@ -9,11 +9,6 @@ public class SaleReceiptService(
     IReceiptService receiptService,
     IUnitOfWork unitOfWork) : ISaleReceiptService
 {
-    public async Task DeleteSaleReceiptAsync(SaleReceipt id, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task AddRangeAsync(Sale sale, IEnumerable<SaleReceipt> saleReceipts, CancellationToken cancellationToken)
     {
         foreach (var saleReceipt in saleReceipts)
@@ -31,9 +26,8 @@ public class SaleReceiptService(
         await unitOfWork.SaleReceipts.AddRangeAsync(saleReceipts, cancellationToken);
     }
 
-    public async Task RevomeFromSaleAsync(Guid saleId, CancellationToken cancellationToken)
+    public void RevomeFromSaleAsync(IEnumerable<SaleReceipt> receipts, CancellationToken cancellationToken)
     {
-        var receipts = await unitOfWork.SaleReceipts.GetAllByExpressionAsync(x => x.SaleId == saleId, cancellationToken);
         unitOfWork.SaleReceipts.RemoveRange(receipts);
     }
 

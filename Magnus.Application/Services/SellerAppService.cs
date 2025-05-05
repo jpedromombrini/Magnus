@@ -1,66 +1,48 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
-using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
-using Magnus.Core.ValueObjects;
+using Magnus.Core.Services.Interfaces;
 
 namespace Magnus.Application.Services;
 
 public class SellerAppService(
     IUnitOfWork unitOfWork,
-    IMapper mapper) : ISellerAppService
+    ISellerService sellerService) : ISellerAppService
 {
     public async Task AddSellerAsync(CreateSellerRequest request, CancellationToken cancellationToken)
     {
-        var sellerDb = await unitOfWork.Sellers.GetByExpressionAsync(
-            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
-        if (sellerDb is not null)
-            throw new ApplicationException("Já existe um vendedor com esse nome");
-        var user = new User(new Email(request.Email), request.Password, request.Name, DateTime.Now,
-            DateTime.Now.AddYears(1), true, UserType.Seller);
-        var seller = mapper.Map<Seller>(request);
-        await unitOfWork.Users.AddAsync(user, cancellationToken);
-        seller.SetUserId(user.Id);
-        var warehouse = new Warehouse(request.Name, user);
-        await unitOfWork.Sellers.AddAsync(seller, cancellationToken);
-        await unitOfWork.Warehouses.AddAsync(warehouse, cancellationToken);
+        await sellerService.AddSellerAsync(request.MapToEntity(), request.Password, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateSellerAsync(Guid id, UpdateSellerRequest request, CancellationToken cancellationToken)
     {
-        var sellerDb = await unitOfWork.Sellers.GetByIdAsync(id, cancellationToken);
-        if (sellerDb is null)
-            throw new EntityNotFoundException(id);
-        sellerDb.SetName(request.Name);
-        sellerDb.SetEmail(new Email(request.Email));
-        if(!string.IsNullOrEmpty(request.Document))
-            sellerDb.SetDocument(new Document(request.Document));
-        sellerDb.SetPhone(new Phone(request.Phone));
-        unitOfWork.Sellers.Update(sellerDb);
+        await sellerService.UpdateSellerAsync(id, request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<SellerResponse>> GetSellersAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<SellerResponse>>(await unitOfWork.Sellers.GetAllAsync(cancellationToken));
+        return (await unitOfWork.Sellers.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<SellerResponse>> GetSellersByFilterAsync(Expression<Func<Seller, bool>> predicate,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<SellerResponse>>(
-            await unitOfWork.Sellers.GetAllByExpressionAsync(predicate, cancellationToken));
+        return (await unitOfWork.Sellers.GetAllByExpressionAsync(predicate, cancellationToken)).MapToResponse();
     }
 
     public async Task<SellerResponse> GetSellerByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return mapper.Map<SellerResponse>(await unitOfWork.Sellers.GetByIdAsync(id, cancellationToken));
+        var seller = await unitOfWork.Sellers.GetByIdAsync(id, cancellationToken);
+        if (seller is null)
+            throw new EntityNotFoundException(id);
+        return (seller).MapToResponse();
     }
 
     public async Task DeleteSellerAsync(Guid id, CancellationToken cancellationToken)
@@ -68,11 +50,16 @@ public class SellerAppService(
         var sellerDb = await unitOfWork.Sellers.GetByIdAsync(id, cancellationToken);
         if (sellerDb is null)
             throw new EntityNotFoundException(id);
-        var userDb = await unitOfWork.Users.GetByIdAsync(sellerDb.UserId, cancellationToken);
-        if (userDb is null)
-            throw new EntityNotFoundException("Nenhum usuário encontrado");
+        if (sellerDb.UserId is not null)
+        {
+            Guid userId = (Guid)sellerDb.UserId;
+            var userDb = await unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
+            if (userDb is null)
+                throw new EntityNotFoundException("Nenhum usuário encontrado");
+            unitOfWork.Users.Delete(userDb);
+        }
+
         unitOfWork.Sellers.Delete(sellerDb);
-        unitOfWork.Users.Delete(userDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

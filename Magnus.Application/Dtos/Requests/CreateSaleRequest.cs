@@ -8,7 +8,8 @@ public record CreateSaleRequest(
     Guid ClientId,
     Guid UserId,
     decimal Value,
+    decimal Freight,
     decimal FinantialDiscount,
     SaleStatus Status,
-    List<SaleItemRequest> Items,
-    List<CreateSaleReceiptRequest>? Receipts);
+    IEnumerable<SaleItemRequest> Items,
+    IEnumerable<CreateSaleReceiptRequest>? Receipts);

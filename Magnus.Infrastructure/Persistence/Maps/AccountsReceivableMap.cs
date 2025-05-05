@@ -35,7 +35,5 @@ public class AccountsReceiptMap : IEntityTypeConfiguration<AccountsReceivable>
         builder.Property(x => x.Observation)
             .HasMaxLength(1000)
             .HasColumnType("varchar(1000)");
-        
-            
     }
 }

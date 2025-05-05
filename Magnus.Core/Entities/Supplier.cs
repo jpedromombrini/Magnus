@@ -6,17 +6,14 @@ public class Supplier : EntityBase
 {
     public string Name { get; set; } 
     public Document Document { get; set; }  
-    public Email Email { get; set; }  
-    public Phone Phone { get; set; }
-    public Address Address { get; set; }
+    public Email? Email { get; set; }  
+    public Phone? Phone { get; set; }
+    public Address? Address { get; set; }
     private Supplier() { }
-    public Supplier(string name, Document document, Email email, Phone phone, Address address)
+    public Supplier(string name, Document document)
     {
         SetName(name);
         SetDocument(document);
-        SetEmail(email);
-        SetPhone(phone);
-        SetAddress(address);
     }
 
     public void SetName(string name)

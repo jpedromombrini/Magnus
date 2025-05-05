@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
@@ -12,8 +13,7 @@ using Magnus.Core.ValueObjects;
 namespace Magnus.Application.Services;
 
 public class UserAppService(
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : IUserAppService
+    IUnitOfWork unitOfWork) : IUserAppService
 {
     public async Task AddUserAsync(CreateUserRequest request, CancellationToken cancellationToken)
     {
@@ -23,7 +23,7 @@ public class UserAppService(
         userDb = await unitOfWork.Users.GetByExpressionAsync(x => x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);
         if (userDb is not null)
             throw new ApplicationException("Já existe um usuário com esse email");
-        await unitOfWork.Users.AddAsync(mapper.Map<User>(request), cancellationToken);
+        await unitOfWork.Users.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -47,14 +47,13 @@ public class UserAppService(
 
     public async Task<IEnumerable<UserResponse>> GetUsersAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<UserResponse>>(await unitOfWork.Users.GetAllAsync(cancellationToken));
+        return (await unitOfWork.Users.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<UserResponse>> GetUsersByFilterAsync(Expression<Func<User, bool>> predicate,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<UserResponse>>(
-            await unitOfWork.Users.GetAllByExpressionAsync(predicate, cancellationToken));
+        return (await unitOfWork.Users.GetAllByExpressionAsync(predicate, cancellationToken)).MapToResponse();
     }
 
     public async Task<UserResponse> GetUserByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -62,7 +61,7 @@ public class UserAppService(
         var user = await unitOfWork.Users.GetByIdAsync(id, cancellationToken);
         if (user is null)
             throw new EntityNotFoundException(id);
-        return mapper.Map<UserResponse>(user);
+        return user.MapToResponse();
     }
 
     public async Task DeleteUserAsync(Guid id, CancellationToken cancellationToken)

@@ -10,24 +10,25 @@ public class Sale : EntityBase
     public string ClientName { get; private set; } = "";
     public Guid UserId { get; private set; }
     public decimal Value { get; private set; }
+    public decimal Freight { get; private set; }
     public decimal FinantialDiscount { get; private set; }
     public SaleStatus Status { get; private set; }
-    public List<SaleItem> Items { get; private set; }
+    public ICollection<SaleItem> Items { get; private set; }
+    public ICollection<SaleReceipt>? Receipts { get; private set; }
+    public Guid? EstimateId { get; private set; }
 
     private Sale()
     {
     }
 
-    public Sale(Guid clientId, string clientName, Guid userId, decimal value, decimal finantialDiscount,
-        SaleStatus status)
+    public Sale(Guid clientId, Guid userId, decimal value, decimal freight, decimal finantialDiscount)
     {
         SetCreateAt(DateTime.Now);
         SetClientId(clientId);
-        SetClientName(clientName);
         SetUserId(userId);
         SetValue(value);
+        SetFreight(freight);
         SetFinantialDiscount(finantialDiscount);
-        SetStatus(status);
     }
 
     public void SetCreateAt(DateTime createAt)
@@ -62,10 +63,22 @@ public class Sale : EntityBase
         Value = value;
     }
 
+    public void SetFreight(decimal freight)
+    {
+        Freight = freight;
+    }
+
     public void AddItem(SaleItem item)
     {
         Items ??= [];
         Items.Add(item);
+    }
+
+    public void AddItems(IEnumerable<SaleItem> items)
+    {
+        Items ??= [];
+        foreach (var item in items)
+            Items.Add(item);
     }
 
     public void RemoveItem(SaleItem item)
@@ -87,11 +100,23 @@ public class Sale : EntityBase
     public decimal GetRealValue()
     {
         if (Value == 0m) return Value;
-        return Value - FinantialDiscount;
+        return Value + Freight - FinantialDiscount;
     }
 
     public decimal GetTotalItemValue()
     {
         return Items.Sum(x => x.TotalPrice - x.Discount);
+    }
+
+    public void SetEstimateId(Guid estimateId)
+    {
+        EstimateId = estimateId;
+    }
+
+    public void AddRangeReceipts(IEnumerable<SaleReceipt> saleReceipts)
+    {
+        Receipts ??= [];
+        foreach (var saleReceipt in saleReceipts)
+            Receipts.Add(saleReceipt);
     }
 }
