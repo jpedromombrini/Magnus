@@ -50,16 +50,41 @@ public class EstimateService(
         var estimateDb = await unitOfWork.Estimates.GetByIdAsync(id, cancellationToken);
         if (estimateDb == null)
             throw new EntityNotFoundException("orçamento não encontrado com o Id informado");
+        var saleExists = await unitOfWork.Sales.GetByExpressionAsync(x => x.EstimateId == estimateDb.Id, cancellationToken);
+        if(saleExists is not null)
+            throw new EntityNotFoundException($"Já existe um pedido criado com esse orçamento, pedido: {saleExists.Document}");
         if (estimateDb.ClientId is null || estimateDb.ClientId == Guid.Empty)
             throw new EntityNotFoundException("Informe um cliente para o orçamento");
         var client = await clientService.GetByIdAsync((Guid)estimateDb.ClientId, cancellationToken);
         if (client is null)
             throw new EntityNotFoundException("cliente não encontrado com esse Id");
+        var saleItems = estimateDb.Items.Select(item =>
+                new SaleItem(item.ProductId, item.ProductName, item.Amount, item.Value, item.TotalValue, item.Discount))
+            .ToList();
+        var saleReceipts = new List<SaleReceipt>();
+        if (estimateDb.Receipts is not null)
+        {
+            foreach (var saleReceipt in estimateDb.Receipts)
+            {
+                var receipt = new SaleReceipt(client.Id, saleReceipt.UserId, saleReceipt.ReceiptId);
+                foreach (var installment in saleReceipt.Installments)
+                {
+                    receipt.AddInstallment(new SaleReceiptInstallment(installment.DueDate,
+                        installment.PaymentDate, installment.PaymentValue, installment.Value, installment.Discount,
+                        installment.Interest, installment.Installment, null));
+                }
+                saleReceipts.Add(receipt);
+            }
+        }
+
         var sale = new Sale(client.Id, estimateDb.UserId, estimateDb.Value, estimateDb.Freight,
             estimateDb.FinantialDiscount);
+        sale.AddRangeReceipts(saleReceipts);
+        sale.AddItems(saleItems);
         sale.SetClientName(client.Name);
         sale.SetStatus(SaleStatus.Open);
         sale.SetEstimateId(estimateDb.Id);
+        await unitOfWork.Sales.AddAsync(sale, cancellationToken);
     }
 
     private void UpdateReceipts(Estimate estimate, IEnumerable<EstimateReceipt> receipts)

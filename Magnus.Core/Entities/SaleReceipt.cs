@@ -10,11 +10,10 @@ public class SaleReceipt : EntityBase
     public ICollection<SaleReceiptInstallment> Installments { get; private set; }
 
     private SaleReceipt() {}
-    public SaleReceipt(Guid clienteId, Guid userId, Guid saleId, Guid receiptId)
+    public SaleReceipt(Guid clienteId, Guid userId, Guid receiptId)
     {
         SetClientId(clienteId);
         SetUserId(userId);
-        SetSaleId(saleId);
         SetReceiptId(receiptId);
     }
 

@@ -26,6 +26,12 @@ public class EstimateAppService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task CreateSaleAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await estimateService.CreateSaleAsync(id, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task UpdateEstimateAsync(Guid id, UpdateEstimateRequest request, CancellationToken cancellationToken)
     {
         var estimate = request.MapToEntity();

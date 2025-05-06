@@ -56,6 +56,12 @@ public class EstimateController(
     {
         await estimateAppService.AddEstimateAsync(request, cancellationToken);
     }
+    
+    [HttpPost("createsale/{id:guid}")]
+    public async Task CreateSaleAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await estimateAppService.CreateSaleAsync(id, cancellationToken);
+    }
 
     [HttpPut("{id:guid}")]
     public async Task UpdateEstimateAsync(Guid id, [FromBody] UpdateEstimateRequest request,

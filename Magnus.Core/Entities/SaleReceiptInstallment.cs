@@ -17,11 +17,10 @@ public class SaleReceiptInstallment : EntityBase
     {
     }
 
-    public SaleReceiptInstallment(Guid saleReceiptId, DateOnly dueDate, DateTime? paymentDate, decimal paymentValue,
+    public SaleReceiptInstallment(DateOnly dueDate, DateTime? paymentDate, decimal paymentValue,
         decimal value,
         decimal discount, decimal interest, int installment, string? proofImageBase64)
     {
-        SetSaleReceiptId(saleReceiptId);
         SetDueDate(dueDate);
         SetPaymentDate(paymentDate);
         SetPaymentValue(paymentValue);

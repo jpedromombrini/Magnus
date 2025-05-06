@@ -10,14 +10,16 @@ public static class SaleReceiptMapper
 
     public static SaleReceipt MapToEntity(this CreateSaleReceiptRequest request)
     {
-        var saleReceipt = new SaleReceipt(request.ClienteId, request.UserId, request.SaleId,
-            request.ReceiptId);
+        var saleReceipt = new SaleReceipt(request.ClienteId, request.UserId, request.ReceiptId);
         foreach (var installment in request.Installments)
         {
-            saleReceipt.AddInstallment(new SaleReceiptInstallment(saleReceipt.Id,
-                installment.DueDate, installment.PaymentDate, installment.PaymentValue, installment.Value, installment.Discount,
+            var installmentToadd = new SaleReceiptInstallment(installment.DueDate, installment.PaymentDate,
+                installment.PaymentValue, installment.Value,
+                installment.Discount,
                 installment.Interest,
-                installment.Installment, installment.ProofImage));
+                installment.Installment, installment.ProofImage);
+            installmentToadd.SetSaleReceiptId(saleReceipt.Id);
+            saleReceipt.AddInstallment(installmentToadd);
         }
 
         return saleReceipt;
@@ -25,14 +27,15 @@ public static class SaleReceiptMapper
 
     public static SaleReceipt MapToEntity(this UpdateSaleReceiptRequest request)
     {
-        var saleReceipt = new SaleReceipt(request.ClientId, request.UserId, request.SaleId,
-            request.ReceiptId);
+        var saleReceipt = new SaleReceipt(request.ClientId, request.UserId, request.ReceiptId);
         foreach (var installment in request.Installments)
         {
-            saleReceipt.AddInstallment(new SaleReceiptInstallment(saleReceipt.Id,
-                installment.DueDate, installment.PaymentDate,installment.PaymentValue, installment.Value, installment.Discount,
+            var installmentToAdd = new SaleReceiptInstallment(installment.DueDate, installment.PaymentDate, installment.PaymentValue, installment.Value,
+                installment.Discount,
                 installment.Interest,
-                installment.Installment, installment.ProofImage));
+                installment.Installment, installment.ProofImage);
+            installmentToAdd.SetSaleReceiptId(saleReceipt.Id); 
+            saleReceipt.AddInstallment(installmentToAdd);
         }
 
         return saleReceipt;
@@ -42,6 +45,7 @@ public static class SaleReceiptMapper
     {
         return requests.Select(MapToEntity).ToList();
     }
+
     public static IEnumerable<SaleReceipt> MapToEntity(this IEnumerable<UpdateSaleReceiptRequest> requests)
     {
         return requests.Select(MapToEntity).ToList();

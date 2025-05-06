@@ -39,6 +39,7 @@ public static class EstimateMapper
     public static EstimateReceipt MapToEntity(this EstimateReceiptRequest request)
     {
         var estimateReceipt = new EstimateReceipt(request.UserId, request.ReceiptId);
+        estimateReceipt.SetClientId(request.ClienteId);
         estimateReceipt.AddInstallments(request.Installments.MapToEntity());
         return estimateReceipt;
     }

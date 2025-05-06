@@ -868,7 +868,13 @@ namespace Magnus.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Document"));
 
+                    b.Property<Guid?>("EstimateId")
+                        .HasColumnType("uuid");
+
                     b.Property<decimal>("FinantialDiscount")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Freight")
                         .HasColumnType("numeric");
 
                     b.Property<int>("Status")
@@ -942,6 +948,8 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ReceiptId");
+
+                    b.HasIndex("SaleId");
 
                     b.ToTable("SaleReceipt", (string)null);
                 });
@@ -1360,7 +1368,7 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasOne("Magnus.Core.Entities.Receipt", "Receipt")
                         .WithMany()
                         .HasForeignKey("ReceiptId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Receipt");
@@ -1441,6 +1449,12 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasOne("Magnus.Core.Entities.Receipt", "Receipt")
                         .WithMany()
                         .HasForeignKey("ReceiptId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Magnus.Core.Entities.Sale", null)
+                        .WithMany("Receipts")
+                        .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1734,6 +1748,8 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.Sale", b =>
                 {
                     b.Navigation("Items");
+
+                    b.Navigation("Receipts");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.SaleReceipt", b =>

@@ -8,6 +8,7 @@ namespace Magnus.Application.Services.Interfaces;
 public interface IEstimateAppService
 {
     Task AddEstimateAsync(CreateEstimateRequest request, CancellationToken cancellationToken);
+    Task CreateSaleAsync(Guid id, CancellationToken cancellationToken);
     Task UpdateEstimateAsync(Guid id, UpdateEstimateRequest request, CancellationToken cancellationToken);
     Task<IEnumerable<EstimateResponse>> GetEstimatesAsync(CancellationToken cancellationToken);
     Task<IEnumerable<EstimateResponse>> GetEstimatesByFilterAsync(Expression<Func<Estimate, bool>> predicate, CancellationToken cancellationToken);

@@ -10,8 +10,12 @@ public class SaleReceiptMap : IEntityTypeConfiguration<SaleReceipt>
     {
         builder.ToTable("SaleReceipt");
         builder.HasKey(x => x.Id);
+        builder.HasOne(x => x.Receipt)
+            .WithMany() 
+            .HasForeignKey(x => x.ReceiptId)
+            .OnDelete(DeleteBehavior.Restrict); 
         builder.HasMany(s => s.Installments)
-            .WithOne(si => si.SaleReceipt)
+            .WithOne(i => i.SaleReceipt)
             .HasForeignKey(si => si.SaleReceiptId)
             .OnDelete(DeleteBehavior.Cascade);
     }

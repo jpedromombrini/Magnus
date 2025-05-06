@@ -30,7 +30,7 @@ public class SaleMap : IEntityTypeConfiguration<Sale>
             .OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(x =>x.Receipts)
             .WithOne()
-            .HasForeignKey(x => x.ReceiptId)
+            .HasForeignKey(x => x.SaleId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

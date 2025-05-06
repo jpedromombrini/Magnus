@@ -10,6 +10,13 @@ public class EstimateReceiptMap : IEntityTypeConfiguration<EstimateReceipt>
     {
         builder.ToTable("EstimateReceipt");
         builder.HasKey(x => x.Id);
-        builder.HasMany(s => s.Installments);
+        builder.HasOne(x => x.Receipt)
+            .WithMany()
+            .HasForeignKey(x => x.ReceiptId)
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(s => s.Installments)
+            .WithOne()
+            .HasForeignKey(si => si.EstimateReceiptId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
