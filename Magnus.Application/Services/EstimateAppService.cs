@@ -1,6 +1,5 @@
 using System.Globalization;
 using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
@@ -72,6 +71,25 @@ public class EstimateAppService(
         var estimateDb = await unitOfWork.Estimates.GetByIdAsync(id, cancellationToken);
         if (estimateDb == null)
             throw new EntityNotFoundException(id);
+        if (estimateDb.Receipts is not null)
+        {
+            foreach (var receipt in estimateDb.Receipts)
+            {
+                var receiptDb = await unitOfWork.Receipts.GetByIdAsync(receipt.ReceiptId, cancellationToken);
+                if (receiptDb is not null)
+                    receipt.SetReceipt(receiptDb);
+            }
+        }
+
+        var freightName = "Frete";
+        if (estimateDb.FreightId is not null)
+        {
+            var freightDb = await unitOfWork.Freights.GetByIdAsync((Guid)estimateDb.FreightId, cancellationToken);
+            if (freightDb is not null)
+                freightName = freightDb.Name;
+        }
+
+
         return Document.Create(container =>
         {
             container.Page(page =>
@@ -88,6 +106,9 @@ public class EstimateAppService(
                         .FontSize(16).Bold().AlignCenter();
                     header.Item().LineHorizontal(1).LineColor(Colors.Grey.Medium);
                 });
+
+                static IContainer CellStyle(IContainer container) =>
+                    container.PaddingVertical(5).PaddingHorizontal(2);
 
                 // Conteúdo
                 page.Content().Column(column =>
@@ -120,10 +141,10 @@ public class EstimateAppService(
                     {
                         table.ColumnsDefinition(columns =>
                         {
-                            columns.RelativeColumn(3); // Produto
-                            columns.RelativeColumn(2); // Quantidade
-                            columns.RelativeColumn(2); // Valor Unitário
-                            columns.RelativeColumn(2); // Valor Total
+                            columns.RelativeColumn(3);
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(2);
                         });
 
                         table.Header(header =>
@@ -143,9 +164,6 @@ public class EstimateAppService(
                             table.Cell().Element(CellStyle).AlignRight()
                                 .Text(item.TotalValue.ToString("c", new CultureInfo("pt-br")));
                         }
-
-                        static IContainer CellStyle(IContainer container) =>
-                            container.PaddingVertical(5).PaddingHorizontal(2);
                     });
 
                     column.Item().LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
@@ -169,18 +187,17 @@ public class EstimateAppService(
                                     row.ConstantItem(150).Text(label).Bold();
                                     row.RelativeItem().AlignRight().Text(value).Bold();
                                 });
-                                return container; // Retorna o container modificado
+                                return container;
                             };
 
-                        // Usar o helper para cada linha de total
                         totals.Item().Element(LabelAndValue("Total dos itens:",
                             totalItems.ToString("c", new CultureInfo("pt-br"))));
                         totals.Item().Element(LabelAndValue("Desconto:",
                             $"-{discount.ToString("c", new CultureInfo("pt-br"))}"));
                         totals.Item()
-                            .Element(LabelAndValue("Frete:", shipping.ToString("c", new CultureInfo("pt-br"))));
+                            .Element(
+                                LabelAndValue($"{freightName} :", shipping.ToString("c", new CultureInfo("pt-br"))));
 
-                        // Caixa destacada para total final
                         totals.Item().PaddingTop(10).Border(1).BorderColor(Colors.Grey.Medium)
                             .Background(Colors.Grey.Lighten3).Padding(10)
                             .Row(row =>
@@ -190,6 +207,78 @@ public class EstimateAppService(
                                     .Bold().FontSize(13);
                             });
                     });
+                    if (estimateDb.Receipts?.Any() == true)
+                    {
+                        column.Item().PaddingTop(15).Text("Formas de pagamento").Bold().FontSize(14);
+
+                        foreach (var receipt in estimateDb.Receipts)
+                        {
+                            if (receipt.Installments?.Any() != true)
+                                continue;
+
+                            column.Item().PaddingTop(5)
+                                .Text($"Pagamento - {receipt.Receipt?.Name ?? "Recebimento"}").Italic()
+                                .FontColor(Colors.Grey.Darken2);
+
+                            column.Item().Table(table =>
+                            {
+                                table.ColumnsDefinition(columns =>
+                                {
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                    columns.RelativeColumn(2);
+                                });
+
+                                table.Header(header =>
+                                {
+                                    header.Cell().Element(CellStyle).Text("Parcela").Bold();
+                                    header.Cell().Element(CellStyle).AlignRight().Text("Vencimento").Bold();
+                                    header.Cell().Element(CellStyle).AlignRight().Text("Valor").Bold();
+                                    header.Cell().Element(CellStyle).AlignRight().Text("Desconto").Bold();
+                                    header.Cell().Element(CellStyle).AlignRight().Text("Juros").Bold();
+                                    header.Cell().Element(CellStyle).AlignRight().Text("Valor Final").Bold();
+                                });
+
+                                foreach (var installment in receipt.Installments.OrderBy(i => i.Installment))
+                                {
+                                    var finalValue = installment.Value - installment.Discount + installment.Interest;
+
+                                    table.Cell().Element(CellStyle).Text($"Parcela {installment.Installment}");
+                                    table.Cell().Element(CellStyle).AlignRight()
+                                        .Text(installment.DueDate.ToString("dd/MM/yyyy"));
+                                    table.Cell().Element(CellStyle).AlignRight()
+                                        .Text(installment.Value.ToString("c", new CultureInfo("pt-br")));
+                                    table.Cell().Element(CellStyle).AlignRight()
+                                        .Text($"-{installment.Discount.ToString("c", new CultureInfo("pt-br"))}");
+                                    table.Cell().Element(CellStyle).AlignRight()
+                                        .Text(installment.Interest.ToString("c", new CultureInfo("pt-br")));
+                                    table.Cell().Element(CellStyle).AlignRight()
+                                        .Text(finalValue.ToString("c", new CultureInfo("pt-br")));
+                                }
+                            });
+
+                            // Total das parcelas desse Receipt
+                            var totalReceipt = receipt.Installments.Sum(i => i.Value - i.Discount + i.Interest);
+                            column.Item().AlignRight().PaddingBottom(10)
+                                .Text($"Total deste pagamento: {totalReceipt.ToString("c", new CultureInfo("pt-br"))}")
+                                .Bold().FontColor(Colors.Black);
+                        }
+
+                        // Total geral de todos os pagamentos
+                        var totalAllReceipts = estimateDb.Receipts
+                            .SelectMany(r => r.Installments)
+                            .Sum(i => i.Value - i.Discount + i.Interest);
+
+                        column.Item().PaddingTop(10).AlignRight().BorderTop(1).BorderColor(Colors.Grey.Medium)
+                            .PaddingTop(5)
+                            .Text(
+                                $"Total geral dos pagamentos: {totalAllReceipts.ToString("c", new CultureInfo("pt-br"))}")
+                            .Bold().FontSize(13);
+                    }
+
                     // Observação
                     if (!string.IsNullOrWhiteSpace(estimateDb.Observation))
                     {
@@ -206,14 +295,8 @@ public class EstimateAppService(
                 {
                     footer.Item().Text(text =>
                     {
-                        text.Span("*Os valores podem sofrer alterações dependendo da forma de pagamento")
-                            .SemiBold();
-                    });
-
-                    footer.Item().Text(text =>
-                    {
-                        text.Span("Gerado em: ").SemiBold();
-                        text.Span($"{DateTime.Now:dd/MM/yyyy HH:mm}");
+                        text.Span("Gerado em: ").SemiBold().FontSize(8);
+                        text.Span($"{DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(8);
                     });
                 });
             });

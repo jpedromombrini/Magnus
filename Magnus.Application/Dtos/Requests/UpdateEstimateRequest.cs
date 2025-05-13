@@ -9,6 +9,7 @@ public record UpdateEstimateRequest(
     Guid? ClientId,
     string? ClientName,
     decimal Value,
+    Guid? FreightId,
     decimal Freight,
     decimal FinantialDiscount,
     string Observation,

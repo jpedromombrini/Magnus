@@ -10,8 +10,10 @@ public record SaleResponse(
     string ClientName,
     Guid UserId,
     decimal Value,
+    Guid? FreightId,
     decimal Freight,
     decimal FinantialDiscount,
+    string ReasonCancel,
     SaleStatus Status,
     IEnumerable<SaleItemResponse> Items,
     IEnumerable<SaleReceiptResponse>? Receipts);

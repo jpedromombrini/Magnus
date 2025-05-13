@@ -14,6 +14,8 @@ public class SaleRepository(MagnusContext context) : Repository<Sale>(context), 
     {
         return await _context.Sales
             .Include(x => x.Items)
+            .Include(x => x.Receipts)
+            .ThenInclude(x => x.Installments)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
@@ -22,6 +24,8 @@ public class SaleRepository(MagnusContext context) : Repository<Sale>(context), 
         return await _context.Sales.AsNoTracking()
             .Where(predicate)
             .Include(x => x.Items)
+            .Include(x => x.Receipts)
+            .ThenInclude(x => x.Installments)
             .ToListAsync(cancellationToken);
     }
 
@@ -30,6 +34,8 @@ public class SaleRepository(MagnusContext context) : Repository<Sale>(context), 
         return await _context.Sales
             .Where(predicate)
             .Include(x => x.Items)
+            .Include(x => x.Receipts)
+            .ThenInclude(x => x.Installments)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -38,6 +44,8 @@ public class SaleRepository(MagnusContext context) : Repository<Sale>(context), 
         return await _context.Sales
             .AsNoTracking()
             .Include(x => x.Items)
+            .Include(x => x.Receipts)
+            .ThenInclude(x => x.Installments)
             .ToListAsync(cancellationToken);
     }
     public void DeleteItensRange(IEnumerable<SaleItem> items)

@@ -448,6 +448,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<decimal>("Freight")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<Guid?>("FreightId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Observation")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -567,6 +570,21 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasIndex("EstimateReceiptId");
 
                     b.ToTable("EstimateReceiptInstallment", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Freight", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Freights");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>
@@ -876,6 +894,13 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<decimal>("Freight")
                         .HasColumnType("numeric");
+
+                    b.Property<Guid>("FreightId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ReasonCancel")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

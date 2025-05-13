@@ -1,8 +1,7 @@
 using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
-using Magnus.Application.Services;
-using Magnus.Core.Enumerators;
+using Magnus.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -56,5 +55,10 @@ public class SaleController(
     public async Task DeleteSaleAsync(Guid id, CancellationToken cancellationToken)
     {
         await saleAppService.DeleteSaleAsync(id, cancellationToken);
+    }
+    [HttpPost("{id:guid}/cancel")]
+    public async Task CancelSaleAsync(Guid id, [FromBody] SaleCancelReasonRequest request, CancellationToken cancellationToken)
+    {
+        await saleAppService.CancelSaleAsync(id, request, cancellationToken);
     }
 }

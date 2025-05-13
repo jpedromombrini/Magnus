@@ -24,6 +24,10 @@ public class SaleMap : IEntityTypeConfiguration<Sale>
         builder.Property(s => s.Value)
             .HasColumnType("decimal(10,2)")
             .IsRequired();
+        builder.Property(x => x.ReasonCancel)
+            .IsRequired(false)
+            .HasColumnType("varchar(100)")
+            .HasMaxLength(100);
         builder.HasMany(s => s.Items)
             .WithOne(si => si.Sale)
             .HasForeignKey(si => si.SaleId)

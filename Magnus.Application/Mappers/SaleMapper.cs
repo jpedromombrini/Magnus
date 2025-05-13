@@ -14,6 +14,8 @@ public static class SaleMapper
             request.FinantialDiscount);
         if (request.Receipts is not null)
             sale.AddRangeReceipts(request.Receipts.MapToEntity());
+        if (request.FreightId is not null)
+            sale.SetFreightId((Guid)request.FreightId);
         sale.AddItems(request.Items.MapToEntity());
         return sale;
     }
@@ -24,6 +26,8 @@ public static class SaleMapper
             request.FinantialDiscount);
         if (request.Receipts is not null)
             sale.AddRangeReceipts(request.Receipts.MapToEntity());
+        if (request.FreightId is not null)
+            sale.SetFreightId((Guid)request.FreightId);
         sale.AddItems(request.Items.MapToEntity());
         return sale;
     }
@@ -47,7 +51,9 @@ public static class SaleMapper
     {
         return new SaleResponse(entity.Id, entity.CreateAt, entity.Document, entity.ClientId, entity.ClientName,
             entity.UserId,
-            entity.Value, entity.Freight, entity.FinantialDiscount, entity.Status, entity.Items.MapToResponse(),
+            entity.Value, entity.FreightId, entity.Freight, entity.FinantialDiscount, entity.ReasonCancel,
+            entity.Status,
+            entity.Items.MapToResponse(),
             entity.Receipts is null ? null : entity.Receipts.MapToResponse());
     }
 
@@ -58,6 +64,11 @@ public static class SaleMapper
     }
 
     public static IEnumerable<SaleItemResponse> MapToResponse(this IEnumerable<SaleItem> entities)
+    {
+        return entities.Select(MapToResponse);
+    }
+
+    public static IEnumerable<SaleResponse> MapToResponse(this IEnumerable<Sale> entities)
     {
         return entities.Select(MapToResponse);
     }

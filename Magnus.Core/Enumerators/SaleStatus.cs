@@ -6,5 +6,6 @@ public enum SaleStatus
     Open,
     Invoiced,
     FinantialPending,
-    Finished
+    Finished,
+    Canceled
 }

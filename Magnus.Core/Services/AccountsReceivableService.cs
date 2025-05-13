@@ -40,6 +40,18 @@ public class AccountsReceivableService(
             accountsExists.SetObservation(accountsReceivable.Observation);
         unitOfWork.AccountsReceivables.Update(accountsExists);
     }
+
+    public async Task<AccountsReceivable?> GetBySaleReceiptInstallmentIdAsync(Guid saleReceiptInstallmentId, CancellationToken cancellationToken)
+    {
+        return await unitOfWork.AccountsReceivables.GetByExpressionAsync(
+                x => x.SaleReceiptInstallmentId == saleReceiptInstallmentId, cancellationToken);
+    }
+
+    public void RemoveRangeAsync(IEnumerable<AccountsReceivable> accountsReceivables)
+    {
+        unitOfWork.AccountsReceivables.DeleteAccountsReceivableRange(accountsReceivables);
+    }
+
     private async Task Validate(AccountsReceivable accountsReceivable, CancellationToken cancellationToken)
     {
         var client = await clientService.GetByIdAsync(accountsReceivable.ClientId, cancellationToken);
@@ -67,4 +79,5 @@ public class AccountsReceivableService(
                 throw new BusinessRuleException("Nenhuma parcela de recebimento encontrado com esse id");
         }
     }
+    
 }

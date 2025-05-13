@@ -58,11 +58,12 @@ public class SaleService(
         await unitOfWork.Sales.AddItemsRangeAsync(items, cancellationToken);
     }
 
-    private async Task UpdateReceipts(Sale sale, IEnumerable<SaleReceipt>? saleReceipts, CancellationToken cancellationToken)
+    private async Task UpdateReceipts(Sale sale, IEnumerable<SaleReceipt>? saleReceipts,
+        CancellationToken cancellationToken)
     {
-        if(sale.Receipts is not null)
+        if (sale.Receipts is not null)
             unitOfWork.Sales.DeleteReceiptsRange(sale.Receipts);
-        if(saleReceipts is not null)
+        if (saleReceipts is not null)
             await unitOfWork.Sales.AddReceiptsRangeAsync(saleReceipts, cancellationToken);
     }
 
@@ -74,7 +75,7 @@ public class SaleService(
         if (sale.GetTotalItemValue() != sale.Value)
             throw new BusinessRuleException("Total do itens diferente do total do pedido");
         var receipts = await saleReceiptService.GetSaleReceiptsAsync(sale.Id, cancellationToken);
-        if (!receipts.Any())
+        if (receipts is null)
             throw new BusinessRuleException("Pedido sem financeiro");
         ValidateFinantial(sale);
 
@@ -96,38 +97,35 @@ public class SaleService(
         return await unitOfWork.Sales.GetByExpressionAsync(x => x.Document == documentId, cancellationToken);
     }
 
-    public async Task CancelSale(Sale sale, CancellationToken cancellationToken)
+    public async Task CancelSale(Sale sale, string reason, CancellationToken cancellationToken)
     {
-        if (sale.Status == SaleStatus.Invoiced)
-        {
-            await CancelInvoicedSale(sale, cancellationToken);
-        }
-        else
-        {
-            await CancelNotInvoicedSale(sale, cancellationToken);
-        }
+        await RemoveInstallments(sale, cancellationToken);
+        await auditProductService.CancelSaleMovimentAsync(sale, cancellationToken);
+        sale.SetReasonCancel(reason);
+        sale.SetStatus(SaleStatus.Canceled);
     }
 
-    private async Task CancelNotInvoicedSale(Sale sale, CancellationToken cancellationToken)
+    private async Task RemoveInstallments(Sale sale, CancellationToken cancellationToken)
     {
-        await RemoveReceipts(sale, cancellationToken);
-        unitOfWork.Sales.Delete(sale);
-    }
-
-    private async Task CancelInvoicedSale(Sale sale, CancellationToken cancellationToken)
-    {
-        await RemoveReceipts(sale, cancellationToken);
-    }
-
-    private async Task RemoveReceipts(Sale sale, CancellationToken cancellationToken)
-    {
-        var receipts = (await saleReceiptService.GetSaleReceiptsAsync(sale.Id, cancellationToken)).ToList();
-        if (receipts.Count > 0)
+        var accountsToRemove = new List<AccountsReceivable>();
+        if (sale.Receipts is not null)
         {
-            unitOfWork.SaleReceipts.RemoveRange(receipts);
+            foreach (var installment in sale.Receipts.SelectMany(x => x.Installments))
+            {
+                var acconutsReceivable =
+                    await accountsReceivableService.GetBySaleReceiptInstallmentIdAsync(installment.Id,
+                        cancellationToken);
+                if (acconutsReceivable is not null)
+                {
+                    accountsToRemove.Add(acconutsReceivable);
+                    if (acconutsReceivable.Status == AccountsReceivableStatus.Paid)
+                        throw new BusinessRuleException("Existe um título baixado referente a essa venda");
+                }
+            }
+
+            accountsReceivableService.RemoveRangeAsync(accountsToRemove);
         }
     }
-
     private async Task ValidateStockAsync(SaleItem item, int warehouseId, CancellationToken cancellationToken)
     {
         var stock = await productStockService.GetProductStockAsync(item.ProductId, warehouseId, cancellationToken);

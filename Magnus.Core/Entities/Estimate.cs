@@ -11,6 +11,7 @@ public class Estimate : EntityBase
     public Guid? ClientId { get; private set; }
     public string? ClientName { get; private set; }
     public decimal Value { get; private set; }
+    public Guid? FreightId { get; private set; }
     public decimal Freight { get; private set; }
     public decimal FinantialDiscount { get; private set; }
     public string Observation { get; set; }
@@ -104,6 +105,10 @@ public class Estimate : EntityBase
             Receipts.Add(receipt);
     }
 
+    public void SetFreightId(Guid freightId)
+    {
+        FreightId = freightId;
+    }
 
     public void ClearItems()
     {

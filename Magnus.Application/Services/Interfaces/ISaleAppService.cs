@@ -2,7 +2,7 @@ using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 
-namespace Magnus.Application.Services;
+namespace Magnus.Application.Services.Interfaces;
 
 public interface ISaleAppService
 {
@@ -13,4 +13,5 @@ public interface ISaleAppService
     Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(GetSaleFilter filter, CancellationToken cancellationToken);
     Task<SaleResponse> GetSaleByIdAsync(Guid id, CancellationToken cancellationToken);
     Task DeleteSaleAsync(Guid id, CancellationToken cancellationToken);
+    Task CancelSaleAsync(Guid id, SaleCancelReasonRequest reason, CancellationToken cancellationToken);
 }

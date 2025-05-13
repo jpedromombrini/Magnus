@@ -1,10 +1,8 @@
-using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
-using Magnus.Core.Entities;
+using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
@@ -15,12 +13,11 @@ namespace Magnus.Application.Services;
 public class SaleAppService(
     IUnitOfWork unitOfWork,
     ISaleService saleService,
-    ISaleReceiptService saleReceiptService,
-    IMapper mapper) : ISaleAppService
+    ISaleReceiptService saleReceiptService) : ISaleAppService
 {
     public async Task AddSaleAsync(CreateSaleRequest request, CancellationToken cancellationToken)
     {
-        var sale = mapper.Map<Sale>(request);
+        var sale = request.MapToEntity();
         await saleService.CreateAsync(sale, cancellationToken);
         await unitOfWork.Sales.AddAsync(sale, cancellationToken);
         if (request.Receipts is not null)
@@ -51,7 +48,7 @@ public class SaleAppService(
 
     public async Task<IEnumerable<SaleResponse>> GetSalesAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<SaleResponse>>(await unitOfWork.Sales.GetAllAsync(cancellationToken));
+        return (await unitOfWork.Sales.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(GetSaleFilter filter,
@@ -59,28 +56,31 @@ public class SaleAppService(
     {
         if (filter.Status == SaleStatus.All)
         {
-            return mapper.Map<IEnumerable<SaleResponse>>(await unitOfWork.Sales.GetAllByExpressionAsync(x =>
+            return (await unitOfWork.Sales.GetAllByExpressionAsync(x =>
                     x.CreateAt.Date >= filter.InitialDate.Date &&
                     x.CreateAt.Date <= filter.FinalDate.Date &&
                     (filter.ClientId == Guid.Empty || x.ClientId == filter.ClientId) &&
                     (filter.UserId == Guid.Empty || x.UserId == filter.UserId) &&
                     (filter.Document == 0 || x.Document == filter.Document),
-                cancellationToken));
+                cancellationToken)).MapToResponse();
         }
 
-        return mapper.Map<IEnumerable<SaleResponse>>(await unitOfWork.Sales.GetAllByExpressionAsync(x =>
+        return (await unitOfWork.Sales.GetAllByExpressionAsync(x =>
                 x.CreateAt.Date >= filter.InitialDate.Date &&
                 x.CreateAt.Date <= filter.FinalDate.Date &&
                 (filter.ClientId == Guid.Empty || x.ClientId == filter.ClientId) &&
                 (filter.UserId == Guid.Empty || x.UserId == filter.UserId) &&
                 (filter.Document == 0 || x.Document == filter.Document) &&
                 (x.Status == filter.Status),
-            cancellationToken));
+            cancellationToken)).MapToResponse();
     }
 
     public async Task<SaleResponse> GetSaleByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return mapper.Map<SaleResponse>(await unitOfWork.Sales.GetByIdAsync(id, cancellationToken));
+        var saleDb = await unitOfWork.Sales.GetByIdAsync(id, cancellationToken);
+        if (saleDb == null)
+            throw new EntityNotFoundException(id.ToString());
+        return saleDb.MapToResponse();
     }
 
     public async Task DeleteSaleAsync(Guid id, CancellationToken cancellationToken)
@@ -89,6 +89,15 @@ public class SaleAppService(
         if (saleDb == null)
             throw new EntityNotFoundException(id.ToString());
         unitOfWork.Sales.Delete(saleDb);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task CancelSaleAsync(Guid id, SaleCancelReasonRequest request, CancellationToken cancellationToken)
+    {
+        var saleDb = await unitOfWork.Sales.GetByIdAsync(id, cancellationToken);
+        if (saleDb == null)
+            throw new EntityNotFoundException(id.ToString());
+        await saleService.CancelSale(saleDb, request.Reason, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

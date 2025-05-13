@@ -10,12 +10,14 @@ public class Sale : EntityBase
     public string ClientName { get; private set; } = "";
     public Guid UserId { get; private set; }
     public decimal Value { get; private set; }
+    public Guid FreightId { get; private set; }
     public decimal Freight { get; private set; }
     public decimal FinantialDiscount { get; private set; }
     public SaleStatus Status { get; private set; }
     public ICollection<SaleItem> Items { get; private set; }
     public ICollection<SaleReceipt>? Receipts { get; private set; }
     public Guid? EstimateId { get; private set; }
+    public string ReasonCancel { get; private set; }
 
     private Sale()
     {
@@ -62,6 +64,11 @@ public class Sale : EntityBase
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
         Value = value;
     }
+    
+    public void SetFreightId(Guid freightId)
+    {
+        FreightId = freightId;
+    }
 
     public void SetFreight(decimal freight)
     {
@@ -101,6 +108,11 @@ public class Sale : EntityBase
     {
         if (Value == 0m) return Value;
         return Value + Freight - FinantialDiscount;
+    }
+
+    public void SetReasonCancel(string reason)
+    {
+        ReasonCancel = reason;
     }
 
     public decimal GetTotalItemValue()

@@ -8,6 +8,7 @@ public record CreateSaleRequest(
     Guid ClientId,
     Guid UserId,
     decimal Value,
+    Guid? FreightId,
     decimal Freight,
     decimal FinantialDiscount,
     SaleStatus Status,

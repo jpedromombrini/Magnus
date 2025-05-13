@@ -12,5 +12,5 @@ public interface ISaleService
 
     Task<Sale?> GetSaleByDocument(int documentId, CancellationToken cancellationToken);
     
-    Task CancelSale(Sale sale, CancellationToken cancellationToken);
+    Task CancelSale(Sale sale, string reason, CancellationToken cancellationToken);
 }

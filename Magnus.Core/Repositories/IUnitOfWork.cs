@@ -30,5 +30,6 @@ public interface IUnitOfWork : IDisposable
     IProductPriceTableRepository ProductPriceTables { get; }
     IBarRepository Bars { get; }
     IAccountsReceivableRepository AccountsReceivables { get; }
+    IFreightRepository Freights { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

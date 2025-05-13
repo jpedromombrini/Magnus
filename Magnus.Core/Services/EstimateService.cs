@@ -31,6 +31,8 @@ public class EstimateService(
         await ValidateUser(estimate, cancellationToken);
         estimate.ValidateTotals();
         estimateDb.SetDescription(estimate.Description);
+        if (estimate.FreightId is not null)
+            estimateDb.SetFreightId((Guid)estimate.FreightId);
         estimateDb.SetFreight(estimate.Freight);
         estimateDb.SetObservation(estimate.Observation);
         estimateDb.SetValue(estimate.Value);
@@ -50,11 +52,13 @@ public class EstimateService(
         var estimateDb = await unitOfWork.Estimates.GetByIdAsync(id, cancellationToken);
         if (estimateDb == null)
             throw new EntityNotFoundException("orçamento não encontrado com o Id informado");
-        var saleExists = await unitOfWork.Sales.GetByExpressionAsync(x => x.EstimateId == estimateDb.Id, cancellationToken);
-        if(saleExists is not null)
-            throw new EntityNotFoundException($"Já existe um pedido criado com esse orçamento, pedido: {saleExists.Document}");
+        var saleExists =
+            await unitOfWork.Sales.GetByExpressionAsync(x => x.EstimateId == estimateDb.Id, cancellationToken);
+        if (saleExists is not null)
+            throw new BusinessRuleException(
+                $"Já existe um pedido criado com esse orçamento, pedido: {saleExists.Document}");
         if (estimateDb.ClientId is null || estimateDb.ClientId == Guid.Empty)
-            throw new EntityNotFoundException("Informe um cliente para o orçamento");
+            throw new BusinessRuleException("Informe um cliente para o orçamento");
         var client = await clientService.GetByIdAsync((Guid)estimateDb.ClientId, cancellationToken);
         if (client is null)
             throw new EntityNotFoundException("cliente não encontrado com esse Id");
@@ -73,12 +77,19 @@ public class EstimateService(
                         installment.PaymentDate, installment.PaymentValue, installment.Value, installment.Discount,
                         installment.Interest, installment.Installment, null));
                 }
+
                 saleReceipts.Add(receipt);
             }
         }
 
         var sale = new Sale(client.Id, estimateDb.UserId, estimateDb.Value, estimateDb.Freight,
             estimateDb.FinantialDiscount);
+        if (estimateDb.FreightId is not null)
+        {
+            sale.SetFreight(estimateDb.Freight);
+            sale.SetFreightId((Guid)estimateDb.FreightId);
+        }
+
         sale.AddRangeReceipts(saleReceipts);
         sale.AddItems(saleItems);
         sale.SetClientName(client.Name);
