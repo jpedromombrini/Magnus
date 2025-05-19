@@ -4,6 +4,6 @@ namespace Magnus.Core.Services.Interfaces;
 
 public interface IInvoiceService
 {
-    Task CreateInvoiceAsync(Invoice invoice, InvoicePayment invoicePayment, CancellationToken cancellationToken);
+    Task CreateInvoiceAsync(Invoice invoice, CancellationToken cancellationToken);
     Task DeleteInvoiceAsync(Invoice invoice, CancellationToken cancellationToken);
 }

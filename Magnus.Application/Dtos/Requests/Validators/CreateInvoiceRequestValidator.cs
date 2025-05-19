@@ -8,7 +8,7 @@ public class CreateInvoiceRequestValidator : AbstractValidator<CreateInvoiceRequ
     {
         RuleFor(invoice => invoice.Number)
             .GreaterThan(0)
-            .WithMessage("Número da fatura deve ser maior que zero.");
+            .WithMessage("Número da Nota deve ser maior que zero.");
      
         RuleFor(invoice => invoice.Serie)
             .GreaterThan(0)
@@ -16,7 +16,7 @@ public class CreateInvoiceRequestValidator : AbstractValidator<CreateInvoiceRequ
 
         RuleFor(invoice => invoice.Date)
             .NotEmpty()
-            .WithMessage("A data da fatura não pode ser vazia.");
+            .WithMessage("A data da nota não pode ser vazia.");
 
         RuleFor(invoice => invoice.DateEntry)
             .NotEmpty()

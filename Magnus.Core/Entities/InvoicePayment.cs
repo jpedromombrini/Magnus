@@ -2,6 +2,7 @@ namespace Magnus.Core.Entities;
 
 public class InvoicePayment : EntityBase
 {
+    public Guid SupplierId { get; private set; }
     public Guid InvoiceId { get; private set; }
     public Invoice Invoice { get; private set; }
     public Guid PaymentId { get; private set; }
@@ -10,30 +11,32 @@ public class InvoicePayment : EntityBase
 
     private InvoicePayment(){}
     
-    public InvoicePayment(Invoice invoice, Payment payment)
+    public InvoicePayment(Guid paymentId, Guid supplierId)
     {
-        SetInvoice(invoice);
-        SetPayment(payment);
+        SetPaymentId(paymentId);
+        SetSupplierId(supplierId);
     }
 
     public void SetInvoice(Invoice invoice)
     {
         if(invoice is null)
             throw new ArgumentNullException("Informe a nota");
-        if(invoice.Id == Guid.Empty)
-            throw new ArgumentNullException("Informe o Id da nota");
         InvoiceId = invoice.Id;
         Invoice = invoice;
     }
     
     public void SetPayment(Payment payment)
     {
-        if(payment is null)
-            throw new ArgumentNullException("Informe o pagamento da nota");
-        if(payment.Id == Guid.Empty)
-            throw new ArgumentNullException("Informe o Id do pagendamento da nota");
-        PaymentId = payment.Id;
+        ArgumentNullException.ThrowIfNull(payment);
         Payment = payment;
+    }
+    public void SetPaymentId(Guid paymentId)
+    {
+        PaymentId = paymentId;
+    }
+    public void SetSupplierId(Guid supplierId)
+    {
+        SupplierId = supplierId;
     }
 
     public void AddInstallment(InvoicePaymentInstallment installment)

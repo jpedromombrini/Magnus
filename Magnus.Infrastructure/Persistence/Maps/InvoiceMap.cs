@@ -23,6 +23,7 @@ public class InvoiceMap : IEntityTypeConfiguration<Invoice>
             .IsRequired()
             .HasColumnType("timestamp");
         builder.Property(x => x.Key)
+            .IsRequired(false)
             .HasColumnType("varchar(44)");
         builder.Property(x => x.Deduction)
             .IsRequired()
@@ -40,6 +41,10 @@ public class InvoiceMap : IEntityTypeConfiguration<Invoice>
         builder.HasMany(x => x.Items)
             .WithOne(ii => ii.Invoice)
             .HasForeignKey(ii => ii.InvoiceId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.InvoicePayments)
+            .WithOne(ip => ip.Invoice)
+            .HasForeignKey(ip => ip.InvoiceId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -216,55 +216,11 @@ public class EstimateAppService(
                             if (receipt.Installments?.Any() != true)
                                 continue;
 
-                            column.Item().PaddingTop(5)
-                                .Text($"Pagamento - {receipt.Receipt?.Name ?? "Recebimento"}").Italic()
-                                .FontColor(Colors.Grey.Darken2);
-
-                            column.Item().Table(table =>
-                            {
-                                table.ColumnsDefinition(columns =>
-                                {
-                                    columns.RelativeColumn(2);
-                                    columns.RelativeColumn(2);
-                                    columns.RelativeColumn(2);
-                                    columns.RelativeColumn(2);
-                                    columns.RelativeColumn(2);
-                                    columns.RelativeColumn(2);
-                                });
-
-                                table.Header(header =>
-                                {
-                                    header.Cell().Element(CellStyle).Text("Parcela").Bold();
-                                    header.Cell().Element(CellStyle).AlignRight().Text("Vencimento").Bold();
-                                    header.Cell().Element(CellStyle).AlignRight().Text("Valor").Bold();
-                                    header.Cell().Element(CellStyle).AlignRight().Text("Desconto").Bold();
-                                    header.Cell().Element(CellStyle).AlignRight().Text("Juros").Bold();
-                                    header.Cell().Element(CellStyle).AlignRight().Text("Valor Final").Bold();
-                                });
-
-                                foreach (var installment in receipt.Installments.OrderBy(i => i.Installment))
-                                {
-                                    var finalValue = installment.Value - installment.Discount + installment.Interest;
-
-                                    table.Cell().Element(CellStyle).Text($"Parcela {installment.Installment}");
-                                    table.Cell().Element(CellStyle).AlignRight()
-                                        .Text(installment.DueDate.ToString("dd/MM/yyyy"));
-                                    table.Cell().Element(CellStyle).AlignRight()
-                                        .Text(installment.Value.ToString("c", new CultureInfo("pt-br")));
-                                    table.Cell().Element(CellStyle).AlignRight()
-                                        .Text($"-{installment.Discount.ToString("c", new CultureInfo("pt-br"))}");
-                                    table.Cell().Element(CellStyle).AlignRight()
-                                        .Text(installment.Interest.ToString("c", new CultureInfo("pt-br")));
-                                    table.Cell().Element(CellStyle).AlignRight()
-                                        .Text(finalValue.ToString("c", new CultureInfo("pt-br")));
-                                }
-                            });
-
-                            // Total das parcelas desse Receipt
                             var totalReceipt = receipt.Installments.Sum(i => i.Value - i.Discount + i.Interest);
-                            column.Item().AlignRight().PaddingBottom(10)
-                                .Text($"Total deste pagamento: {totalReceipt.ToString("c", new CultureInfo("pt-br"))}")
-                                .Bold().FontColor(Colors.Black);
+
+                            column.Item().PaddingTop(5)
+                                .Text($"{receipt.Receipt?.Name ?? "Recebimento"}: {totalReceipt.ToString("c", new CultureInfo("pt-br"))}")
+                                .FontSize(12);
                         }
 
                         // Total geral de todos os pagamentos

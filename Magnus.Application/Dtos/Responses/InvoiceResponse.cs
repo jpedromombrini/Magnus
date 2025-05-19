@@ -3,7 +3,9 @@ using Magnus.Core.Enumerators;
 
 namespace Magnus.Application.Dtos.Responses;
 
-public record InvoiceResponse( int Number,
+public record InvoiceResponse(
+    Guid Id,
+    int Number,
     int Serie,
     string Key,
     DateTime DateEntry,
@@ -15,4 +17,9 @@ public record InvoiceResponse( int Number,
     decimal Value,
     string Observation,
     InvoiceSituation InvoiceSituation,
-    IEnumerable<InvoiceItemResponse> Items);
+    IEnumerable<InvoiceItemResponse> Items,
+    IEnumerable<InvoicePaymentResponse>? Payments,
+    Guid? DoctorId,
+    bool UpdateFinantial,
+    Guid? CostCenterId,
+    Guid LaboratoryId);

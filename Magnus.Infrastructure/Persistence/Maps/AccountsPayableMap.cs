@@ -21,7 +21,7 @@ public class AccountsPayableMap: IEntityTypeConfiguration<AccountsPayable>
             .HasColumnType("timestamp");
         builder.Property(x => x.DueDate)
             .IsRequired()
-            .HasColumnType("timestamp");
+            .HasColumnType("date");
         builder.Property(x => x.PaymentDate)
             .HasColumnType("timestamp");
         builder.Property(x => x.Value)
@@ -35,9 +35,6 @@ public class AccountsPayableMap: IEntityTypeConfiguration<AccountsPayable>
         builder.Property(x => x.Interest)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
-        builder.Property(x => x.CostCenter)
-            .IsRequired()
-            .HasColumnType("varchar(8)");
         builder.HasMany(x => x.Occurrences)
             .WithOne(x => x.AccountsPayable)
             .HasForeignKey(x => x.AccountsPayableId);

@@ -13,10 +13,5 @@ public class InvoiceItemRequestValidator : AbstractValidator<InvoiceItemRequest>
         RuleFor(x => x.TotalValue)
             .GreaterThan(0).WithMessage("O valor total deve ser maior que 0.")
             .ScalePrecision(2, 10).WithMessage("O valor total deve ter até 2 casas decimais e até 10 dígitos.");
-
-        RuleFor(x => x.Amount)
-            .GreaterThan(0).WithMessage("A quantidade deve ser maior que 0.")
-            .ScalePrecision(3, 12).WithMessage("A quantidade deve ter até 3 casas decimais e até 12 dígitos.");
-
     }
 }

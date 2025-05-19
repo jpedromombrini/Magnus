@@ -5,7 +5,7 @@ namespace Magnus.Application.Dtos.Requests;
 public record CreateInvoiceRequest(
     int Number,
     int Serie,
-    string Key,
+    string? Key,
     DateTime DateEntry,
     DateTime Date,
     Guid SupplierId,
@@ -16,5 +16,8 @@ public record CreateInvoiceRequest(
     string Observation,
     InvoiceSituation InvoiceSituation,
     IEnumerable<InvoiceItemRequest> Items,
-    InvoicePaymentRequest Payment,
-    Guid? DoctorId);
+    IEnumerable<InvoicePaymentRequest>? Payments,
+    Guid? DoctorId,
+    bool UpdateFinantial,
+    Guid? CostCenterId,
+    Guid LaboratoryId);

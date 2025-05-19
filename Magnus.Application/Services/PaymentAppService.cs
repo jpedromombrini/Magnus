@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
@@ -10,8 +11,7 @@ using Magnus.Core.Repositories;
 namespace Magnus.Application.Services;
 
 public class PaymentAppService(
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : IPaymentAppService
+    IUnitOfWork unitOfWork) : IPaymentAppService
 {
     public async Task AddPaymentAsync(CreatePaymentRequest request, CancellationToken cancellationToken)
     {
@@ -19,7 +19,7 @@ public class PaymentAppService(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (paymentDb is not null)
             throw new ApplicationException("Já existe um pagamento com esse nome");
-        await unitOfWork.Payments.AddAsync(mapper.Map<Payment>(request), cancellationToken);
+        await unitOfWork.Payments.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -35,19 +35,21 @@ public class PaymentAppService(
 
     public async Task<IEnumerable<PaymentResponse>> GetPaymentsAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<PaymentResponse>>(await unitOfWork.Payments.GetAllAsync(cancellationToken));
+        return (await unitOfWork.Payments.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<PaymentResponse>> GetPaymentsByFilterAsync(Expression<Func<Payment, bool>> predicate,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<PaymentResponse>>(
-            await unitOfWork.Payments.GetAllByExpressionAsync(predicate, cancellationToken));
+        return (await unitOfWork.Payments.GetAllByExpressionAsync(predicate, cancellationToken)).MapToResponse();
     }
 
     public async Task<PaymentResponse> GetPaymentByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return mapper.Map<PaymentResponse>(await unitOfWork.Payments.GetByIdAsync(id, cancellationToken));
+        var payment =  await unitOfWork.Payments.GetByIdAsync(id, cancellationToken);
+        if (payment is null)
+            throw new EntityNotFoundException(id);
+        return payment.MapToResponse();
     }
 
     public async Task DeletePaymentAsync(Guid id, CancellationToken cancellationToken)

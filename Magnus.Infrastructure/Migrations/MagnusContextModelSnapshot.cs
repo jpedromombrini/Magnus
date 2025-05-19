@@ -31,9 +31,8 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<bool>("Canceled")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("CostCenter")
-                        .IsRequired()
-                        .HasColumnType("varchar(8)");
+                    b.Property<Guid>("CostCenterId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp");
@@ -44,8 +43,8 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<int>("Document")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("DueDate")
-                        .HasColumnType("timestamp");
+                    b.Property<DateOnly>("DueDate")
+                        .HasColumnType("date");
 
                     b.Property<int>("Installment")
                         .HasColumnType("integer");
@@ -593,6 +592,9 @@ namespace Magnus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("CostCenterId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp");
 
@@ -612,8 +614,10 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Key")
-                        .IsRequired()
                         .HasColumnType("varchar(44)");
+
+                    b.Property<Guid>("LaboratoryId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Number")
                         .HasColumnType("integer");
@@ -631,6 +635,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<string>("SupplierName")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("UpdateFinantial")
+                        .HasColumnType("boolean");
 
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(10,2)");
@@ -655,6 +662,10 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Lot")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)");
+
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
 
@@ -667,6 +678,9 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<decimal>("TotalValue")
                         .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateOnly>("Validate")
+                        .HasColumnType("date");
 
                     b.HasKey("Id");
 
@@ -685,6 +699,9 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("PaymentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SupplierId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -1422,7 +1439,7 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.InvoicePayment", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Invoice", "Invoice")
-                        .WithMany()
+                        .WithMany("InvoicePayments")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1430,7 +1447,7 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasOne("Magnus.Core.Entities.Payment", "Payment")
                         .WithMany()
                         .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Invoice");
@@ -1755,6 +1772,8 @@ namespace Magnus.Infrastructure.Migrations
 
             modelBuilder.Entity("Magnus.Core.Entities.Invoice", b =>
                 {
+                    b.Navigation("InvoicePayments");
+
                     b.Navigation("Items");
                 });
 

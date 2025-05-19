@@ -16,6 +16,11 @@ public class InvoiceItemMap : IEntityTypeConfiguration<InvoiceItem>
         builder.Property(x => x.TotalValue)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
+        builder.Property(x => x.Validate)
+            .IsRequired()
+            .HasColumnType("date");
+        builder.Property(x => x.Lot)
+            .HasColumnType("varchar(20)");
         builder.Property(x => x.Amount)
             .IsRequired()
             .HasColumnType("decimal(12,3)");

@@ -6,7 +6,7 @@ public class Invoice : EntityBase
 {
     public int Number { get; private set; }
     public int Serie { get; private set; }
-    public string Key { get; private set; }
+    public string? Key { get; private set; }
     public DateTime DateEntry { get; private set; }
     public DateTime Date { get; private set; }
     public Guid SupplierId { get; private set; }
@@ -16,14 +16,21 @@ public class Invoice : EntityBase
     public decimal Value { get; private set; }
     public string Observation { get; private set; }
     public InvoiceSituation InvoiceSituation { get; private set; }
-    public List<InvoiceItem> Items { get; private set; }
+    public ICollection<InvoiceItem> Items { get; private set; }
+    public ICollection<InvoicePayment>? InvoicePayments { get; private set; }
     public Guid? DoctorId { get; private set; }
+    public bool UpdateFinantial { get; private set; }
+    public Guid? CostCenterId { get; private set; }
+    public Guid LaboratoryId { get; private set; }
 
-    private Invoice(){}
+    private Invoice()
+    {
+    }
+
     public Invoice(
-        int number, 
+        int number,
         int serie,
-        string key,
+        string? key,
         DateTime dateEntry,
         DateTime date,
         Guid supplierId,
@@ -32,8 +39,11 @@ public class Invoice : EntityBase
         decimal deduction,
         decimal value,
         string observation,
-        InvoiceSituation invoiceSituation, 
-        Guid? doctorId)
+        InvoiceSituation invoiceSituation,
+        Guid? doctorId,
+        bool updateFinantial,
+        Guid? costCenterId,
+        Guid laboratoryId)
     {
         SetNumber(number);
         SetSerie(serie);
@@ -48,6 +58,9 @@ public class Invoice : EntityBase
         SetObservation(observation);
         SetInvoiceSituation(invoiceSituation);
         SetDoctorId(doctorId);
+        SetUpdateFinantial(updateFinantial);
+        SetCostCenterId(costCenterId);
+        SetLaboratoryId(laboratoryId);
         Items = [];
     }
 
@@ -65,10 +78,8 @@ public class Invoice : EntityBase
         Serie = serie;
     }
 
-    public void SetKey(string key)
+    public void SetKey(string? key)
     {
-        if (string.IsNullOrWhiteSpace(key))
-            throw new ArgumentException("A chave não pode ser nula ou vazia.");
         Key = key;
     }
 
@@ -131,15 +142,50 @@ public class Invoice : EntityBase
         InvoiceSituation = invoiceSituation;
     }
 
-    public void SetItems(List<InvoiceItem> items)
+    public void SetItems(IEnumerable<InvoiceItem> items)
     {
-        if (items == null || items.Count == 0)
-            throw new ArgumentException("A fatura deve ter pelo menos um item.");
-        Items = items;
+        Items ??= [];
+        foreach (var item in items)
+            Items.Add(item);
     }
 
     public void SetDoctorId(Guid? doctorId)
     {
         DoctorId = doctorId;
     }
+
+    public void AddRangePayments(IEnumerable<InvoicePayment> invoicePayments)
+    {
+        InvoicePayments ??= [];
+        foreach (var invoicePayment in invoicePayments)
+            InvoicePayments.Add(invoicePayment);
+    }
+
+    public void AddPayment(InvoicePayment invoicePayment)
+    {
+        InvoicePayments ??= [];
+        InvoicePayments.Add(invoicePayment);
+    }
+    public decimal GetRealValue()
+    {
+        if (Value == 0m) return Value;
+        return Value + Freight - Deduction;
+    }
+
+    public void SetUpdateFinantial(bool updateFinantial)
+    {
+        UpdateFinantial = updateFinantial;
+    }
+
+    public void SetCostCenterId(Guid? costCenterId)
+    {
+        CostCenterId = costCenterId;
+    }
+    
+    public void SetLaboratoryId(Guid laboratoryId)
+    {
+        LaboratoryId = laboratoryId;
+    }
+    
+        
 }

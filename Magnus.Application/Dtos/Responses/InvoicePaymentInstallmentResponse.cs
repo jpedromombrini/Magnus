@@ -1,6 +1,7 @@
 namespace Magnus.Application.Dtos.Responses;
 
 public record InvoicePaymentInstallmentResponse(
+    Guid Id,
     Guid InvoicePaymentId,
     DateOnly DueDate,
     DateTime? PaymentDate,

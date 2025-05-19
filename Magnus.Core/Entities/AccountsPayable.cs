@@ -6,13 +6,13 @@ public class AccountsPayable : EntityBase
     public Guid SupplierId { get; private set; }
     public string SupplierName { get; private set; }
     public DateTime CreatedAt { get; private set; }
-    public DateTime DueDate { get; private set; }
+    public DateOnly DueDate { get; private set; }
     public DateTime? PaymentDate { get; private set; }
     public decimal Value { get; private set; }
     public decimal PaymentValue { get; private set; }
     public decimal Discount { get; private set; }
     public decimal Interest { get; private set; }
-    public string CostCenter { get; private set; }
+    public Guid CostCenterId { get; private set; }
     public int Installment { get; private set; }
     public Guid? InvoiceId { get; private set; }
     public Guid? UserPaymentId { get; private set; }
@@ -27,13 +27,13 @@ public class AccountsPayable : EntityBase
         Guid supplierId,
         string supplierName,
         DateTime createdAt,
-        DateTime dueDate,
+        DateOnly dueDate,
         DateTime? paymentDate,
         decimal value,
         decimal paymentValue,
         decimal discount,
         decimal interest,
-        string costCenter,
+        Guid costCenterId,
         int installment,
         Guid? invoiceId,
         Guid? userPaymentId,
@@ -50,7 +50,7 @@ public class AccountsPayable : EntityBase
         SetPaymentValue(paymentValue);
         SetDiscount(discount);
         SetInterest(interest);
-        SetCostCenter(costCenter);
+        SetCostCenter(costCenterId);
         SetInstallment(installment);
         SetInvoiceId(invoiceId);
         SetUserPaymentId(userPaymentId);
@@ -84,7 +84,7 @@ public class AccountsPayable : EntityBase
         CreatedAt = createdAt;
     }
 
-    public void SetDueDate(DateTime dueDate)
+    public void SetDueDate(DateOnly dueDate)
     {
         DueDate = dueDate;
     }
@@ -122,11 +122,9 @@ public class AccountsPayable : EntityBase
         Interest = interest;
     }
 
-    public void SetCostCenter(string costCenter)
+    public void SetCostCenter(Guid costCenterId)
     {
-        if (string.IsNullOrEmpty(costCenter))
-            throw new ArgumentNullException(nameof(costCenter), "O centro de custo não pode ser nulo ou vazio.");
-        CostCenter = costCenter;
+        CostCenterId = costCenterId;
     }
 
     public void SetInstallment(int installment)
@@ -138,8 +136,6 @@ public class AccountsPayable : EntityBase
 
     public void SetInvoiceId(Guid? invoiceId)
     {
-        if (invoiceId == Guid.Empty)
-            throw new ArgumentNullException(nameof(invoiceId), "O ID da fatura não pode ser vazio.");
         InvoiceId = invoiceId;
     }
 

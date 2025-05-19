@@ -4,8 +4,9 @@ public record InvoiceItemRequest(
     Guid ProductId,
     int ProductInternalCode,
     string ProductName,
-    decimal Amount,
+    int Amount,
     decimal TotalValue,
-    DateOnly Validity,
+    DateOnly Validate,
+    string Lot,
     bool Bonus
 );

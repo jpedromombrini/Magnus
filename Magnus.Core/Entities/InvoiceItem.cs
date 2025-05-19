@@ -8,11 +8,13 @@ public class InvoiceItem : EntityBase
     public int Amount { get; private set; }
     public decimal TotalValue { get; private set; }
     public bool Bonus { get; private set; }
-    public Guid InvoiceId { get; set; }
-    public Invoice Invoice { get; set; }
+    public Guid InvoiceId { get; private set; }
+    public DateOnly Validate { get; private set; }
+    public string Lot { get; private set; }
+    public Invoice Invoice { get; private set; }
     private InvoiceItem(){}
     public InvoiceItem(Guid productId, int productInternalCode, string productName, int amount, decimal totalValue,
-        bool bonus)
+        bool bonus, DateOnly validate,  string lot)
     {
         SetProductId(productId);
         SetProductInternalCode(productInternalCode);
@@ -20,6 +22,8 @@ public class InvoiceItem : EntityBase
         SetAmount(amount);
         SetTotalValue(totalValue);
         SetBonus(bonus);
+        SetValidate(validate);
+        SetLot(lot);
     }
     public void SetProductId(Guid productId)
     {
@@ -68,5 +72,15 @@ public class InvoiceItem : EntityBase
             throw new ArgumentException("O ID do pedido não pode ser um GUID vazio.");
         Invoice = invoice;
         InvoiceId = invoice.Id;
+    }
+
+    public void SetValidate(DateOnly validate)
+    {
+        Validate = validate;
+    }
+
+    public void SetLot(string lot)
+    {
+        Lot = lot;
     }
 }

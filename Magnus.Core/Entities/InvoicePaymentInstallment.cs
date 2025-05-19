@@ -12,15 +12,15 @@ public class InvoicePaymentInstallment : EntityBase
     public int Installment { get; private set; }
 
     private InvoicePaymentInstallment(){}
-    public InvoicePaymentInstallment(InvoicePayment invoicePayment, DateOnly dueDate, DateTime? paymentDate,
+    public InvoicePaymentInstallment(DateOnly dueDate, DateTime? paymentDate,
         decimal value, decimal discount, decimal interest, int installment)
     {
-        SetInvoicePayment(invoicePayment);
         SetDueDate(dueDate);
+        SetPaymentDate(paymentDate);
         SetValue(value);
-        SetValue(discount);
-        SetValue(interest);
-        SetValue(installment);
+        SetDiscount(discount);
+        SetInterest(interest);
+        SetInstallment(installment);
     }
 
     public void SetDueDate(DateOnly dueDate)
@@ -28,15 +28,13 @@ public class InvoicePaymentInstallment : EntityBase
         DueDate = dueDate;
     }
 
-    public void SetPaymentDate(DateTime paymentDate)
+    public void SetPaymentDate(DateTime? paymentDate)
     {
         PaymentDate = paymentDate;
     }
 
     public void SetValue(decimal value)
     {
-        if (value <= 0)
-            throw new ArgumentException("Informe um valor maior que zero");
         Value = value;
     }
 
@@ -60,8 +58,6 @@ public class InvoicePaymentInstallment : EntityBase
     public void SetInvoicePayment(InvoicePayment invoicePayment)
     {
         if(invoicePayment  is null)
-            throw new ArgumentNullException("Informe um pagamento");
-        if(invoicePayment.Id == Guid.Empty)
             throw new ArgumentNullException("Informe um pagamento");
         InvoicePaymentId = invoicePayment.Id;
         InvoicePayment = invoicePayment;

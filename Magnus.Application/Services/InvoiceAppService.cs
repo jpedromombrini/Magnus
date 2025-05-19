@@ -3,6 +3,7 @@ using AutoMapper;
 using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
@@ -13,40 +14,12 @@ namespace Magnus.Application.Services;
 
 public class InvoiceAppService(
     IUnitOfWork unitOfWork,
-    IInvoiceService invoiceService,
-    IMapper mapper) : IInvoiceAppService
+    IInvoiceService invoiceService) : IInvoiceAppService
 {
     public async Task AddInvoiceAsync(CreateInvoiceRequest request, CancellationToken cancellationToken)
     {
-        var invoice = mapper.Map<Invoice>(request);
-        var invoicePayment = mapper.Map<InvoicePayment>(request.Payment);
-        if (invoice is null)
-            throw new ApplicationException("Não foi possível converter o objeto");
-        var payment = await unitOfWork.Payments.GetByIdAsync(invoicePayment.PaymentId, cancellationToken);
-        if (payment is null)
-            throw new ApplicationException("Forma de pagamento não encontrada");
-        invoicePayment.SetPayment(payment);
-        var invoiceDb = await unitOfWork.Invoices.GetByExpressionAsync(x => x.SupplierId == request.SupplierId
-                                                                            && x.Number == request.Number
-                                                                            && x.Serie == request.Serie,
-            cancellationToken);
-        if (invoiceDb is not null)
-            throw new ApplicationException("Já existe uma NF com esses dados");
-
-        var supplier = await unitOfWork.Suppliers.GetByIdAsync(invoice.SupplierId, cancellationToken);
-        if (supplier is null)
-            throw new EntityNotFoundException(invoice.SupplierId);
-
-        invoice.SetSupplierName(supplier.Name);
-        var totalItemsValue = invoice.Items
-            .Where(x => x.Bonus == false)
-            .Sum(x => x.TotalValue);
-        var totalFinantialValue = invoicePayment.Installments.Sum(x => x.Value);
-        if (totalItemsValue == 0 || totalItemsValue != invoice.Value)
-            throw new ApplicationException("O valor total dos items difere do valor total da nota");
-        if (totalFinantialValue == 0 || totalFinantialValue != invoice.Value)
-            throw new ApplicationException("O valor total dos pagamentos difere do valor total da nota");
-        await invoiceService.CreateInvoiceAsync(invoice, invoicePayment, cancellationToken);
+        var invoice = request.MapToEntity();
+        await invoiceService.CreateInvoiceAsync(invoice, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -74,25 +47,29 @@ public class InvoiceAppService(
 
     public async Task<IEnumerable<InvoiceResponse>> GetInvoicesAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<InvoiceResponse>>(await unitOfWork.Invoices.GetAllAsync(cancellationToken));
+        return (await unitOfWork.Invoices.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<InvoiceResponse>> GetInvoicesByFilterAsync(GetInvoiceFilter filter,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<InvoiceResponse>>(
+        var invoices = 
             await unitOfWork.Invoices.GetAllByExpressionAsync(x =>
                 (x.DateEntry.Date >= filter.InitialDate)
                 && (x.DateEntry.Date <= filter.FinalDate)
                 && (filter.Number == 0 || x.Number == filter.Number)
                 && (filter.Serie == 0 || x.Serie == filter.Serie)
                 && (string.IsNullOrEmpty(filter.Key) || x.Key == filter.Key)
-                && (filter.SupplierId == Guid.Empty || x.SupplierId == filter.SupplierId), cancellationToken));
+                && (filter.SupplierId == Guid.Empty || x.SupplierId == filter.SupplierId), cancellationToken);
+        return invoices.MapToResponse();
     }
 
     public async Task<InvoiceResponse> GetInvoiceByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return mapper.Map<InvoiceResponse>(await unitOfWork.Invoices.GetByIdAsync(id, cancellationToken));
+        var invoice = await unitOfWork.Invoices.GetByIdAsync(id, cancellationToken);
+        if (invoice is null)
+            throw new EntityNotFoundException(id);
+        return invoice.MapToResponse();
     }
 
     public async Task DeleteInvoiceAsync(Guid id, CancellationToken cancellationToken)
