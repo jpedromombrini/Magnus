@@ -113,13 +113,13 @@ public class InvoiceService(
                     throw new BusinessRuleException("Pagamento não encontrado");
                 foreach (var installment in invoicePayment.Installments)
                 {
-                    var accountsPayable = new AccountsPayable(invoice.Number, invoice.SupplierId, invoice.SupplierName,
-                        DateTime.Now, installment.DueDate, installment.PaymentDate, installment.Value, 0m,
-                        installment.Discount, installment.Interest, costCenter.Id, installment.Installment,invoice.Id, null, false, payment);
+                    var accountsPayable = new AccountsPayable(invoice.Number, invoice.SupplierId, DateTime.Now,
+                        installment.DueDate, installment.PaymentDate, installment.Value, 0m,
+                        installment.Discount, installment.Interest, costCenter.Id, installment.Installment, invoice.Id,
+                        null, payment.Id);
                     await unitOfWork.AccountsPayables.AddAsync(accountsPayable, cancellationToken);
-                }    
+                }
             }
-            
         }
     }
 }

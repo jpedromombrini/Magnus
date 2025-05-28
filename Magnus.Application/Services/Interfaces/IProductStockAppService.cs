@@ -8,4 +8,5 @@ public interface IProductStockAppService
 {
     Task<IEnumerable<ProductStockResponse>> GetProductStocksByFilterAsync(Guid productId, int warehouseId, bool all, CancellationToken cancellationToken);
     Task<decimal> GetBalanceProductStocksAsync(Guid productId, int warehouseId, CancellationToken cancellationToken);
+    Task CreateProductStockMovementAsync(ProductStock productStock, CancellationToken cancellationToken);
 }

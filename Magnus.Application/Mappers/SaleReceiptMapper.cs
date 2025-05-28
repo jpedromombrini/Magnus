@@ -10,7 +10,7 @@ public static class SaleReceiptMapper
 
     public static SaleReceipt MapToEntity(this CreateSaleReceiptRequest request)
     {
-        var saleReceipt = new SaleReceipt(request.ClienteId, request.UserId, request.ReceiptId);
+        var saleReceipt = new SaleReceipt(request.ClientId, request.UserId, request.ReceiptId);
         foreach (var installment in request.Installments)
         {
             var installmentToadd = new SaleReceiptInstallment(installment.DueDate, installment.PaymentDate,
@@ -18,7 +18,6 @@ public static class SaleReceiptMapper
                 installment.Discount,
                 installment.Interest,
                 installment.Installment, installment.ProofImage);
-            installmentToadd.SetSaleReceiptId(saleReceipt.Id);
             saleReceipt.AddInstallment(installmentToadd);
         }
 
@@ -34,7 +33,6 @@ public static class SaleReceiptMapper
                 installment.Discount,
                 installment.Interest,
                 installment.Installment, installment.ProofImage);
-            installmentToAdd.SetSaleReceiptId(saleReceipt.Id); 
             saleReceipt.AddInstallment(installmentToAdd);
         }
 

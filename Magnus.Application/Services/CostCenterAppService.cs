@@ -16,10 +16,14 @@ public class CostCenterAppService(
     public async Task AddCostCenterAsync(CreateCostCenterRequest request, CancellationToken cancellationToken)
     {
         var costcenterDb =
-            await unitOfWork.CostCenters.GetByExpressionAsync(x => x.Code == request.Code, cancellationToken);
+            await unitOfWork.CostCenters.GetByExpressionAsync(
+                x => x.Code == request.Code && x.CostCenterSubGroupId == request.CostCenterSubGroupId,
+                cancellationToken);
         if (costcenterDb is not null)
-            throw new ApplicationException("Já existe um centro de custo com esse código");
-        costcenterDb = await unitOfWork.CostCenters.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+            throw new ApplicationException("Já existe um centro de custo com esse código para esse subgrupo");
+        costcenterDb = await unitOfWork.CostCenters.GetByExpressionAsync(
+            x => x.Name.ToLower() == request.Name.ToLower() && x.CostCenterSubGroupId == request.CostCenterSubGroupId,
+            cancellationToken);
         if (costcenterDb is not null)
             throw new ApplicationException("Já existe um centro de custo com esse nome");
         await unitOfWork.CostCenters.AddAsync(request.MapToEntity(), cancellationToken);

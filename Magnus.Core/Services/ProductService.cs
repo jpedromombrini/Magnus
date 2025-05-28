@@ -10,7 +10,6 @@ public class ProductService(
     IBarService barService,
     IUnitOfWork unitOfWork) : IProductService
 {
-    
     public async Task CreateProductAsync(Product product, CancellationToken cancellationToken)
     {
         var productDb = await unitOfWork.Products.GetByExpressionAsync(
@@ -28,6 +27,7 @@ public class ProductService(
         productDb.SetPrice(product.Price);
         productDb.SetName(product.Name);
         productDb.SetLaboratoryId(product.LaboratoryId);
+        productDb.SetApplyPriceRule(product.ApplyPriceRule);
         productDb.Bars?.Clear();
         productDb.ProductPriceTables?.Clear();
         await UpdateBarsAsync(productDb.Id, product, cancellationToken);
@@ -46,9 +46,8 @@ public class ProductService(
         var tables = await productPriceTableService.GetByProductId(product.Id, cancellationToken);
         foreach (var table in tables)
             product.AddProductPriceTable(table);
-        
+
         return product;
-        
     }
 
     private async Task UpdateBarsAsync(Guid productId, Product product, CancellationToken cancellationToken)

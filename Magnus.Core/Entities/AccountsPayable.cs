@@ -1,7 +1,9 @@
+using Magnus.Core.Enumerators;
+
 namespace Magnus.Core.Entities;
 
 public class AccountsPayable : EntityBase
-{    
+{
     public int Document { get; private set; }
     public Guid SupplierId { get; private set; }
     public string SupplierName { get; private set; }
@@ -16,16 +18,18 @@ public class AccountsPayable : EntityBase
     public int Installment { get; private set; }
     public Guid? InvoiceId { get; private set; }
     public Guid? UserPaymentId { get; private set; }
-    public bool Canceled { get; private set; }
-    public Guid PaymentId { get; set; }
-    public Payment Payment { get; set; }
+    public Guid PaymentId { get; private set; }
+    public AccountPayableStatus AccountPayableStatus  { get; private set; }
+    public Payment Payment { get; private set; }
     public List<AccountsPayableOccurrence>? Occurrences { get; private set; }
-    private AccountsPayable(){}
-    
-     public AccountsPayable(
+
+    private AccountsPayable()
+    {
+    }
+
+    public AccountsPayable(
         int document,
         Guid supplierId,
-        string supplierName,
         DateTime createdAt,
         DateOnly dueDate,
         DateTime? paymentDate,
@@ -37,12 +41,10 @@ public class AccountsPayable : EntityBase
         int installment,
         Guid? invoiceId,
         Guid? userPaymentId,
-        bool canceled,
-        Payment payment)
+        Guid paymentId)
     {
         SetDocument(document);
         SetSupplierId(supplierId);
-        SetSupplierName(supplierName);
         SetCreatedAt(createdAt);
         SetDueDate(dueDate);
         SetPaymentDate(paymentDate);
@@ -54,11 +56,11 @@ public class AccountsPayable : EntityBase
         SetInstallment(installment);
         SetInvoiceId(invoiceId);
         SetUserPaymentId(userPaymentId);
-        SetCanceled(canceled);
-        SetPayent(payment);
+        SetPaymentId(paymentId);
+        SetStatus(AccountPayableStatus.Open);
     }
 
-   public void SetDocument(int document)
+    public void SetDocument(int document)
     {
         if (document <= 0)
             throw new ArgumentOutOfRangeException(nameof(document), "O número do documento deve ser maior que zero.");
@@ -146,20 +148,14 @@ public class AccountsPayable : EntityBase
         UserPaymentId = userPaymentId;
     }
 
-    public void SetCanceled(bool canceled)
+    public void SetPaymentId(Guid paymentId)
     {
-        Canceled = canceled;
+        PaymentId = paymentId;
     }
 
-    public void SetPayent(Payment payment)
+    public void SetPayment(Payment payment)
     {
-        if(payment is null)
-            throw new ArgumentNullException("Informe o pagamento");
-        if(payment.Id == Guid.Empty)
-            throw new ArgumentException("informe o Id do pagamento");
-        PaymentId = payment.Id;
         Payment = payment;
-        
     }
 
     public void SetOccurrences(List<AccountsPayableOccurrence>? occurrences)
@@ -168,6 +164,10 @@ public class AccountsPayable : EntityBase
         Occurrences = occurrences ?? [];
     }
 
+    public void SetStatus(AccountPayableStatus status)
+    {
+        AccountPayableStatus = status;
+    }
     public void AddOccurrence(AccountsPayableOccurrence occurrence)
     {
         if (occurrence is null)

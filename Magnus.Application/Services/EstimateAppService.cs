@@ -72,14 +72,12 @@ public class EstimateAppService(
         if (estimateDb == null)
             throw new EntityNotFoundException(id);
         if (estimateDb.Receipts is not null)
-        {
             foreach (var receipt in estimateDb.Receipts)
             {
                 var receiptDb = await unitOfWork.Receipts.GetByIdAsync(receipt.ReceiptId, cancellationToken);
                 if (receiptDb is not null)
                     receipt.SetReceipt(receiptDb);
             }
-        }
 
         var freightName = "Frete";
         if (estimateDb.FreightId is not null)
@@ -97,8 +95,6 @@ public class EstimateAppService(
                 page.Size(PageSizes.A4);
                 page.Margin(30);
                 page.DefaultTextStyle(x => x.FontSize(12));
-
-                // Cabeçalho
                 page.Header().Column(header =>
                 {
                     header.Item().Text("Estética Injetáveis").FontSize(20).Bold().AlignCenter();
@@ -107,19 +103,16 @@ public class EstimateAppService(
                     header.Item().LineHorizontal(1).LineColor(Colors.Grey.Medium);
                 });
 
-                static IContainer CellStyle(IContainer container) =>
-                    container.PaddingVertical(5).PaddingHorizontal(2);
+                static IContainer CellStyle(IContainer container)
+                {
+                    return container.PaddingVertical(5).PaddingHorizontal(2);
+                }
 
-                // Conteúdo
                 page.Content().Column(column =>
                 {
                     column.Spacing(10);
-
-                    // Descrição
                     if (!string.IsNullOrWhiteSpace(estimateDb.Description))
-                    {
                         column.Item().Text(estimateDb.Description).Italic().FontColor(Colors.Grey.Darken2);
-                    }
 
                     column.Item().Row(row =>
                     {
@@ -135,8 +128,6 @@ public class EstimateAppService(
                     });
 
                     column.Item().LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
-
-                    // Tabela de itens
                     column.Item().Table(table =>
                     {
                         table.ColumnsDefinition(columns =>
@@ -167,8 +158,6 @@ public class EstimateAppService(
                     });
 
                     column.Item().LineHorizontal(0.5f).LineColor(Colors.Grey.Lighten2);
-
-                    // Resumo de valores
                     var totalItems = estimateDb.Items.Sum(item => item.TotalValue);
                     var discount = estimateDb.FinantialDiscount;
                     var shipping = estimateDb.Freight;
@@ -179,8 +168,9 @@ public class EstimateAppService(
                         totals.Spacing(4);
 
                         // Helper para linha de texto
-                        Func<IContainer, IContainer> LabelAndValue(string label, string value) =>
-                            container =>
+                        Func<IContainer, IContainer> LabelAndValue(string label, string value)
+                        {
+                            return container =>
                             {
                                 container.Row(row =>
                                 {
@@ -189,6 +179,7 @@ public class EstimateAppService(
                                 });
                                 return container;
                             };
+                        }
 
                         totals.Item().Element(LabelAndValue("Total dos itens:",
                             totalItems.ToString("c", new CultureInfo("pt-br"))));
@@ -217,13 +208,18 @@ public class EstimateAppService(
                                 continue;
 
                             var totalReceipt = receipt.Installments.Sum(i => i.Value - i.Discount + i.Interest);
-
-                            column.Item().PaddingTop(5)
-                                .Text($"{receipt.Receipt?.Name ?? "Recebimento"}: {totalReceipt.ToString("c", new CultureInfo("pt-br"))}")
-                                .FontSize(12);
+                            if (receipt.Installments.Count == 1)
+                                column.Item().PaddingTop(5).AlignRight()
+                                    .Text(
+                                        $"{receipt.Receipt?.Name ?? "Recebimento"}: {totalReceipt.ToString("c", new CultureInfo("pt-br"))}")
+                                    .FontSize(12);
+                            else
+                                column.Item().PaddingTop(5).AlignRight()
+                                    .Text(
+                                        $"{receipt.Receipt?.Name ?? "Recebimento"}: {totalReceipt.ToString("c", new CultureInfo("pt-br"))} em {receipt.Installments.Count} x")
+                                    .FontSize(12);
                         }
 
-                        // Total geral de todos os pagamentos
                         var totalAllReceipts = estimateDb.Receipts
                             .SelectMany(r => r.Installments)
                             .Sum(i => i.Value - i.Discount + i.Interest);
@@ -235,18 +231,13 @@ public class EstimateAppService(
                             .Bold().FontSize(13);
                     }
 
-                    // Observação
                     if (!string.IsNullOrWhiteSpace(estimateDb.Observation))
-                    {
                         column.Item().PaddingTop(10).Text(text =>
                         {
                             text.Span("Observação: ").SemiBold();
                             text.Span(estimateDb.Observation);
                         });
-                    }
                 });
-
-                // Rodapé
                 page.Footer().AlignCenter().Column(footer =>
                 {
                     footer.Item().Text(text =>

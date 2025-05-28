@@ -1,3 +1,4 @@
+using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 
 namespace Magnus.Core.Entities;
@@ -19,6 +20,7 @@ public class Estimate : EntityBase
     public User User { get; private set; }
     public ICollection<EstimateItem> Items { get; private set; }
     public ICollection<EstimateReceipt>? Receipts { get; private set; }
+    public EstimateStatus EstimateStatus { get; private set; }
 
     private Estimate()
     {
@@ -124,5 +126,10 @@ public class Estimate : EntityBase
     {
         if (FinantialDiscount > Value)
             throw new BusinessRuleException("O desconto não pode ser maior que o valor do orçamento");
+    }
+
+    public void SetEstimateStatus(EstimateStatus estimateStatus)
+    {
+        EstimateStatus = estimateStatus;
     }
 }

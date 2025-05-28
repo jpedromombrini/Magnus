@@ -1,3 +1,5 @@
+using Magnus.Core.Enumerators;
+
 namespace Magnus.Application.Dtos.Responses;
 
 public record EstimateResponse(
@@ -16,4 +18,5 @@ public record EstimateResponse(
     Guid UserId,
     UserResponse User,
     IEnumerable<EstimateItemResponse> Items,
-    IEnumerable<EstimateReceiptResponse>? Receipts);
+    IEnumerable<EstimateReceiptResponse>? Receipts,
+    EstimateStatus EstimateStatus);

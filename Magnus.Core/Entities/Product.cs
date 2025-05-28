@@ -2,23 +2,26 @@ namespace Magnus.Core.Entities;
 
 public class Product : EntityBase
 {
+    private Product()
+    {
+    }
+
+    public Product(string name, decimal price, Guid laboratoryId, bool applyPriceRule)
+    {
+        SetName(name);
+        SetPrice(price);
+        SetLaboratoryId(laboratoryId);
+        SetApplyPriceRule(applyPriceRule);
+    }
+
     public int InternalCode { get; private set; }
     public string Name { get; private set; }
     public decimal Price { get; private set; }
     public ICollection<Bar>? Bars { get; private set; }
     public Guid LaboratoryId { get; private set; }
+    public bool ApplyPriceRule { get; private set; }
     public ICollection<ProductPriceTable>? ProductPriceTables { get; private set; }
 
-    private Product()
-    {
-    }
-
-    public Product(string name, decimal price, Guid laboratoryId)
-    {
-        SetName(name);
-        SetPrice(price);
-        SetLaboratoryId(laboratoryId);
-    }
     public void SetName(string name)
     {
         if (string.IsNullOrEmpty(name))
@@ -52,10 +55,7 @@ public class Product : EntityBase
 
     public void SetLaboratoryId(Guid laboratoryId)
     {
-        if (laboratoryId == Guid.Empty)
-        {
-            throw new ArgumentException("O LaboratoryId não pode ser um Guid vazio.");
-        }
+        if (laboratoryId == Guid.Empty) throw new ArgumentException("O LaboratoryId não pode ser um Guid vazio.");
 
         LaboratoryId = laboratoryId;
     }
@@ -74,8 +74,13 @@ public class Product : EntityBase
 
     public void RemoveProductPriceTable(ProductPriceTable priceTable)
     {
-        if(ProductPriceTables == null || ProductPriceTables.Count == 0)
+        if (ProductPriceTables == null || ProductPriceTables.Count == 0)
             return;
         ProductPriceTables.Remove(priceTable);
+    }
+
+    public void SetApplyPriceRule(bool applyPriceRule)
+    {
+        ApplyPriceRule = applyPriceRule;
     }
 }

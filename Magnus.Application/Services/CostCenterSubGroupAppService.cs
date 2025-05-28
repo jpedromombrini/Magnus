@@ -17,11 +17,13 @@ public class CostCenterSubGroupAppService(
         CancellationToken cancellationToken)
     {
         var costCenterSubGroup =
-            await unitOfWork.CostCenterSubGroups.GetByExpressionAsync(x => x.Code == request.Code, cancellationToken);
+            await unitOfWork.CostCenterSubGroups.GetByExpressionAsync(
+                x => x.Code == request.Code && x.CostCenterGroupId == request.CostCenterGroupId, cancellationToken);
         if (costCenterSubGroup is not null)
-            throw new ApplicationException("Já existe um subgrupo de centro de custo com esse código");
+            throw new ApplicationException("Já existe um subgrupo de centro de custo com esse código para esse grupo");
         costCenterSubGroup = await unitOfWork.CostCenterSubGroups.GetByExpressionAsync(
-            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+            x => x.Name.ToLower() == request.Name.ToLower() && x.CostCenterGroupId == request.CostCenterGroupId,
+            cancellationToken);
         if (costCenterSubGroup is not null)
             throw new ApplicationException("Já existe um subgrupo de centro de custo com esse nome");
         await unitOfWork.CostCenterSubGroups.AddAsync(request.MapToEntity(), cancellationToken);
@@ -49,7 +51,8 @@ public class CostCenterSubGroupAppService(
     public async Task<IEnumerable<CostCenterSubGroupResponse>> GetCostCenterSubGroupsByFilterAsync(
         Expression<Func<CostCenterSubGroup, bool>> predicate, CancellationToken cancellationToken)
     {
-        return (await unitOfWork.CostCenterSubGroups.GetAllByExpressionAsync(predicate, cancellationToken)).MapToResponse();
+        return (await unitOfWork.CostCenterSubGroups.GetAllByExpressionAsync(predicate, cancellationToken))
+            .MapToResponse();
     }
 
     public async Task<CostCenterSubGroupResponse> GetCostCenterSubGroupByIdAsync(Guid id,

@@ -1,6 +1,7 @@
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services;
 using Magnus.Application.Services.Interfaces;
+using Magnus.Core.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,4 +33,10 @@ public class ProductStockController(
     {
         return await productStockAppService.GetBalanceProductStocksAsync(productId, warehouseId, cancellationToken);
     }
+
+    [HttpPost]
+    public async Task CreateProductStockAsync(ProductStock productStock, CancellationToken cancellationToken)
+    {
+        await productStockAppService.CreateProductStockMovementAsync(productStock, cancellationToken);
+    } 
 }

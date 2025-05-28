@@ -65,7 +65,7 @@ public static class ServiceRegistration
         services.AddScoped<ISupplierService, SupplierService>();
         services.AddScoped<ISellerService, SellerService>();
         services.AddScoped<IEstimateService, EstimateService>();
-        services.AddScoped<IAccountsPayableService, AccountsPayableService>();
+        services.AddScoped<IAccountPayableService, AccountPayableService>();
         #endregion
         
         #region Repositories

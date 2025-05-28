@@ -1,7 +1,7 @@
 namespace Magnus.Application.Dtos.Requests;
 
 public record CreateSaleReceiptRequest(
-    Guid ClienteId, 
+    Guid ClientId, 
     Guid UserId, 
     int Document,
     Guid SaleId,

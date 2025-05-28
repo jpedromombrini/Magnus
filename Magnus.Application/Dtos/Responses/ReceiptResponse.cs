@@ -4,4 +4,4 @@ public record ReceiptResponse(
     Guid Id,
     string Name,
     decimal Increase,
-    bool InIstallments);
+    bool InInstallments);

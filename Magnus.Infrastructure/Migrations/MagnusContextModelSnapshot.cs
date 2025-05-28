@@ -28,8 +28,8 @@ namespace Magnus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<bool>("Canceled")
-                        .HasColumnType("boolean");
+                    b.Property<int>("AccountPayableStatus")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("CostCenterId")
                         .HasColumnType("uuid");
@@ -177,9 +177,15 @@ namespace Magnus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("AmountToDiscount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("CostCenterSale")
                         .IsRequired()
                         .HasColumnType("varchar(8)");
+
+                    b.Property<int>("DaysValidityEstimate")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -440,6 +446,9 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
+
+                    b.Property<int>("EstimateStatus")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("FinantialDiscount")
                         .HasColumnType("decimal(10,2)");
@@ -788,6 +797,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("ApplyPriceRule")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("InternalCode")
                         .ValueGeneratedOnAdd()

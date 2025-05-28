@@ -1,6 +1,7 @@
 using AutoMapper;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services.Interfaces;
+using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
@@ -32,5 +33,11 @@ public class ProductStockAppService(
         if (product == null)
             throw new EntityNotFoundException("Nenhum produto encontrado com esse Id");
         return await productStockService.GetProductStockAsync(productId, warehouseId, cancellationToken);
+    }
+
+    public async Task CreateProductStockMovementAsync(ProductStock productStock, CancellationToken cancellationToken)
+    {
+        await productStockService.CreateProductStockMovementAsync(productStock, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

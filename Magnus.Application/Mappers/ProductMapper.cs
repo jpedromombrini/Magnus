@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Core.Entities;
@@ -13,7 +12,7 @@ public static class ProductMapper
     {
         List<Bar> bars = [];
         List<ProductPriceTable> prices = [];
-        Product product = new(request.Name, request.Price, request.LaboratoryId);
+        Product product = new(request.Name, request.Price, request.LaboratoryId, request.ApplyPriceRule);
         if (request.Bars is not null) bars.AddRange(request.Bars.Select(bar => new Bar(product.Id, bar.Code)));
         if (request.ProductPriceTable is not null)
             prices.AddRange(request.ProductPriceTable.Select(productPrice =>
@@ -27,7 +26,7 @@ public static class ProductMapper
 
     public static Product MapToEntity(this UpdateProductRequest request)
     {
-        Product product = new(request.Name, request.Price, request.LaboratoryId);
+        Product product = new(request.Name, request.Price, request.LaboratoryId, request.ApplyPriceRule);
         if (request.ProductPriceTable is not null)
             product.AddProductPriceTables(request.ProductPriceTable.MapToEntity());
         if (request.Bars is not null)
@@ -68,7 +67,7 @@ public static class ProductMapper
         if (entity.ProductPriceTables is not null)
             prices = entity.ProductPriceTables.MapToResponse();
         return new ProductResponse(entity.Id, entity.InternalCode, entity.Name, entity.Price, bars,
-            entity.LaboratoryId, prices);
+            entity.LaboratoryId, entity.ApplyPriceRule, prices);
     }
 
     public static IEnumerable<ProductResponse> MapToResponse(this IEnumerable<Product> entities)

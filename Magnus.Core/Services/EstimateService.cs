@@ -9,7 +9,8 @@ namespace Magnus.Core.Services;
 public class EstimateService(
     IUnitOfWork unitOfWork,
     IClientService clientService,
-    IUserService userService) : IEstimateService
+    IUserService userService,
+    ISaleService saleService) : IEstimateService
 {
     public async Task CreateEstimateAsync(Estimate estimate, CancellationToken cancellationToken)
     {
@@ -17,7 +18,7 @@ public class EstimateService(
         await ValidateUser(estimate, cancellationToken);
         estimate.ValidateTotals();
         estimate.SetCreatedAt(DateTime.Now);
-
+        estimate.SetEstimateStatus(EstimateStatus.Open);
         await unitOfWork.Estimates.AddAsync(estimate, cancellationToken);
     }
 
@@ -96,6 +97,8 @@ public class EstimateService(
         sale.SetStatus(SaleStatus.Open);
         sale.SetEstimateId(estimateDb.Id);
         await unitOfWork.Sales.AddAsync(sale, cancellationToken);
+        await saleService.Invoice(sale, cancellationToken);
+        estimateDb.SetEstimateStatus(EstimateStatus.Invoiced);
     }
 
     private void UpdateReceipts(Estimate estimate, IEnumerable<EstimateReceipt> receipts)

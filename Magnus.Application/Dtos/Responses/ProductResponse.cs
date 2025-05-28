@@ -7,4 +7,5 @@ public record ProductResponse(
     decimal Price,
     IEnumerable<BarResponse>? Bars,
     Guid LaboratoryId,
+    bool ApplyPriceRule,
     IEnumerable<ProductPriceTableResponse>? ProductPriceTable);

@@ -20,12 +20,6 @@ public class SaleAppService(
         var sale = request.MapToEntity();
         await saleService.CreateAsync(sale, cancellationToken);
         await unitOfWork.Sales.AddAsync(sale, cancellationToken);
-        if (request.Receipts is not null)
-        {
-            var receipts = request.Receipts.MapToEntity();
-            await saleReceiptService.AddRangeAsync(sale, receipts, cancellationToken);
-        }
-
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

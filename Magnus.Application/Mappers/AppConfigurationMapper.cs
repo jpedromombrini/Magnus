@@ -10,12 +10,14 @@ public static class AppConfigurationMapper
 
     public static AppConfiguration MapToEntity(this CreateAppConfigurationRequest request)
     {
-        return new AppConfiguration(request.CostCenterSale);
+        return new AppConfiguration(request.CostCenterSale, request.AmountToDiscount, request.DaysValidityEstimate);
     }
+
     public static AppConfiguration MapToEntity(this UpdateAppConfigurationRequest request)
     {
-        return new AppConfiguration(request.CostCenterSale);
+        return new AppConfiguration(request.CostCenterSale, request.AmountToDiscount, request.DaysValidityEstimate);
     }
+
     public static IEnumerable<AppConfiguration> MapToEntity(
         this IEnumerable<CreateAppConfigurationRequest> requests)
     {
@@ -27,7 +29,6 @@ public static class AppConfigurationMapper
     {
         return requests.Select(MapToEntity).ToList();
     }
-    
 
     #endregion
 
@@ -35,7 +36,8 @@ public static class AppConfigurationMapper
 
     public static AppConfigurationResponse MapToResponse(this AppConfiguration entity)
     {
-        return new AppConfigurationResponse(entity.Id, entity.CostCenterSale);
+        return new AppConfigurationResponse(entity.Id, entity.CostCenterSale, entity.AmountToDiscount,
+            entity.DaysValidityEstimate);
     }
 
     public static IEnumerable<AppConfigurationResponse> MapToResponse(this IEnumerable<AppConfiguration> entity)

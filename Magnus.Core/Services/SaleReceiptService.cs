@@ -18,7 +18,6 @@ public class SaleReceiptService(
             saleReceipt.SetUserId(sale.UserId);
             if(saleReceipt.ReceiptId == Guid.Empty)
                 throw new BusinessRuleException("Informe o id da venda");
-        
             var receipt = await receiptService.GetByIdAsync(saleReceipt.ReceiptId, cancellationToken);
             if (receipt is null)
                 throw new BusinessRuleException("Informe a forma de recebimento");

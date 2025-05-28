@@ -1,6 +1,5 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
-using Magnus.Application.Services;
 using Magnus.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +45,7 @@ public class EstimateController(
     }
 
     [HttpGet("getreport/{id:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GenerateReportAsync(Guid id, CancellationToken cancellationToken)
     {
         return File(await estimateAppService.CreatePdf(id, cancellationToken), "application/pdf", $"{id}.pdf");
@@ -56,7 +56,7 @@ public class EstimateController(
     {
         await estimateAppService.AddEstimateAsync(request, cancellationToken);
     }
-    
+
     [HttpPost("createsale/{id:guid}")]
     public async Task CreateSaleAsync(Guid id, CancellationToken cancellationToken)
     {

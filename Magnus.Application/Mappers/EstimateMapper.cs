@@ -86,7 +86,7 @@ public static class EstimateMapper
         var estimate = new EstimateResponse(entity.Id, entity.Code, entity.Description, entity.CreatedAt,
             entity.ValiditAt, entity.ClientId, entity.ClientName, entity.Value, entity.FreightId, entity.Freight,
             entity.FinantialDiscount, entity.Observation, entity.UserId, user, entity.Items.MapToResponse(),
-            entity.Receipts.MapToResponse());
+            entity.Receipts.MapToResponse(), entity.EstimateStatus);
         return estimate;
     }
 
@@ -100,7 +100,6 @@ public static class EstimateMapper
     {
         return entities.Select(MapToResponse);
     }
-
 
     public static IEnumerable<EstimateItemResponse> MapToResponse(this IEnumerable<EstimateItem> entities)
     {

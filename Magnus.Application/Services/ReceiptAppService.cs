@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
@@ -10,8 +11,7 @@ using Magnus.Core.Repositories;
 namespace Magnus.Application.Services;
 
 public class ReceiptAppService(
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : IReceiptAppService
+    IUnitOfWork unitOfWork) : IReceiptAppService
 {
     public async Task AddReceiptAsync(CreateReceiptRequest request, CancellationToken cancellationToken)
     {
@@ -19,7 +19,7 @@ public class ReceiptAppService(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (receiptDb is not null)
             throw new ApplicationException("Já existe um Recebimento com esse nome");
-        await unitOfWork.Receipts.AddAsync(mapper.Map<Receipt>(request), cancellationToken);
+        await unitOfWork.Receipts.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -37,19 +37,21 @@ public class ReceiptAppService(
 
     public async Task<IEnumerable<ReceiptResponse>> GetReceiptsAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<ReceiptResponse>>(await unitOfWork.Receipts.GetAllAsync(cancellationToken));
+        return (await unitOfWork.Receipts.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<ReceiptResponse>> GetReceiptsByFilterAsync(Expression<Func<Receipt, bool>> predicate,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<ReceiptResponse>>(
-            await unitOfWork.Receipts.GetAllByExpressionAsync(predicate, cancellationToken));
+        return (await unitOfWork.Receipts.GetAllByExpressionAsync(predicate, cancellationToken)).MapToResponse();
     }
 
     public async Task<ReceiptResponse> GetReceiptByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return mapper.Map<ReceiptResponse>(await unitOfWork.Receipts.GetByIdAsync(id, cancellationToken));
+        var receiptDb = await unitOfWork.Receipts.GetByIdAsync(id, cancellationToken);
+        if(receiptDb is null)
+            throw new EntityNotFoundException(id);
+        return receiptDb.MapToResponse();
     }
 
     public async Task DeleteReceiptAsync(Guid id, CancellationToken cancellationToken)

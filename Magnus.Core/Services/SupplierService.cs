@@ -41,4 +41,12 @@ public class SupplierService(IUnitOfWork unitOfWork) : ISupplierService
             supplierDb.SetEmail(supplier.Email);
         unitOfWork.Suppliers.Update(supplierDb);
     }
+
+    public async Task<Supplier> GetSupplierByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var supplierDb = await unitOfWork.Suppliers.GetByIdAsync(id, cancellationToken);
+        if (supplierDb is null)
+            throw new EntityNotFoundException(id);
+        return supplierDb;
+    }
 }

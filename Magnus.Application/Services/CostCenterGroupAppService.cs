@@ -18,11 +18,13 @@ public class CostCenterGroupAppService(
     public async Task AddCostCenterGroupAsync(CreateCostCenterGroupRequest request, CancellationToken cancellationToken)
     {
         var costCenterGroupDb =
-            await unitOfWork.CostCenterGroups.GetByExpressionAsync(x => x.Code == request.Code, cancellationToken);
+            await unitOfWork.CostCenterGroups.GetByExpressionAsync(
+                x => x.Code == request.Code && x.CostcenterGroupType == request.CostcenterGroupType, cancellationToken);
         if (costCenterGroupDb is not null)
             throw new ApplicationException("Já existe um grupo de centro de custo com esse código");
         costCenterGroupDb = await unitOfWork.CostCenterGroups.GetByExpressionAsync(
-            x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+            x => x.Name.ToLower() == request.Name.ToLower() && x.CostcenterGroupType == request.CostcenterGroupType,
+            cancellationToken);
         if (costCenterGroupDb is not null)
             throw new ApplicationException("Já existe um grupo de centro de custo com esse nome");
         await unitOfWork.CostCenterGroups.AddAsync(request.MapToEntity(), cancellationToken);
@@ -51,10 +53,10 @@ public class CostCenterGroupAppService(
         GetCostCenterFilter filter, CancellationToken cancellationToken)
     {
         return (await unitOfWork.CostCenterGroups.GetAllByExpressionAsync(
-                x =>
-                    (string.IsNullOrEmpty(filter.Name) || x.Name.ToLower() == filter.Name.ToLower()) &&
-                    (filter.CostCenterGroupType == null || x.CostcenterGroupType == filter.CostCenterGroupType),
-                cancellationToken)).MapToResponse();
+            x =>
+                (string.IsNullOrEmpty(filter.Name) || x.Name.ToLower() == filter.Name.ToLower()) &&
+                (filter.CostCenterGroupType == null || x.CostcenterGroupType == filter.CostCenterGroupType),
+            cancellationToken)).MapToResponse();
     }
 
     public async Task<CostCenterGroupResponse> GetCostCenterGroupByIdAsync(Guid id, CancellationToken cancellationToken)
