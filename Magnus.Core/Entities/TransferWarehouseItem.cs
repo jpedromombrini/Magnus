@@ -1,34 +1,34 @@
-using System.Text.Json.Serialization;
 using Magnus.Core.Enumerators;
 
 namespace Magnus.Core.Entities;
 
 public class TransferWarehouseItem : EntityBase
 {
-    public Guid ProductId { get; private set; }
-    public int ProductInternalCode { get; private set; }
-    public string ProductName { get; private set; }
-    public int Amount { get; private set; }
-    public Guid TransferWarehouseId { get; private set; }
-    public TransferWarehouseItemStatus Status { get; private set; }
-    public TransferWarehouse TransferWarehouse { get; private set; }
-
     private TransferWarehouseItem()
     {
     }
 
-    public TransferWarehouseItem(Guid productId, int productInternalCode, string productName, int amount,
+    public TransferWarehouseItem(Guid productId, int productInternalCode, string productName, int requestedAmount,
         Guid transferWarehouseId, TransferWarehouseItemStatus status, TransferWarehouse transferWarehouse)
     {
         SetProductId(productId);
         SetProductInternalCode(productInternalCode);
         SetProductName(productName);
-        SetAmount(amount);
+        SetRequestedAmount(requestedAmount);
         SetTransferWarehouseId(transferWarehouseId);
         SetStatus(status);
         SetStatus(status);
         SetTransferWarehouse(transferWarehouse);
     }
+
+    public Guid ProductId { get; private set; }
+    public int ProductInternalCode { get; private set; }
+    public string ProductName { get; private set; }
+    public int RequestedAmount { get; private set; }
+    public int AutorizedAmount { get; private set; }
+    public Guid TransferWarehouseId { get; private set; }
+    public TransferWarehouseItemStatus Status { get; private set; }
+    public TransferWarehouse TransferWarehouse { get; private set; }
 
     public void SetProductId(Guid productId)
     {
@@ -51,11 +51,18 @@ public class TransferWarehouseItem : EntityBase
         ProductName = productName;
     }
 
-    public void SetAmount(int amount)
+    public void SetRequestedAmount(int requestedAmount)
     {
-        if (amount <= 0)
-            throw new ArgumentException("Informe a quantidade do produto");
-        Amount = amount;
+        if (requestedAmount <= 0)
+            throw new ArgumentException("Informe a quantidade solicitada do produto");
+        RequestedAmount = requestedAmount;
+    }
+
+    public void SetAutorizedAmount(int autorizedAmount)
+    {
+        if (autorizedAmount <= 0)
+            throw new ArgumentException("Informe a quantidade autorizada do produto");
+        AutorizedAmount = autorizedAmount;
     }
 
     public void SetTransferWarehouseId(Guid transferWarehouseId)

@@ -1,12 +1,12 @@
 using Magnus.Core.Repositories;
 using Magnus.Infrastructure.Persistence.Contexts;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Magnus.Infrastructure.Persistence.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
     private readonly MagnusContext _context;
+
     public UnitOfWork(MagnusContext context)
     {
         _context = context;
@@ -37,6 +37,7 @@ public class UnitOfWork : IUnitOfWork
         Bars = new BarRepository(_context);
         AccountsReceivables = new AccountsReceivableRepository(_context);
         Freights = new FreightRepository(_context);
+        StockMovements = new StockMovementRepository(_context);
     }
 
     public IProductRepository Products { get; }
@@ -66,11 +67,13 @@ public class UnitOfWork : IUnitOfWork
     public IBarRepository Bars { get; }
     public IAccountsReceivableRepository AccountsReceivables { get; }
     public IFreightRepository Freights { get; }
+    public IStockMovementRepository StockMovements { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
         return await _context.SaveChangesAsync(cancellationToken);
     }
+
     public void Dispose()
     {
         _context.Dispose();

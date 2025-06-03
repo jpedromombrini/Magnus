@@ -20,8 +20,9 @@ public class ClientMap : IEntityTypeConfiguration<Client>
             .HasColumnType("varchar(14)");
         builder.OwnsOne(x => x.Email)
             .Property(x => x.Address)
+            .IsRequired(false)
             .HasColumnName("Email")
-            .HasColumnType("varchar(100)");        
+            .HasColumnType("varchar(100)");
         builder.Property(x => x.DateOfBirth)
             .HasColumnType("date");
         builder.Property(x => x.Occupation)
@@ -38,8 +39,8 @@ public class ClientMap : IEntityTypeConfiguration<Client>
             .Property(x => x.Neighborhood)
             .HasColumnName("Neighborhood")
             .HasColumnType("varchar(50)");
-        builder.OwnsOne(x=>x.Address)
-            .Property(x =>x.PublicPlace)
+        builder.OwnsOne(x => x.Address)
+            .Property(x => x.PublicPlace)
             .HasColumnName("PublicPlace")
             .HasColumnType("varchar(100)");
         builder.OwnsOne(x => x.Address)
@@ -47,7 +48,7 @@ public class ClientMap : IEntityTypeConfiguration<Client>
             .HasColumnName("Complement")
             .HasColumnType("varchar(50)");
         builder.OwnsOne(x => x.Address)
-            .Property(x =>x.Number)
+            .Property(x => x.Number)
             .HasColumnName("Number");
         builder.OwnsOne(x => x.Address)
             .Property(x => x.ZipCode)

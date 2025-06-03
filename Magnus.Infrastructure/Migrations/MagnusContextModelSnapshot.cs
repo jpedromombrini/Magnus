@@ -1067,6 +1067,42 @@ namespace Magnus.Infrastructure.Migrations
                     b.ToTable("Seller", (string)null);
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.StockMovement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("AuditProductType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Observation")
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("WarehouseId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WarehouseName")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StockMovements", (string)null);
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Supplier", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1123,8 +1159,8 @@ namespace Magnus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(10,3)");
+                    b.Property<int>("AutorizedAmount")
+                        .HasColumnType("integer");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
@@ -1135,6 +1171,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<string>("ProductName")
                         .IsRequired()
                         .HasColumnType("varchar(100)");
+
+                    b.Property<int>("RequestedAmount")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -1310,7 +1349,6 @@ namespace Magnus.Infrastructure.Migrations
                                 .HasColumnType("uuid");
 
                             b1.Property<string>("Address")
-                                .IsRequired()
                                 .HasColumnType("varchar(100)")
                                 .HasColumnName("Email");
 

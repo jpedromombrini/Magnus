@@ -57,7 +57,7 @@ public class TransferWarehouseAppService(
             await unitOfWork.TransferWarehouses.GetByIdAsync(transferItemDb.TransferWarehouse.Id, cancellationToken);
         if (transferDb is null)
             throw new EntityNotFoundException("Não foi possível encontrar a transferência");
-
+        transferItemDb.SetAutorizedAmount(request.AutorizedAmount);
         switch (transferItemDb.Status)
         {
             case TransferWarehouseItemStatus.Requested when

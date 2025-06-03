@@ -1,5 +1,3 @@
-using Magnus.Core.Entities;
-
 namespace Magnus.Core.Repositories;
 
 public interface IUnitOfWork : IDisposable
@@ -31,5 +29,6 @@ public interface IUnitOfWork : IDisposable
     IBarRepository Bars { get; }
     IAccountsReceivableRepository AccountsReceivables { get; }
     IFreightRepository Freights { get; }
+    IStockMovementRepository StockMovements { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

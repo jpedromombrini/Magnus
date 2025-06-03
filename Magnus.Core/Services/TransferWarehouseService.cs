@@ -16,30 +16,30 @@ public class TransferWarehouseService(
     {
         var audits = CreateAuditProducts(transferWarehouseItem, transferId, originWarehouseId, destinationWarehouseId);
         var productStockOrigin = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
-            x.WarehouseId == originWarehouseId &&
-            transferWarehouseItem.ProductId == x.ProductId,
-             cancellationToken);
+                x.WarehouseId == originWarehouseId &&
+                transferWarehouseItem.ProductId == x.ProductId,
+            cancellationToken);
         if (productStockOrigin is null)
             throw new EntityNotFoundException(transferWarehouseItem.ProductId);
-        
+
         var productStockDestiny = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
                 x.WarehouseId == destinationWarehouseId &&
                 transferWarehouseItem.ProductId == x.ProductId,
             cancellationToken);
-        
-        productStockOrigin.DecreaseAmount(transferWarehouseItem.Amount);
+
+        productStockOrigin.DecreaseAmount(transferWarehouseItem.AutorizedAmount);
         unitOfWork.ProductStocks.Update(productStockOrigin);
-        
+
         if (productStockDestiny is null)
         {
             productStockDestiny = new ProductStock(transferWarehouseItem.ProductId,
-                transferWarehouseItem.Amount, destinationWarehouseId,
+                transferWarehouseItem.AutorizedAmount, destinationWarehouseId,
                 transferWarehouseItem.TransferWarehouse.WarehouseDestinyName);
             await unitOfWork.ProductStocks.AddAsync(productStockDestiny, cancellationToken);
         }
         else
         {
-            productStockDestiny.IncreaseAmount(transferWarehouseItem.Amount);
+            productStockDestiny.IncreaseAmount(transferWarehouseItem.AutorizedAmount);
             unitOfWork.ProductStocks.Update(productStockDestiny);
         }
 
@@ -52,31 +52,31 @@ public class TransferWarehouseService(
         int destinationWarehouseId, CancellationToken cancellationToken)
     {
         var productStockDestiny = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
-            x.WarehouseId == destinationWarehouseId &&
-            transferWarehouseItem.ProductId == x.ProductId, 
+                x.WarehouseId == destinationWarehouseId &&
+                transferWarehouseItem.ProductId == x.ProductId,
             cancellationToken);
 
         if (productStockDestiny is null)
             throw new EntityNotFoundException(transferWarehouseItem.ProductId);
 
-        productStockDestiny.DecreaseAmount(transferWarehouseItem.Amount);
+        productStockDestiny.DecreaseAmount(transferWarehouseItem.AutorizedAmount);
         unitOfWork.ProductStocks.Update(productStockDestiny);
 
         var productStockOrigin = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
-            x.WarehouseId == originWarehouseId &&
-            transferWarehouseItem.ProductId == x.ProductId,
+                x.WarehouseId == originWarehouseId &&
+                transferWarehouseItem.ProductId == x.ProductId,
             cancellationToken);
         if (productStockOrigin is null)
         {
             var productStock = new ProductStock(transferWarehouseItem.ProductId,
-                transferWarehouseItem.Amount, destinationWarehouseId,
+                transferWarehouseItem.AutorizedAmount, destinationWarehouseId,
                 transferWarehouseItem.TransferWarehouse.WarehouseDestinyName);
 
             await unitOfWork.ProductStocks.AddAsync(productStock, cancellationToken);
         }
         else
         {
-            productStockOrigin.IncreaseAmount(transferWarehouseItem.Amount);
+            productStockOrigin.IncreaseAmount(transferWarehouseItem.AutorizedAmount);
             unitOfWork.ProductStocks.Update(productStockOrigin);
         }
 
@@ -86,14 +86,16 @@ public class TransferWarehouseService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public void UpdateTransferWarehouseItem(TransferWarehouse transferWarehouse, IEnumerable<TransferWarehouseItem> transferWarehouseItems)
+    public void UpdateTransferWarehouseItem(TransferWarehouse transferWarehouse,
+        IEnumerable<TransferWarehouseItem> transferWarehouseItems)
     {
         foreach (var item in transferWarehouseItems)
         {
             var existingItem = transferWarehouse.Items.SingleOrDefault(x => x.ProductId == item.ProductId);
             if (existingItem != null)
             {
-                existingItem.SetAmount(item.Amount);
+                existingItem.SetRequestedAmount(item.RequestedAmount);
+                existingItem.SetAutorizedAmount(item.AutorizedAmount);
                 existingItem.SetStatus(item.Status);
                 existingItem.SetTransferWarehouse(transferWarehouse);
                 existingItem.SetTransferWarehouseId(transferWarehouse.Id);
@@ -105,22 +107,22 @@ public class TransferWarehouseService(
                 transferWarehouse.AddItem(item);
             }
         }
+
         var itemsToRemove = transferWarehouse.Items
             .Where(existingItem => !transferWarehouseItems.Any(item => item.ProductId == existingItem.ProductId))
             .ToList();
-        foreach (var itemToRemove in itemsToRemove)
-        {
-            transferWarehouse.RemoveItem(itemToRemove);
-        }
+        foreach (var itemToRemove in itemsToRemove) transferWarehouse.RemoveItem(itemToRemove);
     }
 
     private List<AuditProduct> CreateAuditProducts(TransferWarehouseItem transferWarehouseItem, Guid transferId,
         int originWarehouseId,
         int destinationWarehouseId)
     {
-        var auditIn = new AuditProduct(transferWarehouseItem.ProductId, DateTime.Now, 0, transferWarehouseItem.Amount,
+        var auditIn = new AuditProduct(transferWarehouseItem.ProductId, DateTime.Now, 0,
+            transferWarehouseItem.AutorizedAmount,
             0, AuditProductType.In, null, 0, destinationWarehouseId, transferId, null, null);
-        var auditOut = new AuditProduct(transferWarehouseItem.ProductId, DateTime.Now, 0, transferWarehouseItem.Amount,
+        var auditOut = new AuditProduct(transferWarehouseItem.ProductId, DateTime.Now, 0,
+            transferWarehouseItem.AutorizedAmount,
             0, AuditProductType.Out, null, 0, originWarehouseId, transferId, null, null);
         List<AuditProduct> audits = [auditIn, auditOut];
         return audits;

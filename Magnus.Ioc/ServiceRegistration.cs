@@ -17,6 +17,7 @@ public static class ServiceRegistration
     public static void AddApplicationServices(this IServiceCollection services)
     {
         #region Services Application
+
         services.AddScoped<IProductAppService, ProductAppService>();
         services.AddScoped<ILaboratoryAppService, LaboratoryAppService>();
         services.AddScoped<IUserAppService, UserAppService>();
@@ -43,9 +44,12 @@ public static class ServiceRegistration
         services.AddScoped<IAccountReceivableAppService, AccountReceivableAppService>();
         services.AddScoped<IStatisticsAppService, StatisticsAppService>();
         services.AddScoped<IFreightAppService, FreightAppService>();
+        services.AddScoped<IStockMovementAppService, StockMovementAppService>();
+
         #endregion
 
         #region Services Core
+
         services.AddScoped<IAuditProductService, AuditProductService>();
         services.AddScoped<IClientService, ClientService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
@@ -66,10 +70,15 @@ public static class ServiceRegistration
         services.AddScoped<ISellerService, SellerService>();
         services.AddScoped<IEstimateService, EstimateService>();
         services.AddScoped<IAccountPayableService, AccountPayableService>();
+        services.AddScoped<IStockMovementService, StockMovementService>();
+        services.AddScoped<IProductStockService, ProductStockService>();
+
         #endregion
-        
+
         #region Repositories
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
         #endregion
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

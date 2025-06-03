@@ -14,9 +14,7 @@ public static class TransferWarehouseMapper
         var transferWarehouse = new TransferWarehouse(request.UserId, request.UserName, request.WarehouseOriginId,
             request.WarehouseOriginName, request.WarehouseDestinyId, request.WarehouseDestinyName);
         foreach (var transferWarehouseItem in request.Items)
-        {
             transferWarehouse.AddItem(transferWarehouseItem.MapToEntity());
-        }
 
         return transferWarehouse;
     }
@@ -26,17 +24,18 @@ public static class TransferWarehouseMapper
         var transferWarehouse = new TransferWarehouse(request.UserId, request.UserName, request.WarehouseOriginId,
             request.WarehouseOriginName, request.WarehouseDestinyId, request.WarehouseDestinyName);
         foreach (var transferWarehouseItem in request.Items)
-        {
             transferWarehouse.AddItem(transferWarehouseItem.MapToEntity());
-        }
 
         return transferWarehouse;
     }
 
     public static TransferWarehouseItem MapToEntity(this TransferWarehouseItemRequest request)
     {
-        return new TransferWarehouseItem(request.ProductId, request.ProductInternalCode, request.ProductName,
-            request.Amount, Guid.Empty, TransferWarehouseItemStatus.Requested, null);
+        var item = new TransferWarehouseItem(request.ProductId, request.ProductInternalCode, request.ProductName,
+            request.RequestedAmount, Guid.Empty, TransferWarehouseItemStatus.Requested, null);
+        if (request.AutorizedAmount > 0)
+            item.SetAutorizedAmount(request.AutorizedAmount);
+        return item;
     }
 
     #endregion
@@ -46,10 +45,7 @@ public static class TransferWarehouseMapper
     public static TransferWarehouseResponse MapToResponse(this TransferWarehouse? entity)
     {
         var items = new List<TransferWarehouseItemResponse>(entity.Items.Count);
-        items.AddRange(entity.Items.Select(item => new TransferWarehouseItemResponse(item.Id, item.ProductId,
-            item.ProductInternalCode, item.ProductName, item.Amount, item.TransferWarehouseId, item.Status,
-            entity.WarehouseOriginName, entity.WarehouseDestinyName)));
-
+        items.AddRange(entity.Items.MapToResponse());
         var transferWarehouse = new TransferWarehouseResponse(entity.Id, entity.UserId, entity.CreatedAt,
             entity.UserName, entity.WarehouseOriginId, entity.WarehouseOriginName, entity.WarehouseDestinyId,
             entity.WarehouseDestinyName,
@@ -60,7 +56,8 @@ public static class TransferWarehouseMapper
     public static TransferWarehouseItemResponse MapToResponse(this TransferWarehouseItem entity)
     {
         return new TransferWarehouseItemResponse(entity.Id, entity.ProductId,
-            entity.ProductInternalCode, entity.ProductName, entity.Amount, entity.TransferWarehouseId, entity.Status,
+            entity.ProductInternalCode, entity.ProductName, entity.RequestedAmount, entity.AutorizedAmount,
+            entity.TransferWarehouseId, entity.Status,
             entity.TransferWarehouse.WarehouseOriginName, entity.TransferWarehouse.WarehouseDestinyName);
     }
 
@@ -74,7 +71,6 @@ public static class TransferWarehouseMapper
     {
         return entities.Select(MapToResponse).ToList();
     }
-    
 
     #endregion
 }
