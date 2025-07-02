@@ -26,18 +26,18 @@ public class ProductStockAppService(
             productId == x.ProductId && x.WarehouseId == warehouseId, cancellationToken));
     }
 
-    public async Task<decimal> GetBalanceProductStocksAsync(Guid productId, int warehouseId,
+    public async Task CreateProductStockMovementAsync(ProductStock productStock, CancellationToken cancellationToken)
+    {
+        await productStockService.CreateProductStockMovementAsync(productStock, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<int> GetBalanceProductStocksAsync(Guid productId, int warehouseId,
         CancellationToken cancellationToken)
     {
         var product = await unitOfWork.Products.GetByIdAsync(productId, cancellationToken);
         if (product == null)
             throw new EntityNotFoundException("Nenhum produto encontrado com esse Id");
         return await productStockService.GetProductStockAsync(productId, warehouseId, cancellationToken);
-    }
-
-    public async Task CreateProductStockMovementAsync(ProductStock productStock, CancellationToken cancellationToken)
-    {
-        await productStockService.CreateProductStockMovementAsync(productStock, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

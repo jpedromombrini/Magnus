@@ -2,12 +2,6 @@ namespace Magnus.Core.Entities;
 
 public class CostCenterSubGroup : EntityBase
 {
-    public string Code { get; private set; } 
-    public string Name { get; private set; } 
-    public Guid CostCenterGroupId { get; private set; }
-    public CostCenterGroup CostCenterGroup { get; private set; }
-    public ICollection<CostCenter> CostCenters { get; private set; }
-    
     public CostCenterSubGroup(string code, string name, Guid costCenterGroupId)
     {
         SetCode(code);
@@ -15,21 +9,29 @@ public class CostCenterSubGroup : EntityBase
         SetCostCenterGroupId(costCenterGroupId);
         CostCenters = [];
     }
+
+    public string Code { get; private set; }
+    public string Name { get; private set; }
+    public Guid CostCenterGroupId { get; private set; }
+    public CostCenterGroup CostCenterGroup { get; private set; }
+    public ICollection<CostCenter> CostCenters { get; }
+
     public void SetCode(string code)
     {
-        if(string.IsNullOrEmpty(code))
+        if (string.IsNullOrEmpty(code))
             throw new ArgumentNullException("O código não pode ser nulo.");
-        if(code.Length != 5)
+        if (code.Length != 5)
             throw new ArgumentNullException("O código deve ter 5 caracteres.");
         Code = code;
     }
 
     public void SetName(string name)
     {
-        if(string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(name))
             throw new ArgumentNullException("O Nome não pode ser nulo.");
-        Name = name;
+        Name = name.ToUpper();
     }
+
     public void AddCostCenter(CostCenter costCenter)
     {
         if (costCenter == null)
@@ -41,7 +43,7 @@ public class CostCenterSubGroup : EntityBase
     {
         CostCenterGroup = costCenterGroup;
     }
-    
+
     public void SetCostCenterGroupId(Guid costCenterGroupId)
     {
         if (costCenterGroupId == Guid.Empty)

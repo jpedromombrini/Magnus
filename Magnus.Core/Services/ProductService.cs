@@ -28,10 +28,8 @@ public class ProductService(
         productDb.SetName(product.Name);
         productDb.SetLaboratoryId(product.LaboratoryId);
         productDb.SetApplyPriceRule(product.ApplyPriceRule);
-        productDb.Bars?.Clear();
-        productDb.ProductPriceTables?.Clear();
-        await UpdateBarsAsync(productDb.Id, product, cancellationToken);
-        await UpdatePriceTableAsync(productDb.Id, product, cancellationToken);
+        UpdateBarsAsync(product, productDb);
+        UpdatePriceTableAsync(product, productDb);
         return productDb;
     }
 
@@ -40,34 +38,41 @@ public class ProductService(
         var product = await unitOfWork.Products.GetByIdAsync(id, cancellationToken);
         if (product is null)
             throw new EntityNotFoundException(id);
-        var bars = await barService.GetByProductId(product.Id, cancellationToken);
-        foreach (var bar in bars)
-            product.AddBar(bar);
-        var tables = await productPriceTableService.GetByProductId(product.Id, cancellationToken);
-        foreach (var table in tables)
-            product.AddProductPriceTable(table);
-
         return product;
     }
 
-    private async Task UpdateBarsAsync(Guid productId, Product product, CancellationToken cancellationToken)
+    private void UpdateBarsAsync(Product product, Product productDb)
     {
-        await barService.RemoveRangeAsync(productId, cancellationToken);
-        if (product.Bars != null)
+        if (productDb.Bars is not null)
         {
-            var barsToInsert = product.Bars.Select(bar => new Bar(productId, bar.Code)).ToList();
-            await barService.AddRangeAsync(barsToInsert, cancellationToken);
+            unitOfWork.Bars.RemoveRange(productDb.Bars);
+            productDb.Bars?.Clear();
+        }
+
+        if (product.Bars is null) return;
+        foreach (var barRequest in product.Bars)
+        {
+            var bar = new Bar(barRequest.Code);
+            bar.SetProductId(productDb.Id);
+            productDb.AddBar(bar);
         }
     }
 
-    private async Task UpdatePriceTableAsync(Guid productId, Product product, CancellationToken cancellationToken)
+    private void UpdatePriceTableAsync(Product product, Product productDb)
     {
-        await productPriceTableService.RemoveRangeAsync(productId, cancellationToken);
-        if (product.ProductPriceTables != null)
+        if (productDb.ProductPriceTables is not null)
         {
-            var tablesToInsert = product.ProductPriceTables.Select(table =>
-                new ProductPriceTable(productId, table.MinimalAmount, table.MaximumAmount, table.Price)).ToList();
-            await productPriceTableService.AddRangeAsync(tablesToInsert, cancellationToken);
+            unitOfWork.ProductPriceTables.RemoveRange(productDb.ProductPriceTables);
+            productDb.ProductPriceTables?.Clear();
+        }
+
+        if (product.ProductPriceTables is null) return;
+        foreach (var priceTableRequest in product.ProductPriceTables)
+        {
+            var priceTable = new ProductPriceTable(priceTableRequest.MinimalAmount, priceTableRequest.MaximumAmount,
+                priceTableRequest.Price);
+            priceTable.SetProductId(productDb.Id);
+            productDb.AddProductPriceTable(priceTable);
         }
     }
 }

@@ -26,7 +26,7 @@ public class Product : EntityBase
     {
         if (string.IsNullOrEmpty(name))
             throw new ArgumentNullException(nameof(name), "O nome não pode ser nulo ou vazio.");
-        Name = name;
+        Name = name.ToUpper();
     }
 
     public void SetPrice(decimal price)

@@ -2,19 +2,12 @@ namespace Magnus.Core.Entities;
 
 public class InvoiceItem : EntityBase
 {
-    public Guid ProductId { get; private  set; }
-    public int ProductInternalCode { get; private set; }
-    public string ProductName { get; private set; }
-    public int Amount { get; private set; }
-    public decimal TotalValue { get; private set; }
-    public bool Bonus { get; private set; }
-    public Guid InvoiceId { get; private set; }
-    public DateOnly Validate { get; private set; }
-    public string Lot { get; private set; }
-    public Invoice Invoice { get; private set; }
-    private InvoiceItem(){}
+    private InvoiceItem()
+    {
+    }
+
     public InvoiceItem(Guid productId, int productInternalCode, string productName, int amount, decimal totalValue,
-        bool bonus, DateOnly validate,  string lot)
+        bool bonus, DateOnly validate, string lot)
     {
         SetProductId(productId);
         SetProductInternalCode(productInternalCode);
@@ -25,6 +18,18 @@ public class InvoiceItem : EntityBase
         SetValidate(validate);
         SetLot(lot);
     }
+
+    public Guid ProductId { get; private set; }
+    public int ProductInternalCode { get; private set; }
+    public string ProductName { get; private set; }
+    public int Amount { get; private set; }
+    public decimal TotalValue { get; private set; }
+    public bool Bonus { get; private set; }
+    public Guid InvoiceId { get; private set; }
+    public DateOnly Validate { get; private set; }
+    public string Lot { get; private set; }
+    public Invoice Invoice { get; private set; }
+
     public void SetProductId(Guid productId)
     {
         if (productId == Guid.Empty)
@@ -43,7 +48,7 @@ public class InvoiceItem : EntityBase
     {
         if (string.IsNullOrWhiteSpace(productName))
             throw new ArgumentException("O nome do produto não pode ser nulo ou vazio.");
-        ProductName = productName;
+        ProductName = productName.ToUpper();
     }
 
     public void SetAmount(int amount)

@@ -10,17 +10,11 @@ public static class ProductMapper
 
     public static Product MapToEntity(this CreateProductRequest request)
     {
-        List<Bar> bars = [];
-        List<ProductPriceTable> prices = [];
         Product product = new(request.Name, request.Price, request.LaboratoryId, request.ApplyPriceRule);
-        if (request.Bars is not null) bars.AddRange(request.Bars.Select(bar => new Bar(product.Id, bar.Code)));
+        if (request.Bars is not null)
+            product.AddBars(request.Bars.MapToEntity());
         if (request.ProductPriceTable is not null)
-            prices.AddRange(request.ProductPriceTable.Select(productPrice =>
-                new ProductPriceTable(product.Id, productPrice.MinimalAmount,
-                    productPrice.MaximumAmount,
-                    productPrice.Price)));
-        foreach (var bar in bars) product.AddBar(bar);
-        foreach (var priceTable in prices) product.AddProductPriceTable(priceTable);
+            product.AddProductPriceTables(request.ProductPriceTable.MapToEntity());
         return product;
     }
 
@@ -36,12 +30,12 @@ public static class ProductMapper
 
     public static Bar MapToEntity(this BarRequest request)
     {
-        return new Bar(request.ProductId, request.Code);
+        return new Bar(request.Code);
     }
 
     public static ProductPriceTable MapToEntity(this ProductPriceTableRequest request)
     {
-        return new ProductPriceTable(request.ProductId, request.MinimalAmount, request.MaximumAmount, request.Price);
+        return new ProductPriceTable(request.MinimalAmount, request.MaximumAmount, request.Price);
     }
 
     public static IEnumerable<ProductPriceTable> MapToEntity(this IEnumerable<ProductPriceTableRequest> requests)

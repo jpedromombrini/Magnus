@@ -71,7 +71,6 @@ public static class ServiceRegistration
         services.AddScoped<IEstimateService, EstimateService>();
         services.AddScoped<IAccountPayableService, AccountPayableService>();
         services.AddScoped<IStockMovementService, StockMovementService>();
-        services.AddScoped<IProductStockService, ProductStockService>();
 
         #endregion
 

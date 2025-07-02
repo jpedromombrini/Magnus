@@ -2,18 +2,21 @@ namespace Magnus.Core.Entities;
 
 public class Freight : EntityBase
 {
-    public string Name { get; private set; }
+    private Freight()
+    {
+    }
 
-    private Freight(){}
     public Freight(string name)
     {
-        Name = name;
+        SetName(name);
     }
+
+    public string Name { get; private set; }
 
     public void SetName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Informe o nome");
-        Name = name;
+        Name = name.ToUpper();
     }
 }

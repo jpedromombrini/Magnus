@@ -10,6 +10,9 @@ public class StockMovementMap : IEntityTypeConfiguration<StockMovement>
     {
         builder.ToTable("StockMovements");
         builder.HasKey(x => x.Id);
+        builder.Property(x => x.CreatAt)
+            .IsRequired()
+            .HasColumnType("timestamp");
         builder.Property(x => x.Observation)
             .IsRequired(false)
             .HasColumnType("varchar(100)");

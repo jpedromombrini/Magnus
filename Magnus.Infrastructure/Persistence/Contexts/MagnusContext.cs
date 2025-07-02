@@ -1,12 +1,19 @@
 using System.Reflection;
 using Magnus.Core.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Magnus.Infrastructure.Persistence.Contexts;
+
 public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(options)
 {
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        base.OnModelCreating(modelBuilder);
+    }
+
     #region Contexts
+
     public DbSet<Product> Products { get; set; }
     public DbSet<Laboratory> Laboratories { get; set; }
     public DbSet<Bar> Bars { get; set; }
@@ -43,10 +50,7 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<AppConfiguration> AppConfigurations { get; set; }
     public DbSet<AccountsReceivable> AccountsReceivables { get; set; }
     public DbSet<Freight> Freights { get; set; }
+    public DbSet<StockMovement> StockMovements { get; set; }
+
     #endregion
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        base.OnModelCreating(modelBuilder);
-    }
 }

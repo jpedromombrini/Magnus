@@ -4,6 +4,20 @@ namespace Magnus.Core.Entities;
 
 public class Sale : EntityBase
 {
+    private Sale()
+    {
+    }
+
+    public Sale(Guid clientId, Guid userId, decimal value, decimal freight, decimal finantialDiscount)
+    {
+        SetCreateAt(DateTime.Now);
+        SetClientId(clientId);
+        SetUserId(userId);
+        SetValue(value);
+        SetFreight(freight);
+        SetFinantialDiscount(finantialDiscount);
+    }
+
     public DateTime CreateAt { get; private set; }
     public int Document { get; private set; }
     public Guid ClientId { get; private set; }
@@ -18,20 +32,6 @@ public class Sale : EntityBase
     public ICollection<SaleReceipt>? Receipts { get; private set; }
     public Guid? EstimateId { get; private set; }
     public string ReasonCancel { get; private set; }
-
-    private Sale()
-    {
-    }
-
-    public Sale(Guid clientId, Guid userId, decimal value, decimal freight, decimal finantialDiscount)
-    {
-        SetCreateAt(DateTime.Now);
-        SetClientId(clientId);
-        SetUserId(userId);
-        SetValue(value);
-        SetFreight(freight);
-        SetFinantialDiscount(finantialDiscount);
-    }
 
     public void SetCreateAt(DateTime createAt)
     {
@@ -49,7 +49,7 @@ public class Sale : EntityBase
     {
         if (string.IsNullOrWhiteSpace(clientName))
             throw new ArgumentException("Informe o Nome do cliente");
-        ClientName = clientName;
+        ClientName = clientName.ToUpper();
     }
 
     public void SetUserId(Guid userId)
@@ -64,7 +64,7 @@ public class Sale : EntityBase
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
         Value = value;
     }
-    
+
     public void SetFreightId(Guid freightId)
     {
         FreightId = freightId;

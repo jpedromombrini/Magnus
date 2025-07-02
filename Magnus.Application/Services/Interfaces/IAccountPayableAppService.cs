@@ -9,7 +9,7 @@ public interface IAccountPayableAppService
     Task AddAccountPayableAsync(CreateAccountsPayableRequest request, CancellationToken cancellationToken);
     Task UpdateAccountPayableAsync(Guid id, UpdateAccountsPayableRequest request, CancellationToken cancellationToken);
 
-    Task<IEnumerable<AccountsPayableResponse>> GetAccountPayablesByFilterAsync(GetAccountsReceivableFilter filter,
+    Task<IEnumerable<AccountsPayableResponse>> GetAccountPayablesByFilterAsync(GetAccountsPayableFilter filter,
         CancellationToken cancellationToken);
 
     Task<AccountsPayableResponse> GetAccountPayableByIdAsync(Guid id, CancellationToken cancellationToken);

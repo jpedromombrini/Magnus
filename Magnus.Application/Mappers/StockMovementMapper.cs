@@ -10,13 +10,13 @@ public static class StockMovementMapper
 
     public static StockMovement MapToEntity(this CreateStockMovementRequest request)
     {
-        return new StockMovement(request.ProductId, request.Amount, request.AuditProductType, request.WarehouseId,
+        return new StockMovement(request.ProductId, request.Amount, request.AuditProductTypeEnum, request.WarehouseId,
             request.WarehouseName, request.UserId, request.Observation);
     }
 
     public static StockMovement MapToEntity(this UpdateStockMovementRequest request)
     {
-        return new StockMovement(request.ProductId, request.Amount, request.AuditProductType, request.WarehouseId,
+        return new StockMovement(request.ProductId, request.Amount, request.AuditProductTypeEnum, request.WarehouseId,
             request.WarehouseName, request.UserId, request.Observation);
     }
 
@@ -26,7 +26,9 @@ public static class StockMovementMapper
 
     public static StockMovementResponse MapToResponse(this StockMovement entity)
     {
-        return new StockMovementResponse(entity.Id, entity.ProductId, entity.Amount, entity.AuditProductType,
+        return new StockMovementResponse(entity.Id, entity.CreatAt, entity.ProductId, entity.Product.Name,
+            entity.Amount,
+            entity.AuditProductType,
             entity.WarehouseId, entity.WarehouseName, entity.UserId, entity.Observation);
     }
 

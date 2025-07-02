@@ -20,5 +20,13 @@ public class ProductMap : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Price)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
+        builder.HasMany(x => x.Bars)
+            .WithOne()
+            .HasForeignKey(x => x.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasMany(x => x.ProductPriceTables)
+            .WithOne()
+            .HasForeignKey(x => x.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -10,7 +10,7 @@ namespace Magnus.Api.Controller;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class AccountsReceivableController(IAccountReceivableAppService accountReceivableAppService)
+public class AccountsReceivableController(IAccountReceivableAppService accountReceivableAppService) : ControllerBase
 {
     [HttpGet("getbyfilter")]
     public async Task<IEnumerable<AccountsReceivableResponse>> GetAccountsReceivablesByFilterAsync(
@@ -21,13 +21,15 @@ public class AccountsReceivableController(IAccountReceivableAppService accountRe
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<AccountsReceivableResponse> GetAccountsReceivableByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<AccountsReceivableResponse> GetAccountsReceivableByIdAsync(Guid id,
+        CancellationToken cancellationToken)
     {
         return await accountReceivableAppService.GetAccountsReceivableByIdAsync(id, cancellationToken);
     }
 
     [HttpPost]
-    public async Task AddAccountsReceivableAsync([FromBody] CreateAccountsReceivableRequest request, CancellationToken cancellationToken)
+    public async Task AddAccountsReceivableAsync([FromBody] CreateAccountsReceivableRequest request,
+        CancellationToken cancellationToken)
     {
         await accountReceivableAppService.AddAccountsReceivableAsync(request, cancellationToken);
     }

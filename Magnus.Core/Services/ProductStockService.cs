@@ -9,7 +9,7 @@ namespace Magnus.Core.Services;
 public class ProductStockService(
     IUnitOfWork unitOfWork) : IProductStockService
 {
-    public async Task<decimal> GetProductStockAsync(Guid productId, int warehouseId,
+    public async Task<int> GetProductStockAsync(Guid productId, int warehouseId,
         CancellationToken cancellationToken)
     {
         var productStocks = await unitOfWork.ProductStocks.GetAllByExpressionAsync(x => x.Amount > 0 &&
@@ -50,7 +50,8 @@ public class ProductStockService(
         await CreateAuditProduck(productStock, cancellationToken, product, wareHouse);
     }
 
-    private async Task CreateAuditProduck(ProductStock productStock, CancellationToken cancellationToken, Product? product,
+    private async Task CreateAuditProduck(ProductStock productStock, CancellationToken cancellationToken,
+        Product? product,
         Warehouse wareHouse)
     {
         var audit = new AuditProduct(product.Id, DateTime.Now, 0, productStock.Amount, 0m, AuditProductType.In, null,
@@ -73,7 +74,8 @@ public class ProductStockService(
         }
     }
 
-    private async Task<(Product? product, Warehouse? wareHouse)> ValidadeProductStock(ProductStock productStock, CancellationToken cancellationToken)
+    private async Task<(Product? product, Warehouse? wareHouse)> ValidadeProductStock(ProductStock productStock,
+        CancellationToken cancellationToken)
     {
         var product =
             await unitOfWork.Products.GetByExpressionAsync(x => x.Id == productStock.ProductId, cancellationToken);

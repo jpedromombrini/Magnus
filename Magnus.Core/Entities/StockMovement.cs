@@ -22,6 +22,7 @@ public class StockMovement : EntityBase
 
     public DateTime CreatAt { get; private set; } = DateTime.Now;
     public Guid ProductId { get; private set; }
+    public Product Product { get; private set; }
     public int Amount { get; private set; }
     public AuditProductType AuditProductType { get; private set; }
     public int WarehouseId { get; private set; }
@@ -34,6 +35,13 @@ public class StockMovement : EntityBase
         if (productId == Guid.Empty)
             throw new ArgumentException("Id do produto não pode ser vazio");
         ProductId = productId;
+    }
+
+    public void SetProduct(Product product)
+    {
+        if (product == null)
+            throw new ArgumentNullException(nameof(product));
+        Product = product;
     }
 
     public void SetAmount(int amount)
@@ -57,7 +65,7 @@ public class StockMovement : EntityBase
     {
         if (string.IsNullOrEmpty(warehouseName))
             throw new ArgumentException("Informe um nome para o depósito");
-        WarehouseName = warehouseName;
+        WarehouseName = warehouseName.ToUpper();
     }
 
     public void SetUserId(Guid userId)

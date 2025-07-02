@@ -2,16 +2,12 @@ namespace Magnus.Core.Entities;
 
 public class EstimateItem : EntityBase
 {
-    public Guid ProductId { get; private set; }
-    public string ProductName { get; private set; }
-    public int Amount { get; private set; }
-    public decimal TotalValue { get; private set; }
-    public decimal Value { get; private set; }
-    public decimal Discount { get; private set; }
-    public Guid EstimateId { get; private set; }
+    private EstimateItem()
+    {
+    }
 
-    private EstimateItem(){}
-    public EstimateItem(Guid productId, string productName, int amount, decimal value, decimal totalValue, decimal discount)
+    public EstimateItem(Guid productId, string productName, int amount, decimal value, decimal totalValue,
+        decimal discount)
     {
         SetProductId(productId);
         SetProductName(productName);
@@ -21,23 +17,31 @@ public class EstimateItem : EntityBase
         SetDiscount(discount);
     }
 
+    public Guid ProductId { get; private set; }
+    public string ProductName { get; private set; }
+    public int Amount { get; private set; }
+    public decimal TotalValue { get; private set; }
+    public decimal Value { get; private set; }
+    public decimal Discount { get; private set; }
+    public Guid EstimateId { get; private set; }
+
     public void SetProductId(Guid productId)
     {
-        if(productId == Guid.Empty)
+        if (productId == Guid.Empty)
             throw new ArgumentNullException("Informe o Id do produto");
         ProductId = productId;
     }
 
     public void SetProductName(string productName)
     {
-        if(string.IsNullOrWhiteSpace(productName))
+        if (string.IsNullOrWhiteSpace(productName))
             throw new ArgumentNullException("Informe o nome do produto");
-        ProductName = productName;
+        ProductName = productName.ToUpper();
     }
 
     public void SetAmount(int amount)
     {
-        if(amount <= 0)
+        if (amount <= 0)
             throw new ArgumentNullException("Informe a quantidade do produto");
         Amount = amount;
     }
@@ -51,11 +55,11 @@ public class EstimateItem : EntityBase
 
     public void setValue(decimal value)
     {
-        if(value <= 0m)
+        if (value <= 0m)
             throw new ArgumentNullException("Informe o valor do produto");
         Value = value;
     }
-    
+
     public void SetDiscount(decimal discount)
     {
         if (discount < 0)
@@ -70,5 +74,4 @@ public class EstimateItem : EntityBase
             throw new ArgumentException("O ID do Orçamento não pode ser um GUID vazio.");
         EstimateId = estimateId;
     }
-    
 }

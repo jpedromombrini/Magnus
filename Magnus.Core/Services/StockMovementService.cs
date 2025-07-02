@@ -6,7 +6,7 @@ using Magnus.Core.Services.Interfaces;
 
 namespace Magnus.Core.Services;
 
-public class StockMovementService(IUnitOfWork unitOfWork, ProductStockService productStockService)
+public class StockMovementService(IUnitOfWork unitOfWork)
     : IStockMovementService
 {
     public async Task CreateStockMovementAsync(StockMovement stockMovement, CancellationToken cancellationToken)
@@ -28,6 +28,7 @@ public class StockMovementService(IUnitOfWork unitOfWork, ProductStockService pr
             else
             {
                 productStock.IncreaseAmount(stockMovement.Amount);
+                unitOfWork.ProductStocks.Update(productStock);
             }
         }
         else
@@ -36,7 +37,7 @@ public class StockMovementService(IUnitOfWork unitOfWork, ProductStockService pr
             productStock.DecreaseAmount(stockMovement.Amount);
         }
 
-        unitOfWork.ProductStocks.Update(productStock);
+        
         await unitOfWork.AuditProducts.AddAsync(auditProduct, cancellationToken);
     }
 }

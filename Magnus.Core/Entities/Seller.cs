@@ -4,13 +4,10 @@ namespace Magnus.Core.Entities;
 
 public class Seller : EntityBase
 {
-    public string Name { get; private set; }
-    public Document? Document { get; private set; }
-    public Phone Phone { get; private set; }
-    public Email Email { get; private set; }
-    public Guid? UserId { get; private set; }
+    private Seller()
+    {
+    }
 
-    private Seller(){}
     public Seller(string name, Phone phone, Email email)
     {
         SetName(name);
@@ -18,11 +15,17 @@ public class Seller : EntityBase
         SetEmail(email);
     }
 
+    public string Name { get; private set; }
+    public Document? Document { get; private set; }
+    public Phone Phone { get; private set; }
+    public Email Email { get; private set; }
+    public Guid? UserId { get; private set; }
+
     public void SetName(string name)
     {
         if (string.IsNullOrEmpty(name))
             throw new ArgumentNullException("O nome não pode ser nulo ou vazio.");
-        Name = name;
+        Name = name.ToUpper();
     }
 
     public void SetDocument(Document document)

@@ -68,20 +68,16 @@ public class EstimateService(
             .ToList();
         var saleReceipts = new List<SaleReceipt>();
         if (estimateDb.Receipts is not null)
-        {
             foreach (var saleReceipt in estimateDb.Receipts)
             {
                 var receipt = new SaleReceipt(client.Id, saleReceipt.UserId, saleReceipt.ReceiptId);
                 foreach (var installment in saleReceipt.Installments)
-                {
                     receipt.AddInstallment(new SaleReceiptInstallment(installment.DueDate,
                         installment.PaymentDate, installment.PaymentValue, installment.Value, installment.Discount,
                         installment.Interest, installment.Installment, null));
-                }
 
                 saleReceipts.Add(receipt);
             }
-        }
 
         var sale = new Sale(client.Id, estimateDb.UserId, estimateDb.Value, estimateDb.Freight,
             estimateDb.FinantialDiscount);
@@ -94,7 +90,7 @@ public class EstimateService(
         sale.AddRangeReceipts(saleReceipts);
         sale.AddItems(saleItems);
         sale.SetClientName(client.Name);
-        sale.SetStatus(SaleStatus.Open);
+        sale.SetStatus(SaleStatus.Invoiced);
         sale.SetEstimateId(estimateDb.Id);
         await unitOfWork.Sales.AddAsync(sale, cancellationToken);
         await saleService.Invoice(sale, cancellationToken);
@@ -138,10 +134,7 @@ public class EstimateService(
         var itemsToRemove = estimateDb.Items
             .Where(item => estimate.Items.All(requestItem => requestItem.ProductId != item.ProductId))
             .ToList();
-        foreach (var itemToRemove in itemsToRemove)
-        {
-            estimateDb.Items.Remove(itemToRemove);
-        }
+        foreach (var itemToRemove in itemsToRemove) estimateDb.Items.Remove(itemToRemove);
     }
 
     private async Task ValidateClient(Estimate estimate, CancellationToken cancellationToken)

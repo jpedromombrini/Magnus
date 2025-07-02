@@ -5,17 +5,12 @@ namespace Magnus.Core.Entities;
 
 public class User : EntityBase
 {
-    public Email Email { get; private set; }
-    public string Password { get; private set; } 
-    public string Name { get; private set; } 
-    public DateTime InitialDate { get; private set; }
-    public DateTime FinalDate { get; private set; }
-    public bool Active { get; private set; }
-    public UserType UserType { get;  private set; }
-    public Warehouse? Warehouse { get; private set; }
-    private User() {}
-    
-    public User(Email email, string password, string name, DateTime initialDate, DateTime finalDate, bool active, UserType userType)
+    private User()
+    {
+    }
+
+    public User(Email email, string password, string name, DateTime initialDate, DateTime finalDate, bool active,
+        UserType userType)
     {
         SetEmail(email);
         SetPassword(password);
@@ -25,6 +20,15 @@ public class User : EntityBase
         SetActive(active);
         SetUserType(userType);
     }
+
+    public Email Email { get; private set; }
+    public string Password { get; private set; }
+    public string Name { get; private set; }
+    public DateTime InitialDate { get; private set; }
+    public DateTime FinalDate { get; private set; }
+    public bool Active { get; private set; }
+    public UserType UserType { get; private set; }
+    public Warehouse? Warehouse { get; private set; }
 
     public void SetEmail(Email email)
     {
@@ -42,7 +46,7 @@ public class User : EntityBase
     {
         if (string.IsNullOrEmpty(name))
             throw new ArgumentException("Nome não pode ser nulo ou vazio.", nameof(name));
-        Name = name;
+        Name = name.ToUpper();
     }
 
     public void SetInitialDate(DateTime initialDate)
@@ -73,5 +77,4 @@ public class User : EntityBase
     {
         Warehouse = warehouse;
     }
-    
 }

@@ -4,25 +4,6 @@ namespace Magnus.Core.Entities;
 
 public class AccountsPayable : EntityBase
 {
-    public int Document { get; private set; }
-    public Guid SupplierId { get; private set; }
-    public string SupplierName { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateOnly DueDate { get; private set; }
-    public DateTime? PaymentDate { get; private set; }
-    public decimal Value { get; private set; }
-    public decimal PaymentValue { get; private set; }
-    public decimal Discount { get; private set; }
-    public decimal Interest { get; private set; }
-    public Guid CostCenterId { get; private set; }
-    public int Installment { get; private set; }
-    public Guid? InvoiceId { get; private set; }
-    public Guid? UserPaymentId { get; private set; }
-    public Guid PaymentId { get; private set; }
-    public AccountPayableStatus AccountPayableStatus  { get; private set; }
-    public Payment Payment { get; private set; }
-    public List<AccountsPayableOccurrence>? Occurrences { get; private set; }
-
     private AccountsPayable()
     {
     }
@@ -41,6 +22,7 @@ public class AccountsPayable : EntityBase
         int installment,
         Guid? invoiceId,
         Guid? userPaymentId,
+        Guid? laboratoryId,
         Guid paymentId)
     {
         SetDocument(document);
@@ -57,8 +39,29 @@ public class AccountsPayable : EntityBase
         SetInvoiceId(invoiceId);
         SetUserPaymentId(userPaymentId);
         SetPaymentId(paymentId);
+        SetLaboratoryId(laboratoryId);
         SetStatus(AccountPayableStatus.Open);
     }
+
+    public int Document { get; private set; }
+    public Guid SupplierId { get; private set; }
+    public string SupplierName { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateOnly DueDate { get; private set; }
+    public DateTime? PaymentDate { get; private set; }
+    public decimal Value { get; private set; }
+    public decimal PaymentValue { get; private set; }
+    public decimal Discount { get; private set; }
+    public decimal Interest { get; private set; }
+    public Guid CostCenterId { get; private set; }
+    public int Installment { get; private set; }
+    public Guid? InvoiceId { get; private set; }
+    public Guid? UserPaymentId { get; private set; }
+    public Guid PaymentId { get; private set; }
+    public Guid? LaboratoryId { get; private set; }
+    public AccountPayableStatus AccountPayableStatus { get; private set; }
+    public Payment Payment { get; private set; }
+    public List<AccountsPayableOccurrence>? Occurrences { get; private set; }
 
     public void SetDocument(int document)
     {
@@ -164,10 +167,16 @@ public class AccountsPayable : EntityBase
         Occurrences = occurrences ?? [];
     }
 
+    public void SetLaboratoryId(Guid? laboratoryId)
+    {
+        LaboratoryId = laboratoryId;
+    }
+
     public void SetStatus(AccountPayableStatus status)
     {
         AccountPayableStatus = status;
     }
+
     public void AddOccurrence(AccountsPayableOccurrence occurrence)
     {
         if (occurrence is null)

@@ -1,13 +1,17 @@
 namespace Magnus.Application.Dtos.Requests;
 
 public record UpdateAccountsPayableRequest(
-    Guid UserId,
     int Document,
     Guid SupplierId,
-    DateTime DueDate,
+    DateOnly DueDate,
     DateTime PaymentDate,
     decimal Value,
     decimal PaymentValue,
     decimal Discount,
     decimal Interest,
-    string CostCenter);
+    Guid CostCenterId,
+    int Installment,
+    Guid? InvoiceId,
+    Guid? UserPaymentId,
+    Guid? LaboratoryId,
+    Guid PaymentId);

@@ -4,10 +4,6 @@ namespace Magnus.Core.Entities;
 
 public class ProductStock : EntityBase
 {
-    public Guid ProductId { get; private set; }
-    public int Amount { get; private set; }
-    public int WarehouseId { get; private set; }
-    public string WarehouseName { get; private set; } 
     public ProductStock(Guid productId, int amount, int warehouseId, string warehouseName)
     {
         SetProductId(productId);
@@ -15,7 +11,12 @@ public class ProductStock : EntityBase
         SetWarehouseId(warehouseId);
         SetWarehouseName(warehouseName);
     }
-    
+
+    public Guid ProductId { get; private set; }
+    public int Amount { get; private set; }
+    public int WarehouseId { get; private set; }
+    public string WarehouseName { get; private set; }
+
     public void SetProductId(Guid productId)
     {
         if (productId == Guid.Empty)
@@ -39,12 +40,12 @@ public class ProductStock : EntityBase
     {
         if (string.IsNullOrWhiteSpace(warehouseName))
             throw new ArgumentException("O nome do depósito não pode ser nulo ou vazio.");
-        WarehouseName = warehouseName;
+        WarehouseName = warehouseName.ToUpper();
     }
 
     public void DecreaseAmount(int amount)
     {
-        if(Amount - amount < 0)
+        if (Amount - amount < 0)
             throw new ProductWithoutStockException();
         Amount -= amount;
     }

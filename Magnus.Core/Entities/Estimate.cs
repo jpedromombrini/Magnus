@@ -5,23 +5,6 @@ namespace Magnus.Core.Entities;
 
 public class Estimate : EntityBase
 {
-    public int Code { get; private set; }
-    public string Description { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime ValiditAt { get; private set; }
-    public Guid? ClientId { get; private set; }
-    public string? ClientName { get; private set; }
-    public decimal Value { get; private set; }
-    public Guid? FreightId { get; private set; }
-    public decimal Freight { get; private set; }
-    public decimal FinantialDiscount { get; private set; }
-    public string Observation { get; set; }
-    public Guid UserId { get; private set; }
-    public User User { get; private set; }
-    public ICollection<EstimateItem> Items { get; private set; }
-    public ICollection<EstimateReceipt>? Receipts { get; private set; }
-    public EstimateStatus EstimateStatus { get; private set; }
-
     private Estimate()
     {
     }
@@ -40,6 +23,23 @@ public class Estimate : EntityBase
         SetUserId(userId);
     }
 
+    public int Code { get; private set; }
+    public string Description { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime ValiditAt { get; private set; }
+    public Guid? ClientId { get; private set; }
+    public string? ClientName { get; private set; }
+    public decimal Value { get; private set; }
+    public Guid? FreightId { get; private set; }
+    public decimal Freight { get; private set; }
+    public decimal FinantialDiscount { get; private set; }
+    public string Observation { get; set; }
+    public Guid UserId { get; private set; }
+    public User User { get; private set; }
+    public ICollection<EstimateItem> Items { get; private set; }
+    public ICollection<EstimateReceipt>? Receipts { get; private set; }
+    public EstimateStatus EstimateStatus { get; private set; }
+
     public void SetDescription(string description)
     {
         Description = description;
@@ -57,7 +57,7 @@ public class Estimate : EntityBase
 
     public void SetClientName(string? clientName)
     {
-        ClientName = clientName;
+        ClientName = clientName.ToUpper();
     }
 
     public void SetValue(decimal value)

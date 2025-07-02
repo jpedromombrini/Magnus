@@ -4,25 +4,6 @@ namespace Magnus.Core.Entities;
 
 public class Invoice : EntityBase
 {
-    public int Number { get; private set; }
-    public int Serie { get; private set; }
-    public string? Key { get; private set; }
-    public DateTime DateEntry { get; private set; }
-    public DateTime Date { get; private set; }
-    public Guid SupplierId { get; private set; }
-    public string SupplierName { get; private set; }
-    public decimal Freight { get; private set; }
-    public decimal Deduction { get; private set; }
-    public decimal Value { get; private set; }
-    public string Observation { get; private set; }
-    public InvoiceSituation InvoiceSituation { get; private set; }
-    public ICollection<InvoiceItem> Items { get; private set; }
-    public ICollection<InvoicePayment>? InvoicePayments { get; private set; }
-    public Guid? DoctorId { get; private set; }
-    public bool UpdateFinantial { get; private set; }
-    public Guid? CostCenterId { get; private set; }
-    public Guid LaboratoryId { get; private set; }
-
     private Invoice()
     {
     }
@@ -63,6 +44,25 @@ public class Invoice : EntityBase
         SetLaboratoryId(laboratoryId);
         Items = [];
     }
+
+    public int Number { get; private set; }
+    public int Serie { get; private set; }
+    public string? Key { get; private set; }
+    public DateTime DateEntry { get; private set; }
+    public DateTime Date { get; private set; }
+    public Guid SupplierId { get; private set; }
+    public string SupplierName { get; private set; }
+    public decimal Freight { get; private set; }
+    public decimal Deduction { get; private set; }
+    public decimal Value { get; private set; }
+    public string Observation { get; private set; }
+    public InvoiceSituation InvoiceSituation { get; private set; }
+    public ICollection<InvoiceItem> Items { get; private set; }
+    public ICollection<InvoicePayment>? InvoicePayments { get; private set; }
+    public Guid? DoctorId { get; private set; }
+    public bool UpdateFinantial { get; private set; }
+    public Guid? CostCenterId { get; private set; }
+    public Guid LaboratoryId { get; private set; }
 
     public void SetNumber(int number)
     {
@@ -108,7 +108,7 @@ public class Invoice : EntityBase
     {
         if (string.IsNullOrWhiteSpace(supplierName))
             throw new ArgumentException("O nome do fornecedor não pode ser nulo ou vazio.");
-        SupplierName = supplierName;
+        SupplierName = supplierName.ToUpper();
     }
 
     public void SetFreight(decimal freight)
@@ -166,6 +166,7 @@ public class Invoice : EntityBase
         InvoicePayments ??= [];
         InvoicePayments.Add(invoicePayment);
     }
+
     public decimal GetRealValue()
     {
         if (Value == 0m) return Value;
@@ -181,11 +182,9 @@ public class Invoice : EntityBase
     {
         CostCenterId = costCenterId;
     }
-    
+
     public void SetLaboratoryId(Guid laboratoryId)
     {
         LaboratoryId = laboratoryId;
     }
-    
-        
 }

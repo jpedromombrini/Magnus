@@ -4,39 +4,43 @@ namespace Magnus.Core.Entities;
 
 public class Client : EntityBase
 {
-    public string Name { get; private set; }
-    public Email? Email { get; private set; } 
-    public Document Document { get; private set; }    
-    public string? Occupation { get; private set; }
-    public DateOnly DateOfBirth { get; private set; }
-    public Address? Address { get; private set; }
-    public string? RegisterNumber { get; private set; }
-    public List<ClientSocialMedia>? SocialMedias { get; private set; }
-    public List<ClientPhone>? Phones { get; private set; } 
+    private Client()
+    {
+    }
 
-    private Client(){}
     public Client(string name, Document document)
     {
         SetName(name);
         SetDocument(document);
     }
+
+    public string Name { get; private set; }
+    public Email? Email { get; private set; }
+    public Document Document { get; private set; }
+    public string? Occupation { get; private set; }
+    public DateOnly DateOfBirth { get; private set; }
+    public Address? Address { get; private set; }
+    public string? RegisterNumber { get; private set; }
+    public List<ClientSocialMedia>? SocialMedias { get; private set; }
+    public List<ClientPhone>? Phones { get; private set; }
+
     public void SetName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Nome não pode ser nulo ou vazio.");
-        Name = name;
+        Name = name.ToUpper();
     }
-    
+
     public void SetEmail(Email email)
     {
         Email = email;
     }
-    
+
     public void SetDocument(Document document)
     {
         Document = document;
     }
-    
+
     public void SetOccupation(string occupation)
     {
         if (string.IsNullOrWhiteSpace(occupation))
@@ -53,16 +57,18 @@ public class Client : EntityBase
     {
         Address = address;
     }
+
     public void SetRegisterNumber(string registerNumber)
     {
-        RegisterNumber = registerNumber ?? string.Empty; 
+        RegisterNumber = registerNumber ?? string.Empty;
     }
-    
+
     public void SetSocialMedias(List<ClientSocialMedia>? socialMedias)
     {
-        SocialMedias = socialMedias ?? throw new ArgumentNullException(nameof(socialMedias), "Redes sociais não podem ser nulas.");
+        SocialMedias = socialMedias ??
+                       throw new ArgumentNullException(nameof(socialMedias), "Redes sociais não podem ser nulas.");
     }
-    
+
     public void SetPhones(List<ClientPhone>? phones)
     {
         Phones = phones ?? throw new ArgumentNullException(nameof(phones), "Telefones não podem ser nulos.");

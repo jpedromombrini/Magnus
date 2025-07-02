@@ -230,6 +230,10 @@ public class EstimateAppService(
                                 $"Total geral dos pagamentos: {totalAllReceipts.ToString("c", new CultureInfo("pt-br"))}")
                             .Bold().FontSize(13);
                     }
+                    else
+                    {
+                        column.Item().PaddingTop(15).Text("Condição de pagamento a combinar").Bold().FontSize(14);
+                    }
 
                     if (!string.IsNullOrWhiteSpace(estimateDb.Observation))
                         column.Item().PaddingTop(10).Text(text =>

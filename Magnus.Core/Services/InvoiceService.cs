@@ -34,7 +34,7 @@ public class InvoiceService(
             .Select(group => new
             {
                 group.Key.ProductId,
-                TotalAmount = group.Sum(i => i.Amount),
+                TotalAmount = group.Sum(i => i.Amount)
             })
             .ToList();
         List<ProductStock> listProductStock = [];
@@ -116,7 +116,7 @@ public class InvoiceService(
                     var accountsPayable = new AccountsPayable(invoice.Number, invoice.SupplierId, DateTime.Now,
                         installment.DueDate, installment.PaymentDate, installment.Value, 0m,
                         installment.Discount, installment.Interest, costCenter.Id, installment.Installment, invoice.Id,
-                        null, payment.Id);
+                        null, invoice.LaboratoryId, payment.Id);
                     await unitOfWork.AccountsPayables.AddAsync(accountsPayable, cancellationToken);
                 }
             }

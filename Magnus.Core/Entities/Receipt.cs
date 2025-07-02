@@ -2,10 +2,10 @@ namespace Magnus.Core.Entities;
 
 public class Receipt : EntityBase
 {
-    public string Name { get; private set; }
-    public decimal Increase { get; private set; }
-    public bool InIstallments { get; private set; }
-    private Receipt(){}
+    private Receipt()
+    {
+    }
+
     public Receipt(string name, decimal increase, bool inIstallments)
     {
         SetName(name);
@@ -13,11 +13,15 @@ public class Receipt : EntityBase
         SetInIstallments(inIstallments);
     }
 
+    public string Name { get; private set; }
+    public decimal Increase { get; private set; }
+    public bool InIstallments { get; private set; }
+
     public void SetName(string name)
     {
         if (string.IsNullOrEmpty(name))
             throw new ArgumentNullException("O nome não pode ser nulo ou vazio.");
-        Name = name;
+        Name = name.ToUpper();
     }
 
     public void SetIncrease(decimal increase)

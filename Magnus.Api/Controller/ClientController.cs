@@ -1,6 +1,5 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
-using Magnus.Application.Services;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Exceptions;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +30,14 @@ public class ClientController(
             cancellationToken);
     }
 
+    [HttpGet("getbydocument")]
+    public async Task<IEnumerable<ClientResponse>> GetClientsByDocumentAsync([FromQuery] string document,
+        CancellationToken cancellationToken)
+    {
+        return await clientAppService.GetClientsByDocumentAsync(document,
+            cancellationToken);
+    }
+
     [HttpGet("{id:guid}")]
     public async Task<ClientResponse> GetClientByIdAsync(Guid id, CancellationToken cancellationToken)
     {
@@ -42,9 +49,11 @@ public class ClientController(
     {
         await clientAppService.AddClientAsync(request, cancellationToken);
     }
+
     [HttpPost("external")]
     [AllowAnonymous]
-    public async Task AddClientAnonimousAsync([FromBody] CreateClientRequest request, CancellationToken cancellationToken)
+    public async Task AddClientAnonimousAsync([FromBody] CreateClientRequest request,
+        CancellationToken cancellationToken)
     {
         ValidateCsrfToken();
         await clientAppService.AddClientAsync(request, cancellationToken);
@@ -62,15 +71,16 @@ public class ClientController(
     {
         await clientAppService.DeleteClientAsync(id, cancellationToken);
     }
+
     private void ValidateCsrfToken()
     {
         var token = Request.Headers["X-CSRF-Token"].FirstOrDefault();
         var storageToken = configuration.GetSection("CsrfToken").Value;
-        if(string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(token))
             throw new AuthenticationException("Nenhum token identificado na requisição");
         if (string.IsNullOrEmpty(storageToken))
             throw new AuthenticationException("Nenhum storage token configurado");
-        if(token != storageToken)
+        if (token != storageToken)
             throw new AuthenticationException("Token enviado difere do configurado");
     }
 }

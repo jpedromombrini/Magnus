@@ -28,7 +28,7 @@ public class StockMovementAppService(
         stockDb.SetObservation(request.Observation);
         stockDb.SetProductId(request.ProductId);
         stockDb.SetAmount(request.Amount);
-        stockDb.SetAuditProductType(request.AuditProductType);
+        stockDb.SetAuditProductType(request.AuditProductTypeEnum);
         stockDb.SetWarehouseId(request.WarehouseId);
         stockDb.SetWarehouseName(request.WarehouseName);
         unitOfWork.StockMovements.Update(stockDb);
@@ -44,7 +44,7 @@ public class StockMovementAppService(
         CancellationToken cancellationToken)
     {
         var stocks = await unitOfWork.StockMovements.GetAllByExpressionAsync(
-            x => (filter == null || x.ProductId == filter.ProductId) &&
+            x => (filter.ProductId == null || x.ProductId == filter.ProductId) &&
                  (filter.AuditProductType == null || x.AuditProductType == filter.AuditProductType) &&
                  (filter.UserId == null || x.UserId == filter.UserId) &&
                  x.CreatAt >= filter.InitialDate && x.CreatAt <= filter.FinalDate, cancellationToken);

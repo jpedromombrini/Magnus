@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Runtime.InteropServices.JavaScript;
 using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
@@ -22,7 +21,8 @@ public class ClientAppAppService(
         if (clientDb is not null)
             throw new ApplicationException("Já existe um cliente com esse documento");
         clientDb = await unitOfWork.Clients.GetByExpressionAsync(
-            x => x.Email != null && request.Email != null && x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);
+            x => x.Email != null && request.Email != null && x.Email.Address.ToLower() == request.Email.ToLower(),
+            cancellationToken);
         if (clientDb is not null)
             throw new ApplicationException("Já existe um cliente com esse email");
         clientDb = await unitOfWork.Clients.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(),
@@ -44,20 +44,16 @@ public class ClientAppAppService(
         {
             client.SetAddress(null);
         }
+
         await unitOfWork.Clients.AddAsync(client, cancellationToken);
         if (request.Phones != null && request.Phones.Any())
-        {
             foreach (var phone in request.Phones)
                 client.AddPhone(new ClientPhone(client.Id, new Phone(phone.Number), phone.Description));
-        }
 
         if (request.SocialMedias != null && request.SocialMedias.Any())
-        {
             foreach (var socialMedia in request.SocialMedias)
-            {
                 client.AddSocialMedia(new ClientSocialMedia(client.Id, socialMedia.Name, socialMedia.Link));
-            }
-        }
+
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -77,15 +73,15 @@ public class ClientAppAppService(
         {
             clientDb.SetAddress(null);
         }
-        
+
         if (!string.IsNullOrEmpty(request.RegisterNumber)) clientDb.SetRegisterNumber(request.RegisterNumber);
         if (request.Email is not null) clientDb.SetEmail(new Email(request.Email));
         if (!string.IsNullOrEmpty(request.Occupation)) clientDb.SetOccupation(request.Occupation);
         if (request.DateOfBirth != DateOnly.MinValue) clientDb.SetDateOfBirth(request.DateOfBirth);
         if (clientDb.Phones != null)
         {
-            var phonesToRemove = clientDb.Phones.Where(
-                p => request.Phones != null && request.Phones.All(x => x.Number != p.Phone.Number));
+            var phonesToRemove = clientDb.Phones.Where(p =>
+                request.Phones != null && request.Phones.All(x => x.Number != p.Phone.Number));
             if (request.Phones != null)
                 foreach (var phone in request.Phones)
                 {
@@ -103,8 +99,8 @@ public class ClientAppAppService(
 
             if (clientDb.SocialMedias != null)
             {
-                var socialToRemove = clientDb.SocialMedias.Where(
-                    s => request.SocialMedias != null && request.SocialMedias.All(x => x.Name != s.Name));
+                var socialToRemove = clientDb.SocialMedias.Where(s =>
+                    request.SocialMedias != null && request.SocialMedias.All(x => x.Name != s.Name));
                 if (request.SocialMedias != null)
                     foreach (var socialMedia in request.SocialMedias)
                     {
@@ -140,6 +136,17 @@ public class ClientAppAppService(
     {
         return mapper.Map<IEnumerable<ClientResponse>>(
             await unitOfWork.Clients.GetAllByExpressionAsync(predicate, cancellationToken));
+    }
+
+    public async Task<IEnumerable<ClientResponse>> GetClientsByDocumentAsync(string document,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(document))
+            return mapper.Map<IEnumerable<ClientResponse>>(await unitOfWork.Clients.GetAllAsync(cancellationToken));
+        var documentSanitized = document.Replace(".", "").Replace("/", "").Replace("-", "");
+        return mapper.Map<IEnumerable<ClientResponse>>(
+            await unitOfWork.Clients.GetAllByExpressionAsync(x => x.Document.Value.Contains(documentSanitized),
+                cancellationToken));
     }
 
     public async Task<ClientResponse> GetClientByIdAsync(Guid id, CancellationToken cancellationToken)

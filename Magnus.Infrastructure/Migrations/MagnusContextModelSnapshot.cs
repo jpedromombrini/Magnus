@@ -55,6 +55,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<Guid?>("InvoiceId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("LaboratoryId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("PaymentDate")
                         .HasColumnType("timestamp");
 
@@ -1080,7 +1083,7 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("Observation")
                         .HasColumnType("varchar(100)");
@@ -1099,6 +1102,8 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("StockMovements", (string)null);
                 });
@@ -1627,6 +1632,17 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Navigation("Phone")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.StockMovement", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Supplier", b =>
