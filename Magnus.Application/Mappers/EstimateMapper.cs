@@ -15,11 +15,11 @@ public static class EstimateMapper
             request.Freight, request.FinantialDiscount, request.UserId);
         if (string.IsNullOrEmpty(request.Observation))
             estimate.SetObservation("");
-        if(request.FreightId is not null)
+        if (request.FreightId is not null)
             estimate.SetFreightId((Guid)request.FreightId);
         estimate.SetObservation(request.Observation);
         estimate.AddRangeItems(request.Items.MapToEntity());
-        if(request.Receipts is not null)
+        if (request.Receipts is not null)
             estimate.AddRangeReceipts(request.Receipts.MapToEntity());
         return estimate;
     }
@@ -31,11 +31,11 @@ public static class EstimateMapper
             request.Freight, request.FinantialDiscount, request.UserId);
         if (string.IsNullOrEmpty(request.Observation))
             estimate.SetObservation("");
-        if(request.FreightId is not null)
+        if (request.FreightId is not null)
             estimate.SetFreightId((Guid)request.FreightId);
         estimate.SetObservation(request.Observation);
         estimate.AddRangeItems(request.Items.MapToEntity());
-        if(request.Receipts is not null)
+        if (request.Receipts is not null)
             estimate.AddRangeReceipts(request.Receipts.MapToEntity());
         return estimate;
     }
@@ -86,7 +86,7 @@ public static class EstimateMapper
         var estimate = new EstimateResponse(entity.Id, entity.Code, entity.Description, entity.CreatedAt,
             entity.ValiditAt, entity.ClientId, entity.ClientName, entity.Value, entity.FreightId, entity.Freight,
             entity.FinantialDiscount, entity.Observation, entity.UserId, user, entity.Items.MapToResponse(),
-            entity.Receipts.MapToResponse(), entity.EstimateStatus);
+            entity.Receipts?.MapToResponse(), entity.EstimateStatus);
         return estimate;
     }
 

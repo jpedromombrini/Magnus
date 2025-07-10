@@ -1,4 +1,3 @@
-using Magnus.Application.Dtos.Requests;
 using Magnus.Core.Enumerators;
 
 namespace Magnus.Application.Dtos.Responses;
@@ -7,7 +6,7 @@ public record InvoiceResponse(
     Guid Id,
     int Number,
     int Serie,
-    string Key,
+    string? Key,
     DateTime DateEntry,
     DateTime Date,
     Guid SupplierId,

@@ -1,3 +1,4 @@
+using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Services.Interfaces;
@@ -19,23 +20,10 @@ public class EstimateController(
     }
 
     [HttpGet("getbyfilter")]
-    public async Task<IEnumerable<EstimateResponse>> GetEstimatesByFilterAsync(
-        DateTime initialDate,
-        DateTime finalDate,
-        Guid clientId,
-        Guid userId,
-        string? description,
-        int code,
+    public async Task<IEnumerable<EstimateResponse>> GetEstimatesByFilterAsync([FromQuery] GetEstimatesFilter filter,
         CancellationToken cancellationToken)
     {
-        return await estimateAppService.GetEstimatesByFilterAsync(x =>
-                x.CreatedAt.Date >= initialDate.Date &&
-                x.CreatedAt.Date <= finalDate.Date &&
-                (clientId == Guid.Empty || x.ClientId == clientId) &&
-                (userId == Guid.Empty || x.UserId == userId) &&
-                (code == 0 || x.Code == code) &&
-                (string.IsNullOrEmpty(description) || x.Description.ToLower().Contains(description.ToLower())),
-            cancellationToken);
+        return await estimateAppService.GetEstimatesByFilterAsync(filter, cancellationToken);
     }
 
     [HttpGet("{id:guid}")]

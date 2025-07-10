@@ -52,21 +52,6 @@ public class SaleService(
         await UpdateReceipts(saleDb, sale.Receipts, cancellationToken);
     }
 
-    private async Task UpdateItems(Sale sale, IEnumerable<SaleItem> items, CancellationToken cancellationToken)
-    {
-        unitOfWork.Sales.DeleteItensRange(sale.Items);
-        await unitOfWork.Sales.AddItemsRangeAsync(items, cancellationToken);
-    }
-
-    private async Task UpdateReceipts(Sale sale, IEnumerable<SaleReceipt>? saleReceipts,
-        CancellationToken cancellationToken)
-    {
-        if (sale.Receipts is not null)
-            unitOfWork.Sales.DeleteReceiptsRange(sale.Receipts);
-        if (saleReceipts is not null)
-            await unitOfWork.Sales.AddReceiptsRangeAsync(saleReceipts, cancellationToken);
-    }
-
     public async Task Invoice(Sale sale, CancellationToken cancellationToken)
     {
         var client = await clientService.GetByIdAsync(sale.ClientId, cancellationToken);
@@ -85,7 +70,7 @@ public class SaleService(
         foreach (var item in sale.Items)
             await ValidateStockAsync(item, warehouse.Code, cancellationToken);
         foreach (var item in sale.Items)
-            await productStockService.SubtractProductStockAsync(item.ProductId, warehouse.Code, item.Amount,
+            await productStockService.SubtractProductStockAsync(item.ProductId, warehouse, item.Amount,
                 cancellationToken);
         await auditProductService.SaleMovimentAsync(sale, warehouse.Code, cancellationToken);
         await GenerateAccountsReceivable(client, sale.Document, receipts, cancellationToken);
@@ -99,10 +84,31 @@ public class SaleService(
 
     public async Task CancelSale(Sale sale, string reason, CancellationToken cancellationToken)
     {
+        var warehouse = await warehouseService.GetByUserIdAsync(sale.UserId, cancellationToken);
+        if (warehouse is null)
+            throw new BusinessRuleException("Depósito não encontrado para o usuário");
         await RemoveInstallments(sale, cancellationToken);
         await auditProductService.CancelSaleMovimentAsync(sale, cancellationToken);
+        foreach (var item in sale.Items)
+            await productStockService.IncrementProductStockAsync(item.ProductId, warehouse, item.Amount,
+                cancellationToken);
         sale.SetReasonCancel(reason);
         sale.SetStatus(SaleStatus.Canceled);
+    }
+
+    private async Task UpdateItems(Sale sale, IEnumerable<SaleItem> items, CancellationToken cancellationToken)
+    {
+        unitOfWork.Sales.DeleteItensRange(sale.Items);
+        await unitOfWork.Sales.AddItemsRangeAsync(items, cancellationToken);
+    }
+
+    private async Task UpdateReceipts(Sale sale, IEnumerable<SaleReceipt>? saleReceipts,
+        CancellationToken cancellationToken)
+    {
+        if (sale.Receipts is not null)
+            unitOfWork.Sales.DeleteReceiptsRange(sale.Receipts);
+        if (saleReceipts is not null)
+            await unitOfWork.Sales.AddReceiptsRangeAsync(saleReceipts, cancellationToken);
     }
 
     private async Task RemoveInstallments(Sale sale, CancellationToken cancellationToken)
@@ -126,6 +132,7 @@ public class SaleService(
             accountsReceivableService.RemoveRangeAsync(accountsToRemove);
         }
     }
+
     private async Task ValidateStockAsync(SaleItem item, int warehouseId, CancellationToken cancellationToken)
     {
         var stock = await productStockService.GetProductStockAsync(item.ProductId, warehouseId, cancellationToken);
@@ -147,15 +154,13 @@ public class SaleService(
     {
         var configuration = await configurationService.GetAppConfigurationAsync(cancellationToken);
         foreach (var saleReceipt in saleReceipts)
+        foreach (var installment in saleReceipt.Installments)
         {
-            foreach (var installment in saleReceipt.Installments)
-            {
-                DateOnly? paymentDate = installment.PaymentDate is DateTime dt ? DateOnly.FromDateTime(dt) : null;
-                var account = new AccountsReceivable(installment.Id, client.Id, client.Name, document,
-                    installment.DueDate, paymentDate, installment.PaymentValue, installment.Value, installment.Interest,
-                    installment.Discount, installment.Installment, configuration.CostCenterSale);
-                await accountsReceivableService.CreateAsync(account, cancellationToken);
-            }
+            DateOnly? paymentDate = installment.PaymentDate is DateTime dt ? DateOnly.FromDateTime(dt) : null;
+            var account = new AccountsReceivable(installment.Id, client.Id, client.Name, document,
+                installment.DueDate, paymentDate, installment.PaymentValue, installment.Value, installment.Interest,
+                installment.Discount, installment.Installment, configuration.CostCenterSale);
+            await accountsReceivableService.CreateAsync(account, cancellationToken);
         }
     }
 }

@@ -57,7 +57,7 @@ public static class ProductMapper
         IEnumerable<BarResponse>? bars = null;
         IEnumerable<ProductPriceTableResponse>? prices = null;
         if (entity.Bars is not null)
-            bars = entity.Bars.MapToEntity();
+            bars = entity.Bars.MapToResponse();
         if (entity.ProductPriceTables is not null)
             prices = entity.ProductPriceTables.MapToResponse();
         return new ProductResponse(entity.Id, entity.InternalCode, entity.Name, entity.Price, bars,
@@ -85,7 +85,7 @@ public static class ProductMapper
         return entities.Select(MapToResponse);
     }
 
-    public static IEnumerable<BarResponse> MapToEntity(this IEnumerable<Bar> entities)
+    public static IEnumerable<BarResponse> MapToResponse(this IEnumerable<Bar>? entities)
     {
         return entities.Select(MapToResponse).ToList();
     }

@@ -6,7 +6,7 @@ namespace Magnus.Application.Services.Interfaces;
 
 public interface IAccountPayableAppService
 {
-    Task AddAccountPayableAsync(CreateAccountsPayableRequest request, CancellationToken cancellationToken);
+    Task AddAccountPayableAsync(List<CreateAccountsPayableRequest> request, CancellationToken cancellationToken);
     Task UpdateAccountPayableAsync(Guid id, UpdateAccountsPayableRequest request, CancellationToken cancellationToken);
 
     Task<IEnumerable<AccountsPayableResponse>> GetAccountPayablesByFilterAsync(GetAccountsPayableFilter filter,

@@ -103,7 +103,7 @@ public class ClientProfile : Profile
 
     private List<ClientPhoneResponse> MapPhones(List<ClientPhone>? phones)
     {
-        return phones?.Select(p => new ClientPhoneResponse(p.Phone.Number, p.Description)).ToList() ??
+        return phones?.Select(p => new ClientPhoneResponse(p.Phone.Number, p.Description ?? "")).ToList() ??
                [];
     }
 }

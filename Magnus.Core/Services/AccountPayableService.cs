@@ -9,17 +9,19 @@ public class AccountPayableService(
     IUnitOfWork unitOfWork,
     ISupplierService supplierService) : IAccountPayableService
 {
-    public async Task CreateAsync(AccountsPayable accountsPayable, CancellationToken cancellationToken)
+    public async Task CreateAsync(List<AccountsPayable> accountsPayables, CancellationToken cancellationToken)
     {
-        await ValidateSupplier(accountsPayable, cancellationToken);
-        await ValidateExists(accountsPayable, cancellationToken);
+        foreach (var accountsPayable in accountsPayables)
+        {
+            await ValidateSupplier(accountsPayable, cancellationToken);
+            await ValidateExists(accountsPayable, cancellationToken);
+        }
     }
 
     public async Task UpdateAsync(AccountsPayable accountsPayableDb, AccountsPayable accountsPayable,
         CancellationToken cancellationToken)
     {
         await ValidateSupplier(accountsPayable, cancellationToken);
-        await ValidateExists(accountsPayable, cancellationToken);
         accountsPayableDb.SetDocument(accountsPayable.Document);
         accountsPayableDb.SetSupplierId(accountsPayable.SupplierId);
         accountsPayableDb.SetCreatedAt(accountsPayable.CreatedAt);

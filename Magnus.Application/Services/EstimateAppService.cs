@@ -1,10 +1,10 @@
 using System.Globalization;
-using System.Linq.Expressions;
+using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
-using Magnus.Core.Entities;
+using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
@@ -43,12 +43,6 @@ public class EstimateAppService(
         return (await unitOfWork.Estimates.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
-    public async Task<IEnumerable<EstimateResponse>> GetEstimatesByFilterAsync(
-        Expression<Func<Estimate, bool>> predicate, CancellationToken cancellationToken)
-    {
-        return (await unitOfWork.Estimates.GetAllByExpressionAsync(predicate, cancellationToken)).MapToResponse();
-    }
-
     public async Task<EstimateResponse> GetEstimateByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var estimateDb = await unitOfWork.Estimates.GetByIdAsync(id, cancellationToken);
@@ -62,6 +56,8 @@ public class EstimateAppService(
         var estimateDb = await unitOfWork.Estimates.GetByIdAsync(id, cancellationToken);
         if (estimateDb == null)
             throw new EntityNotFoundException(id);
+        if (estimateDb.EstimateStatus == EstimateStatus.Invoiced)
+            throw new BusinessRuleException("Não é possível excluir orçamento já faturado");
         unitOfWork.Estimates.Delete(estimateDb);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -86,7 +82,6 @@ public class EstimateAppService(
             if (freightDb is not null)
                 freightName = freightDb.Name;
         }
-
 
         return Document.Create(container =>
         {
@@ -252,5 +247,20 @@ public class EstimateAppService(
                 });
             });
         }).GeneratePdf();
+    }
+
+    public async Task<IEnumerable<EstimateResponse>> GetEstimatesByFilterAsync(
+        GetEstimatesFilter filter, CancellationToken cancellationToken)
+    {
+        var estimates = await unitOfWork.Estimates.GetAllByExpressionAsync(x =>
+            x.CreatedAt.Date >= filter.InitialDate.Date &&
+            x.CreatedAt.Date <= filter.FinalDate.Date &&
+            (filter.ClientId == Guid.Empty || x.ClientId == filter.ClientId) &&
+            (filter.UserId == Guid.Empty || x.UserId == filter.UserId) &&
+            (filter.Code == 0 || x.Code == filter.Code) &&
+            (filter.Status == EstimateStatus.All || x.EstimateStatus == filter.Status) &&
+            (string.IsNullOrEmpty(filter.Description) ||
+             x.Description.ToLower().Contains(filter.Description.ToLower())), cancellationToken);
+        return estimates.MapToResponse();
     }
 }

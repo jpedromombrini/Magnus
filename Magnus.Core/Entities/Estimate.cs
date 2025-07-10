@@ -57,7 +57,7 @@ public class Estimate : EntityBase
 
     public void SetClientName(string? clientName)
     {
-        ClientName = clientName.ToUpper();
+        ClientName = clientName?.ToUpper();
     }
 
     public void SetValue(decimal value)

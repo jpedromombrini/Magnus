@@ -19,4 +19,6 @@ public record AccountsPayableResponse(
     Guid PaymentId,
     Guid? LaboratoryId,
     int AccountPayableStatus,
-    PaymentResponse Payment);
+    PaymentResponse Payment,
+    int TotalInstallment,
+    DateOnly Reference);

@@ -7,8 +7,10 @@ public record GetAccountsPayableFilter(
     DateOnly? FinalDueDate,
     DateTime? InitialEntryDate,
     DateTime? FinalEntryDate,
+    DateTime? InitialPaymentDate,
+    DateTime? FinalPaymentDate,
     Guid? LaboratoryId,
     Guid? SupplierId,
     Guid? PaymentId,
-    int? Document,
+    int Document,
     AccountPayableStatus Status);

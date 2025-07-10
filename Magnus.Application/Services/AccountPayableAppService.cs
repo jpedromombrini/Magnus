@@ -14,14 +14,6 @@ public class AccountPayableAppService(
     IAccountPayableService accountPayableService,
     IUnitOfWork unitOfWork) : IAccountPayableAppService
 {
-    public async Task AddAccountPayableAsync(CreateAccountsPayableRequest request, CancellationToken cancellationToken)
-    {
-        var entity = request.MapToEntity();
-        await accountPayableService.CreateAsync(entity, cancellationToken);
-        await unitOfWork.AccountsPayables.AddAsync(entity, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-    }
-
     public async Task UpdateAccountPayableAsync(Guid id, UpdateAccountsPayableRequest request,
         CancellationToken cancellationToken)
     {
@@ -62,10 +54,23 @@ public class AccountPayableAppService(
                  (filter.PaymentId == null || filter.PaymentId == x.PaymentId) &&
                  (filter.InitialDueDate == null || x.DueDate >= filter.InitialDueDate) &&
                  (filter.FinalDueDate == null || x.DueDate <= filter.FinalDueDate) &&
-                 (filter.InitialEntryDate == null || x.CreatedAt >= filter.InitialEntryDate) &&
-                 (filter.FinalEntryDate == null || x.CreatedAt <= filter.FinalEntryDate) &&
+                 (filter.InitialEntryDate == null || x.CreatedAt.Date >= filter.InitialEntryDate) &&
+                 (filter.FinalEntryDate == null || x.CreatedAt.Date <= filter.FinalEntryDate) &&
+                 (filter.InitialPaymentDate == null || x.PaymentDate >= filter.InitialPaymentDate) &&
+                 (filter.FinalPaymentDate == null || x.PaymentDate <= filter.FinalPaymentDate) &&
                  (filter.Status == AccountPayableStatus.All || filter.Status == x.AccountPayableStatus)
             , cancellationToken);
         return accounts.MapToResponse();
+    }
+
+    public async Task AddAccountPayableAsync(List<CreateAccountsPayableRequest> request,
+        CancellationToken cancellationToken)
+    {
+        var entities = request.MapToEntity();
+        await accountPayableService.CreateAsync(entities, cancellationToken);
+        foreach (var accountsPayable in entities)
+            await unitOfWork.AccountsPayables.AddAsync(accountsPayable, cancellationToken);
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

@@ -4,7 +4,7 @@ public record UpdateAccountsPayableRequest(
     int Document,
     Guid SupplierId,
     DateOnly DueDate,
-    DateTime PaymentDate,
+    DateTime? PaymentDate,
     decimal Value,
     decimal PaymentValue,
     decimal Discount,
@@ -14,4 +14,6 @@ public record UpdateAccountsPayableRequest(
     Guid? InvoiceId,
     Guid? UserPaymentId,
     Guid? LaboratoryId,
-    Guid PaymentId);
+    Guid PaymentId,
+    int TotalInstallment,
+    DateOnly Reference);

@@ -23,7 +23,9 @@ public class AccountsPayable : EntityBase
         Guid? invoiceId,
         Guid? userPaymentId,
         Guid? laboratoryId,
-        Guid paymentId)
+        Guid paymentId,
+        int totalInstallment,
+        DateOnly reference)
     {
         SetDocument(document);
         SetSupplierId(supplierId);
@@ -41,6 +43,8 @@ public class AccountsPayable : EntityBase
         SetPaymentId(paymentId);
         SetLaboratoryId(laboratoryId);
         SetStatus(AccountPayableStatus.Open);
+        SetTotalInstallment(totalInstallment);
+        SetReference(reference);
     }
 
     public int Document { get; private set; }
@@ -61,6 +65,8 @@ public class AccountsPayable : EntityBase
     public Guid? LaboratoryId { get; private set; }
     public AccountPayableStatus AccountPayableStatus { get; private set; }
     public Payment Payment { get; private set; }
+    public int TotalInstallment { get; private set; }
+    public DateOnly Reference { get; private set; }
     public List<AccountsPayableOccurrence>? Occurrences { get; private set; }
 
     public void SetDocument(int document)
@@ -175,6 +181,16 @@ public class AccountsPayable : EntityBase
     public void SetStatus(AccountPayableStatus status)
     {
         AccountPayableStatus = status;
+    }
+
+    public void SetTotalInstallment(int installment)
+    {
+        TotalInstallment = installment;
+    }
+
+    public void SetReference(DateOnly reference)
+    {
+        Reference = reference;
     }
 
     public void AddOccurrence(AccountsPayableOccurrence occurrence)

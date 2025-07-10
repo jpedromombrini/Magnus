@@ -4,7 +4,7 @@ public record CreateAccountsPayableRequest(
     int Document,
     Guid SupplierId,
     DateOnly DueDate,
-    DateTime PaymentDate,
+    DateTime? PaymentDate,
     decimal Value,
     decimal PaymentValue,
     decimal Discount,
@@ -14,4 +14,6 @@ public record CreateAccountsPayableRequest(
     Guid? InvoiceId,
     Guid? UserPaymentId,
     Guid? LaboratoryId,
-    Guid PaymentId);
+    Guid PaymentId,
+    int TotalInstallment,
+    DateOnly Reference);

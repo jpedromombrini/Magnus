@@ -67,12 +67,18 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<decimal>("PaymentValue")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<DateOnly>("Reference")
+                        .HasColumnType("date");
+
                     b.Property<Guid>("SupplierId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("SupplierName")
                         .IsRequired()
                         .HasColumnType("varchar(150)");
+
+                    b.Property<int>("TotalInstallment")
+                        .HasColumnType("integer");
 
                     b.Property<Guid?>("UserPaymentId")
                         .HasColumnType("uuid");

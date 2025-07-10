@@ -1,6 +1,5 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
-using Magnus.Application.Services;
 using Magnus.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +24,7 @@ public class WarehouseController(
     {
         return await warehouseAppService.GetWarehousesByFilterAsync(x => x.UserId == userId, cancellationToken);
     }
-    
+
     [HttpGet("getbycode")]
     public async Task<WarehouseResponse> GetWarehousesByFilterAsync([FromQuery] int code,
         CancellationToken cancellationToken)
@@ -37,6 +36,13 @@ public class WarehouseController(
     public async Task<WarehouseResponse> GetWarehouseByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await warehouseAppService.GetWarehouseByIdAsync(id, cancellationToken);
+    }
+
+    [HttpGet("getstock/{userId:guid}")]
+    public async Task<IEnumerable<WarehouseStockResponse>> GetStockByUserAsync(Guid userId,
+        CancellationToken cancellationToken)
+    {
+        return await warehouseAppService.GetStockByUserAsync(userId, cancellationToken);
     }
 
     [HttpPost]

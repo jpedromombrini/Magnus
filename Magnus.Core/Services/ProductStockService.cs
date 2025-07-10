@@ -18,11 +18,11 @@ public class ProductStockService(
         return productStocks.Sum(x => x.Amount);
     }
 
-    public async Task SubtractProductStockAsync(Guid productId, int warehouseId, int amount,
+    public async Task SubtractProductStockAsync(Guid productId, Warehouse warehouse, int amount,
         CancellationToken cancellationToken)
     {
         var stock = await unitOfWork.ProductStocks.GetByExpressionAsync(
-            x => x.ProductId == productId && x.WarehouseId == warehouseId, cancellationToken);
+            x => x.ProductId == productId && x.WarehouseId == warehouse.Code, cancellationToken);
         if (stock == null)
             throw new EntityNotFoundException("Produto não encontrado");
         if (stock.Amount < amount)
@@ -31,14 +31,13 @@ public class ProductStockService(
         unitOfWork.ProductStocks.Update(stock);
     }
 
-    public async Task IncrementProductStockAsync(Guid productId, int warehouseId, int amount,
+    public async Task IncrementProductStockAsync(Guid productId, Warehouse warehouse, int amount,
         CancellationToken cancellationToken)
     {
         var stock = await unitOfWork.ProductStocks.GetByExpressionAsync(
-            x => x.ProductId == productId && x.WarehouseId == warehouseId, cancellationToken);
-        if (stock == null)
-            throw new EntityNotFoundException("Produto não encontrado");
-        stock.IncreaseAmount(amount);
+            x => x.ProductId == productId && x.WarehouseId == warehouse.Code, cancellationToken);
+        if (stock == null) stock = new ProductStock(productId, amount, warehouse.Code, warehouse.Name);
+        else stock.IncreaseAmount(amount);
         unitOfWork.ProductStocks.Update(stock);
     }
 

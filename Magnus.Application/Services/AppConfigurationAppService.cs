@@ -1,4 +1,3 @@
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
@@ -9,8 +8,7 @@ using Magnus.Core.Repositories;
 namespace Magnus.Application.Services;
 
 public class AppConfigurationAppService(
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : IAppConfigurationAppService
+    IUnitOfWork unitOfWork) : IAppConfigurationAppService
 {
     public async Task AddAppConfigurationAsync(CreateAppConfigurationRequest request,
         CancellationToken cancellationToken)

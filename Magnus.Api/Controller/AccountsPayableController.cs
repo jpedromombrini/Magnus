@@ -28,7 +28,7 @@ public class AccountsPayableController(IAccountPayableAppService accountPayableA
     }
 
     [HttpPost]
-    public async Task AddAccountsPayableAsync([FromBody] CreateAccountsPayableRequest request,
+    public async Task AddAccountsPayableAsync([FromBody] List<CreateAccountsPayableRequest> request,
         CancellationToken cancellationToken)
     {
         await accountPayableAppService.AddAccountPayableAsync(request, cancellationToken);
