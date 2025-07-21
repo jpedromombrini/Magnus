@@ -1,10 +1,8 @@
-using System.Security.AccessControl;
-
 namespace Magnus.Application.Dtos.Requests;
 
 public record UpdateEstimateRequest(
     Guid Id,
-    string Description,
+    string? Description,
     DateTime ValiditAt,
     Guid? ClientId,
     string? ClientName,
@@ -12,7 +10,7 @@ public record UpdateEstimateRequest(
     Guid? FreightId,
     decimal Freight,
     decimal FinantialDiscount,
-    string Observation,
+    string? Observation,
     Guid UserId,
     IEnumerable<EstimateItemRequest> Items,
     IEnumerable<EstimateReceiptRequest>? Receipts);

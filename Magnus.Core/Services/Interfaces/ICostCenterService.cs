@@ -4,5 +4,5 @@ namespace Magnus.Core.Services.Interfaces;
 
 public interface ICostCenterService
 {
-    Task<CostCenter?> GetByCodeAsync(string code, CancellationToken cancellationToken);
+    Task<CostCenter?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 }

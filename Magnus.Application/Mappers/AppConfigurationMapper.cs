@@ -10,12 +10,12 @@ public static class AppConfigurationMapper
 
     public static AppConfiguration MapToEntity(this CreateAppConfigurationRequest request)
     {
-        return new AppConfiguration(request.CostCenterSale, request.AmountToDiscount, request.DaysValidityEstimate);
+        return new AppConfiguration(request.CostCenterSale.Id, request.AmountToDiscount, request.DaysValidityEstimate);
     }
 
     public static AppConfiguration MapToEntity(this UpdateAppConfigurationRequest request)
     {
-        return new AppConfiguration(request.CostCenterSale, request.AmountToDiscount, request.DaysValidityEstimate);
+        return new AppConfiguration(request.CostCenterSale.Id, request.AmountToDiscount, request.DaysValidityEstimate);
     }
 
     public static IEnumerable<AppConfiguration> MapToEntity(
@@ -36,7 +36,7 @@ public static class AppConfigurationMapper
 
     public static AppConfigurationResponse MapToResponse(this AppConfiguration entity)
     {
-        return new AppConfigurationResponse(entity.Id, entity.CostCenterSale, entity.AmountToDiscount,
+        return new AppConfigurationResponse(entity.Id, entity.CostCenterSale?.MapToResponse(), entity.AmountToDiscount,
             entity.DaysValidityEstimate);
     }
 

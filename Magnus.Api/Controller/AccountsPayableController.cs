@@ -34,6 +34,19 @@ public class AccountsPayableController(IAccountPayableAppService accountPayableA
         await accountPayableAppService.AddAccountPayableAsync(request, cancellationToken);
     }
 
+    [HttpPost("{id:guid}/pay")]
+    public async Task AddAccountsPayableAsync(Guid id, [FromBody] PayAccountPayableRequest request,
+        CancellationToken cancellationToken)
+    {
+        await accountPayableAppService.PayAccountPayableAsync(id, request, cancellationToken);
+    }
+
+    [HttpPost("{id:guid}/reversepay")]
+    public async Task AddAccountsPayableAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await accountPayableAppService.ReversePayAccountPayableAsync(id, cancellationToken);
+    }
+
     [HttpPut("{id:guid}")]
     public async Task UpdateAccountsPayableAsync(Guid id, [FromBody] UpdateAccountsPayableRequest request,
         CancellationToken cancellationToken)

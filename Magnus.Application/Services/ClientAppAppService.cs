@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
+using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
 using Magnus.Core.Exceptions;
@@ -11,8 +11,7 @@ using Magnus.Core.ValueObjects;
 namespace Magnus.Application.Services;
 
 public class ClientAppAppService(
-    IUnitOfWork unitOfWork,
-    IMapper mapper) : IClientAppService
+    IUnitOfWork unitOfWork) : IClientAppService
 {
     public async Task AddClientAsync(CreateClientRequest request, CancellationToken cancellationToken)
     {
@@ -34,26 +33,17 @@ public class ClientAppAppService(
         if (request.Email is not null) client.SetEmail(new Email(request.Email));
         if (!string.IsNullOrEmpty(request.Occupation)) client.SetOccupation(request.Occupation);
         if (request.DateOfBirth != DateOnly.MinValue) client.SetDateOfBirth(request.DateOfBirth);
-        if (!string.IsNullOrEmpty(request.ZipCode))
-        {
-            Address address = new(request.ZipCode, request.PublicPlace!, request.Number, request.Neighborhood!,
-                request.City!, request.State!, request.Complement!);
-            client.SetAddress(address);
-        }
-        else
-        {
-            client.SetAddress(null);
-        }
+        if (request.Address is not null)
+            client.SetAddress(request.Address.MapToEntity());
 
-        await unitOfWork.Clients.AddAsync(client, cancellationToken);
-        if (request.Phones != null && request.Phones.Any())
+        if (request.Phones is not null)
             foreach (var phone in request.Phones)
-                client.AddPhone(new ClientPhone(client.Id, new Phone(phone.Number), phone.Description));
+                client.AddPhone(phone.MapToEntity());
 
-        if (request.SocialMedias != null && request.SocialMedias.Any())
+        if (request.SocialMedias is not null)
             foreach (var socialMedia in request.SocialMedias)
-                client.AddSocialMedia(new ClientSocialMedia(client.Id, socialMedia.Name, socialMedia.Link));
-
+                client.AddSocialMedia(socialMedia.MapToEntity());
+        await unitOfWork.Clients.AddAsync(client, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -63,26 +53,19 @@ public class ClientAppAppService(
         if (clientDb is null) throw new EntityNotFoundException(id);
         clientDb.SetName(request.Name);
         clientDb.SetDocument(new Document(request.Document));
-        if (!string.IsNullOrEmpty(request.ZipCode))
-        {
-            Address address = new(request.ZipCode, request.PublicPlace!, request.Number, request.Neighborhood!,
-                request.City!, request.State!, request.Complement!);
-            clientDb.SetAddress(address);
-        }
-        else
-        {
-            clientDb.SetAddress(null);
-        }
+        if (request.Address is not null)
+            clientDb.SetAddress(request.Address.MapToEntity());
 
         if (!string.IsNullOrEmpty(request.RegisterNumber)) clientDb.SetRegisterNumber(request.RegisterNumber);
         if (request.Email is not null) clientDb.SetEmail(new Email(request.Email));
         if (!string.IsNullOrEmpty(request.Occupation)) clientDb.SetOccupation(request.Occupation);
         if (request.DateOfBirth != DateOnly.MinValue) clientDb.SetDateOfBirth(request.DateOfBirth);
-        if (clientDb.Phones != null)
+
+        if (clientDb.Phones is not null)
         {
             var phonesToRemove = clientDb.Phones.Where(p =>
-                request.Phones != null && request.Phones.All(x => x.Number != p.Phone.Number));
-            if (request.Phones != null)
+                request.Phones is not null && request.Phones.All(x => x.Number != p.Phone.Number));
+            if (request.Phones is not null)
                 foreach (var phone in request.Phones)
                 {
                     var existingPhone = clientDb.Phones.SingleOrDefault(p => p.Phone.Number == phone.Number);
@@ -93,27 +76,27 @@ public class ClientAppAppService(
                     }
                     else
                     {
-                        clientDb.AddPhone(mapper.Map<ClientPhone>(phone));
+                        clientDb.AddPhone(phone.MapToEntity());
                     }
                 }
 
-            if (clientDb.SocialMedias != null)
+            if (clientDb.SocialMedias is not null)
             {
                 var socialToRemove = clientDb.SocialMedias.Where(s =>
-                    request.SocialMedias != null && request.SocialMedias.All(x => x.Name != s.Name));
-                if (request.SocialMedias != null)
+                    request.SocialMedias is not null && request.SocialMedias.All(x => x.Name != s.Name));
+                if (request.SocialMedias is not null)
                     foreach (var socialMedia in request.SocialMedias)
                     {
                         var existingSocialMedia =
                             clientDb.SocialMedias.SingleOrDefault(s => s.Name == socialMedia.Name);
-                        if (existingSocialMedia != null)
+                        if (existingSocialMedia is not null)
                         {
                             existingSocialMedia.SetName(socialMedia.Name);
                             existingSocialMedia.SetLink(socialMedia.Link);
                         }
                         else
                         {
-                            clientDb.AddSocialMedia(mapper.Map<ClientSocialMedia>(socialMedia));
+                            clientDb.AddSocialMedia(socialMedia.MapToEntity());
                         }
                     }
 
@@ -128,30 +111,31 @@ public class ClientAppAppService(
 
     public async Task<IEnumerable<ClientResponse>> GetClientsAsync(CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<ClientResponse>>(await unitOfWork.Clients.GetAllAsync(cancellationToken));
+        return (await unitOfWork.Clients.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<ClientResponse>> GetClientsByFilterAsync(Expression<Func<Client, bool>> predicate,
         CancellationToken cancellationToken)
     {
-        return mapper.Map<IEnumerable<ClientResponse>>(
-            await unitOfWork.Clients.GetAllByExpressionAsync(predicate, cancellationToken));
+        return (await unitOfWork.Clients.GetAllByExpressionAsync(predicate, cancellationToken)).MapToResponse();
     }
 
     public async Task<IEnumerable<ClientResponse>> GetClientsByDocumentAsync(string document,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(document))
-            return mapper.Map<IEnumerable<ClientResponse>>(await unitOfWork.Clients.GetAllAsync(cancellationToken));
+            return (await unitOfWork.Clients.GetAllAsync(cancellationToken)).MapToResponse();
         var documentSanitized = document.Replace(".", "").Replace("/", "").Replace("-", "");
-        return mapper.Map<IEnumerable<ClientResponse>>(
-            await unitOfWork.Clients.GetAllByExpressionAsync(x => x.Document.Value.Contains(documentSanitized),
-                cancellationToken));
+        return (await unitOfWork.Clients.GetAllByExpressionAsync(x => x.Document.Value.Contains(documentSanitized),
+            cancellationToken)).MapToResponse();
     }
 
     public async Task<ClientResponse> GetClientByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return mapper.Map<ClientResponse>(await unitOfWork.Clients.GetByIdAsync(id, cancellationToken));
+        var client = await unitOfWork.Clients.GetByIdAsync(id, cancellationToken);
+        if (client is null)
+            throw new EntityNotFoundException("Cliente não encontrado com esse Id");
+        return client.MapToResponse();
     }
 
     public async Task DeleteClientAsync(Guid id, CancellationToken cancellationToken)

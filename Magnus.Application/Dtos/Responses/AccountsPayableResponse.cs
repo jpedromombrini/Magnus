@@ -21,4 +21,5 @@ public record AccountsPayableResponse(
     int AccountPayableStatus,
     PaymentResponse Payment,
     int TotalInstallment,
-    DateOnly Reference);
+    DateOnly Reference,
+    string? ProofImage);

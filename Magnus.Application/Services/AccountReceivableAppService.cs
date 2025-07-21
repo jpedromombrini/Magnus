@@ -25,21 +25,25 @@ public class AccountReceivableAppService(
     public async Task UpdateAccountsReceivableAsync(Guid id, UpdateAccountsReceivableRequest request,
         CancellationToken cancellationToken)
     {
-        var acoounts = request.MapToEntity();
-        await accountsReceivableService.UpdateAsync(id, acoounts, cancellationToken);
+        var accounts = request.MapToEntity();
+        await accountsReceivableService.UpdateAsync(id, accounts, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<AccountsReceivableResponse>> GetAccountsReceivablesByFilterAsync(
-        GetAccountsReceivableFilter filter, CancellationToken cancellationToken)
+        AccountsReceivableFilter filter, CancellationToken cancellationToken)
     {
         var accounts = await unitOfWork.AccountsReceivables.GetAllByExpressionAsync(x =>
-                x.DueDate >= filter.InitialDueDate &&
-                x.DueDate <= filter.FinalDueDate &&
-                ((filter.ClientId == null || filter.ClientId == Guid.Empty) || x.ClientId == filter.ClientId) &&
-                (filter.Number == 0 || x.Document == filter.Number) &&
-                (filter.Status == AccountsReceivableStatus.All || x.Status == filter.Status),
-            cancellationToken);
+            (filter.ClientId == null || x.ClientId == filter.ClientId) &&
+            (filter.Document == 0 || x.Document == filter.Document) &&
+            (filter.ReceiptId == null || filter.ReceiptId == x.ReceiptId) &&
+            (filter.InitialDueDate == null || x.DueDate >= filter.InitialDueDate) &&
+            (filter.FinalDueDate == null || x.DueDate <= filter.FinalDueDate) &&
+            (filter.InitialEntryDate == null || x.CreatedAt.Date >= filter.InitialEntryDate) &&
+            (filter.FinalEntryDate == null || x.CreatedAt.Date <= filter.FinalEntryDate) &&
+            (filter.InitialReceiptDate == null || x.ReceiptDate >= filter.InitialReceiptDate) &&
+            (filter.FinalReceiptDate == null || x.ReceiptDate <= filter.FinalReceiptDate) &&
+            (filter.Status == AccountsReceivableStatus.All || filter.Status == x.Status), cancellationToken);
         return accounts.MapToResponse();
     }
 

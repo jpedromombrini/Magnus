@@ -10,8 +10,10 @@ public class AppConfigurationMap : IEntityTypeConfiguration<AppConfiguration>
     {
         builder.ToTable("AppConfiguration");
         builder.HasKey(x => x.Id);
-        builder.Property(x => x.CostCenterSale)
-            .IsRequired()
-            .HasColumnType("varchar(8)");
+        builder.HasOne(ar => ar.CostCenterSale)
+            .WithMany()
+            .HasForeignKey(ar => ar.CostCenterSaleId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

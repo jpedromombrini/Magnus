@@ -10,6 +10,7 @@ using Magnus.Core.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Magnus.Application.Services;
 
@@ -20,9 +21,7 @@ public class AuthAppService(
     public async Task<LoginResponse> LoginAsync(LoginRequest request, CancellationToken cancellationToken)
     {
         var userDb = await unitOfWork.Users.GetUserByEmailAsync(request.Email, cancellationToken);
-        if (userDb is null)
-            throw new AuthenticationException("Usuário ou senha inválidos");
-        if(!userDb.Password.Equals(request.Password))
+        if (userDb is null || !userDb.Password.Equals(request.Password))
             throw new AuthenticationException("Usuário ou senha inválidos");
         var token = CreateToken(userDb);
         var refreshToken = CreateRefreshToken(userDb);
@@ -32,13 +31,13 @@ public class AuthAppService(
     public async Task<LoginResponse> RefreshLoginAsync(RefreshLoginRequest request, CancellationToken cancellationToken)
     {
         var email = await ValidateRefreshTokenAsync(request.RefreshToken);
-        if(string.IsNullOrEmpty(email))
+        if (string.IsNullOrEmpty(email))
             throw new AuthenticationException("Refresh token inválido");
-        
+
         var userDb = await unitOfWork.Users.GetUserByEmailAsync(email, cancellationToken);
         if (userDb is null)
             throw new AuthenticationException("Usuário ou senha inválidos");
-        
+
         var token = CreateToken(userDb);
         var refreshToken = CreateRefreshToken(userDb);
         return new LoginResponse(token, refreshToken);
@@ -53,10 +52,10 @@ public class AuthAppService(
                 new Claim(ClaimTypes.Role, nameof(user.UserType)),
                 new Claim(ClaimTypes.Email, user.Email.Address),
                 new Claim("UserId", user.Id.ToString()),
-                new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Nbf,
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Nbf,
                     ToUnixEpochDate(DateTime.UtcNow).ToString()),
-                new Claim(Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Iat,
+                new Claim(JwtRegisteredClaimNames.Iat,
                     ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64)
             ]),
             Expires = DateTime.UtcNow.AddHours(1),
@@ -76,7 +75,7 @@ public class AuthAppService(
         var tokenConfig = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity([
-                new Claim(ClaimTypes.Email, user.Email.Address),
+                new Claim(ClaimTypes.Email, user.Email.Address)
             ]),
             Expires = DateTime.UtcNow.AddDays(2),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey),
@@ -93,7 +92,7 @@ public class AuthAppService(
     {
         var secretKey = GetSecretKey();
         var handler = new JsonWebTokenHandler();
-        var result = await handler.ValidateTokenAsync(refreshToken, new TokenValidationParameters()
+        var result = await handler.ValidateTokenAsync(refreshToken, new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidateAudience = false,
@@ -104,21 +103,22 @@ public class AuthAppService(
             IssuerSigningKey = new SymmetricSecurityKey(secretKey)
         });
 
-        return !result.IsValid ? null : result.Claims[Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames.Email].ToString();
+        return !result.IsValid ? null : result.Claims[JwtRegisteredClaimNames.Email].ToString();
     }
 
-   
 
     private byte[] GetSecretKey()
     {
         var key = configuration["Jwt:SecretKey"];
         if (key is null)
             throw new AuthenticationException("key não encontrada");
-        
+
         return Encoding.UTF8.GetBytes(key);
     }
 
     private static long ToUnixEpochDate(DateTime date)
-        => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero))
+    {
+        return (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero))
             .TotalSeconds);
+    }
 }

@@ -1,6 +1,5 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
-using Magnus.Application.Services;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Enumerators;
 using Microsoft.AspNetCore.Authorization;
@@ -22,9 +21,9 @@ public class TransferWarehouseController(
         CancellationToken cancellationToken)
     {
         return await transferWarehouseAppService.GetTransferWarehouseByFilterAsync(x =>
-                x.CreatedAt >= initialDate
-                && x.CreatedAt <= finalDate
-                && (warehouseId == 0 || (x.WarehouseOriginId == warehouseId || x.WarehouseDestinyId == warehouseId)),
+                x.CreatedAt >= initialDate.Date
+                && x.CreatedAt <= finalDate.Date
+                && (warehouseId == 0 || x.WarehouseOriginId == warehouseId || x.WarehouseDestinyId == warehouseId),
             cancellationToken);
     }
 
@@ -44,9 +43,13 @@ public class TransferWarehouseController(
         int warehouseOrigin,
         int warehouseDestiny, CancellationToken cancellationToken)
     {
-        return await transferWarehouseAppService.GetTransferWarehouseItemsByFilterAsync(x => x.Status == status
+        return await transferWarehouseAppService.GetTransferWarehouseItemsByFilterAsync(x =>
+                x.Status == status
                 && (warehouseOrigin == 0 || x.TransferWarehouse.WarehouseOriginId == warehouseOrigin)
-                && (warehouseDestiny == 0 || x.TransferWarehouse.WarehouseDestinyId == warehouseDestiny), cancellationToken);
+                && (warehouseDestiny == 0 || x.TransferWarehouse.WarehouseDestinyId == warehouseDestiny)
+                && x.TransferWarehouse.CreatedAt.Date >= initialDate.Date
+                && x.TransferWarehouse.CreatedAt.Date <= finalDate.Date,
+            cancellationToken);
     }
 
     [HttpPost]
@@ -55,10 +58,11 @@ public class TransferWarehouseController(
     {
         await transferWarehouseAppService.AddTransferWarehouseAsync(request, cancellationToken);
     }
-    
+
     [HttpPatch]
     [Route("updatestatusitem")]
-    public async Task UpdateStatusTransferWarehouseItemAsync([FromBody] UpdateStatusTransferWarehouseItemRequest request,
+    public async Task UpdateStatusTransferWarehouseItemAsync(
+        [FromBody] UpdateStatusTransferWarehouseItemRequest request,
         CancellationToken cancellationToken)
     {
         await transferWarehouseAppService.UpdateTransferWarehouseItemStatusAsync(request, cancellationToken);

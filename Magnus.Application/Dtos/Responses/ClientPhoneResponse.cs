@@ -4,4 +4,4 @@ namespace Magnus.Application.Dtos.Responses;
 
 public record ClientPhoneResponse(
     string Number, 
-    string Description);
+    string? Description);

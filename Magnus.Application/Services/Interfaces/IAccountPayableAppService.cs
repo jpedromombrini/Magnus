@@ -8,6 +8,8 @@ public interface IAccountPayableAppService
 {
     Task AddAccountPayableAsync(List<CreateAccountsPayableRequest> request, CancellationToken cancellationToken);
     Task UpdateAccountPayableAsync(Guid id, UpdateAccountsPayableRequest request, CancellationToken cancellationToken);
+    Task PayAccountPayableAsync(Guid id, PayAccountPayableRequest request, CancellationToken cancellationToken);
+    Task ReversePayAccountPayableAsync(Guid id, CancellationToken cancellationToken);
 
     Task<IEnumerable<AccountsPayableResponse>> GetAccountPayablesByFilterAsync(GetAccountsPayableFilter filter,
         CancellationToken cancellationToken);

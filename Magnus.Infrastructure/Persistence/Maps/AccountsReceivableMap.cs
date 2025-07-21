@@ -13,15 +13,15 @@ public class AccountsReceiptMap : IEntityTypeConfiguration<AccountsReceivable>
         builder.Property(x => x.CreatedAt)
             .IsRequired()
             .HasColumnType("timestamp");
-        builder.Property(x => x.ClientName)
-            .IsRequired()
-            .HasMaxLength(150);
+        builder.Property(x => x.ReceiptDate)
+            .IsRequired(false)
+            .HasColumnType("timestamp");
         builder.Property(x => x.DueDate)
             .IsRequired();
         builder.Property(x => x.Value)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
-        builder.Property(x => x.PaymentValue)
+        builder.Property(x => x.ReceiptValue)
             .HasColumnType("decimal(10,2)");
         builder.Property(x => x.Discount)
             .IsRequired()
@@ -29,11 +29,23 @@ public class AccountsReceiptMap : IEntityTypeConfiguration<AccountsReceivable>
         builder.Property(x => x.Interest)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
-        builder.Property(x => x.CostCenter)
-            .IsRequired()
-            .HasColumnType("varchar(8)");
         builder.Property(x => x.Observation)
             .HasMaxLength(1000)
             .HasColumnType("varchar(1000)");
+        builder.HasOne(ar => ar.Client)
+            .WithMany()
+            .HasForeignKey(ar => ar.ClientId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne(ar => ar.Receipt)
+            .WithMany()
+            .HasForeignKey(ar => ar.ReceiptId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+        builder.HasOne(ar => ar.CostCenter)
+            .WithMany()
+            .HasForeignKey(ar => ar.CostCenterId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

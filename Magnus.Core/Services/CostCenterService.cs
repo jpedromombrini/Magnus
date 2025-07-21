@@ -6,8 +6,8 @@ namespace Magnus.Core.Services;
 
 public class CostCenterService(IUnitOfWork unitOfWork) : ICostCenterService
 {
-    public async Task<CostCenter?> GetByCodeAsync(string code, CancellationToken cancellationToken)
+    public async Task<CostCenter?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await unitOfWork.CostCenters.GetByExpressionAsync(x => x.Code == code, cancellationToken);
+        return await unitOfWork.CostCenters.GetByIdAsync(id, cancellationToken);
     }
 }

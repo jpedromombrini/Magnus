@@ -18,7 +18,7 @@ public class Client : EntityBase
     public Email? Email { get; private set; }
     public Document Document { get; private set; }
     public string? Occupation { get; private set; }
-    public DateOnly DateOfBirth { get; private set; }
+    public DateOnly? DateOfBirth { get; private set; }
     public Address? Address { get; private set; }
     public string? RegisterNumber { get; private set; }
     public List<ClientSocialMedia>? SocialMedias { get; private set; }
@@ -31,7 +31,7 @@ public class Client : EntityBase
         Name = name.ToUpper();
     }
 
-    public void SetEmail(Email email)
+    public void SetEmail(Email? email)
     {
         Email = email;
     }
@@ -41,14 +41,12 @@ public class Client : EntityBase
         Document = document;
     }
 
-    public void SetOccupation(string occupation)
+    public void SetOccupation(string? occupation)
     {
-        if (string.IsNullOrWhiteSpace(occupation))
-            throw new ArgumentException("Ocupação não pode ser nula ou vazia.");
         Occupation = occupation;
     }
 
-    public void SetDateOfBirth(DateOnly dateOfBirth)
+    public void SetDateOfBirth(DateOnly? dateOfBirth)
     {
         DateOfBirth = dateOfBirth;
     }
@@ -58,20 +56,9 @@ public class Client : EntityBase
         Address = address;
     }
 
-    public void SetRegisterNumber(string registerNumber)
+    public void SetRegisterNumber(string? registerNumber)
     {
         RegisterNumber = registerNumber ?? string.Empty;
-    }
-
-    public void SetSocialMedias(List<ClientSocialMedia>? socialMedias)
-    {
-        SocialMedias = socialMedias ??
-                       throw new ArgumentNullException(nameof(socialMedias), "Redes sociais não podem ser nulas.");
-    }
-
-    public void SetPhones(List<ClientPhone>? phones)
-    {
-        Phones = phones ?? throw new ArgumentNullException(nameof(phones), "Telefones não podem ser nulos.");
     }
 
     public void AddPhone(ClientPhone phone)

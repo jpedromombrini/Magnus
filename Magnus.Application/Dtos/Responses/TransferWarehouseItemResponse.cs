@@ -4,6 +4,7 @@ namespace Magnus.Application.Dtos.Responses;
 
 public record TransferWarehouseItemResponse(
     Guid Id,
+    DateTime Created,
     Guid ProductId,
     int ProductInternalCode,
     string ProductName,

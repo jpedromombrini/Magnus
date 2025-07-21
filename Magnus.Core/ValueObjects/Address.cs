@@ -4,14 +4,6 @@ namespace Magnus.Core.ValueObjects;
 
 public class Address
 {
-    public string ZipCode { get; private set; }
-    public string PublicPlace { get; private set; }
-    public int Number { get; private set; }
-    public string Neighborhood { get; private set; }
-    public string City { get; private set; }
-    public string State { get; private set; }
-    public string Complement { get; private set; }
-
     public Address(string zipCode, string publicPlace, int number, string neighborhood, string city, string state,
         string complement)
     {
@@ -23,6 +15,14 @@ public class Address
         SetState(state);
         SetComplement(complement);
     }
+
+    public string ZipCode { get; private set; }
+    public string PublicPlace { get; private set; }
+    public int Number { get; private set; }
+    public string Neighborhood { get; private set; }
+    public string City { get; private set; }
+    public string State { get; private set; }
+    public string Complement { get; private set; }
 
     private void SetZipCode(string zipCode)
     {
@@ -45,9 +45,6 @@ public class Address
 
     private void SetNumber(int number)
     {
-        if (number <= 0)
-            throw new ArgumentException("O número da residência deve ser maior que zero.");
-
         Number = number;
     }
 

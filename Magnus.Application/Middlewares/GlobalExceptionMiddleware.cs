@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using Magnus.Core.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -7,8 +8,9 @@ namespace Magnus.Application.Middlewares;
 
 public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExceptionMiddleware> logger)
 {
-    private readonly RequestDelegate _next = next;
     private readonly ILogger<GlobalExceptionMiddleware> _logger = logger;
+    private readonly RequestDelegate _next = next;
+
     public async Task InvokeAsync(HttpContext httpContext)
     {
         try
@@ -20,31 +22,33 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
             await HandleExceptionAsync(httpContext, ex);
         }
     }
+
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         _logger.LogError(exception, "Ocorreu uma exceção não tratada.");
         context.Response.ContentType = "application/json";
-        
+
+        object result;
+
         switch (exception)
         {
             case EntityNotFoundException:
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.NotFound; 
-                var result = new
-                {
-                    message = exception.Message 
-                };
-                return context.Response.WriteAsJsonAsync(result);
-            }
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                result = new { message = exception.Message };
+                break;
+
+            case AuthenticationException:
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                result = new { message = "Autenticação falhou." };
+                break;
+
             default:
-            {
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; 
-                var result = new 
-                {
-                    message = exception.Message 
-                };
-                return context.Response.WriteAsJsonAsync(result);
-            }
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                result = new { message = "Erro interno no servidor." };
+                break;
         }
+
+        var json = JsonSerializer.Serialize(result);
+        return context.Response.WriteAsync(json);
     }
 }

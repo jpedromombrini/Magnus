@@ -11,12 +11,12 @@ public class EstimateMap : IEntityTypeConfiguration<Estimate>
         builder.ToTable("Estimates");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Description)
-            .IsRequired()
+            .IsRequired(false)
             .HasColumnType("varchar(100)")
             .HasMaxLength(100);
         builder.Property(x => x.Observation)
-            .IsRequired()
-            .HasColumnType("varchar(300)")
+            .IsRequired(false)
+            .HasColumnType("varchar(500)")
             .HasMaxLength(500);
         builder.Property(x => x.Code)
             .IsRequired()

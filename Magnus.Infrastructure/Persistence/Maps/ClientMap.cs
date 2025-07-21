@@ -55,7 +55,14 @@ public class ClientMap : IEntityTypeConfiguration<Client>
             .HasColumnType("varchar(9)");
         builder.Property(x => x.RegisterNumber)
             .HasColumnType("varchar(10)");
-        builder.HasMany(x => x.SocialMedias);
-        builder.HasMany(x => x.Phones);
+        builder.HasMany(c => c.Phones)
+            .WithOne(p => p.Client)
+            .HasForeignKey(p => p.ClientId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(c => c.SocialMedias)
+            .WithOne(sm => sm.Client)
+            .HasForeignKey(sm => sm.ClientId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -5,14 +5,8 @@ public record CreateClientRequest(
     string? Email,
     string Document,
     string? Occupation,
-    DateOnly DateOfBirth,
-    string? ZipCode,
-    string? PublicPlace,
-    int Number,
-    string? Neighborhood,
-    string? City,
-    string? State,
-    string? Complement,
-    string? RegisterNumber,
+    DateOnly? DateOfBirth,
+    string RegisterNumber,
+    AddressRequest? Address,
     IEnumerable<ClientSocialMediaRequest>? SocialMedias,
-    IEnumerable<ClientPhoneRequest>? Phones); 
+    IEnumerable<ClientPhoneRequest>? Phones);

@@ -56,13 +56,18 @@ public class WarehouseAppService(
         var warehouses = await unitOfWork.Warehouses.GetAllByExpressionAsync(x =>
             user.UserType == UserType.Admin || x.UserId == user.Id, cancellationToken);
         var productsDb = await unitOfWork.Products.GetAllAsync(cancellationToken);
-        foreach (var warehouse in warehouses)
+        var warehousePrincipal = new Warehouse("Principal", user);
+        warehousePrincipal.SetCode(0);
+        var enumerable = warehouses.ToList();
+        enumerable.Add(warehousePrincipal);
+        foreach (var warehouse in enumerable)
         {
             var productResponse = new List<ProductByStockResponse>();
             foreach (var product in productsDb)
             {
                 var stock = await unitOfWork.ProductStocks.GetByExpressionAsync(x =>
-                        x.ProductId == product.Id,
+                        x.ProductId == product.Id &&
+                        x.WarehouseId == warehouse.Code,
                     cancellationToken);
                 var amount = 0;
                 if (stock != null)
@@ -72,7 +77,7 @@ public class WarehouseAppService(
                     warehouse.Id, amount));
             }
 
-            response.Add(new WarehouseStockResponse(warehouse.Id, warehouse.Name, productResponse));
+            response.Add(new WarehouseStockResponse(warehouse.Code, warehouse.Id, warehouse.Name, productResponse));
         }
 
         return response;

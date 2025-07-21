@@ -1,6 +1,3 @@
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Magnus.Application.Dtos.Requests.Validators;
 using Magnus.Application.Services;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Repositories;
@@ -82,8 +79,5 @@ public static class ServiceRegistration
         #endregion
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-        services.AddFluentValidationAutoValidation();
-        services.AddFluentValidationClientsideAdapters();
-        services.AddValidatorsFromAssemblyContaining<CreateProductRequestValidator>();
     }
 }

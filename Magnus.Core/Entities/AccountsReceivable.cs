@@ -1,55 +1,58 @@
-using System.ComponentModel;
 using Magnus.Core.Enumerators;
 
 namespace Magnus.Core.Entities;
 
 public class AccountsReceivable : EntityBase
 {
-    public DateTime CreatedAt { get; private set; }
-    public Guid? SaleReceiptInstallmentId { get; private set; }
-    public Guid ClientId { get; private set; }
-    public string ClientName { get; private set; }
-    public int Document  { get; private set; }
-    public DateOnly DueDate { get; private set; }
-    public DateOnly? PaymentDate { get; private set; }
-    public decimal PaymentValue { get; private set; }
-    public decimal Value { get; private set; }
-    public decimal Interest { get; private set; }
-    public decimal Discount { get; private set; }
-    public int Installment { get; private set; }
-    public string CostCenter { get; private set; }
-    public string? Observation { get; private set; }
-    public AccountsReceivableStatus Status { get; private set; }
+    private AccountsReceivable()
+    {
+    }
 
-    private AccountsReceivable(){}
     public AccountsReceivable(
-        Guid? saleReceiptInstallmentId,
         Guid clientId,
-        string clientName,
+        Guid? saleReceiptInstallmentId,
         int document,
         DateOnly dueDate,
-        DateOnly? paymentDate,
-        decimal paymentValue,
         decimal value,
         decimal interest,
         decimal discount,
         int installment,
-        string costCenter)
+        int totalInstallment,
+        Guid costCenterId)
     {
         CreatedAt = DateTime.Now;
         SetSaleReceiptInstallmentId(saleReceiptInstallmentId);
         SetClientId(clientId);
-        SetClientName(clientName);
         SetDocument(document);
         SetDueDate(dueDate);
-        SetPaymentDate(paymentDate);
-        SetPaymentValue(paymentValue);
         SetValue(value);
         SetInterest(interest);
         SetDiscount(discount);
         SetInstallment(installment);
-        SetCostCenter(costCenter);
+        SetTotalInstallment(totalInstallment);
+        SetCostCenterId(costCenterId);
     }
+
+    public DateTime CreatedAt { get; private set; }
+    public Guid? SaleReceiptInstallmentId { get; private set; }
+    public Guid ClientId { get; private set; }
+    public Client Client { get; private set; }
+    public int Document { get; private set; }
+    public DateOnly DueDate { get; private set; }
+    public DateTime? ReceiptDate { get; private set; }
+    public decimal ReceiptValue { get; private set; }
+    public Guid? ReceiptId { get; private set; }
+    public Receipt? Receipt { get; private set; }
+    public decimal Value { get; private set; }
+    public decimal Interest { get; private set; }
+    public decimal Discount { get; private set; }
+    public int Installment { get; private set; }
+    public Guid? CostCenterId { get; private set; }
+    public CostCenter? CostCenter { get; private set; }
+    public string? Observation { get; private set; }
+    public byte[]? ProofImage { get; private set; }
+    public int TotalInstallment { get; private set; }
+    public AccountsReceivableStatus Status { get; private set; }
 
     public void SetSaleReceiptInstallmentId(Guid? saleReceiptInstallmentId)
     {
@@ -63,64 +66,85 @@ public class AccountsReceivable : EntityBase
         ClientId = clientId;
     }
 
-    public void SetClientName(string clientName)
+    public void SetClient(Client client)
     {
-        if(string.IsNullOrEmpty(clientName))
-            throw new ArgumentNullException("Informe o nome do cliente");
-        ClientName = clientName;
+        ArgumentNullException.ThrowIfNull(client);
+        Client = client;
+    }
+
+    public void SetReceipt(Receipt receipt)
+    {
+        ArgumentNullException.ThrowIfNull(receipt);
+        Receipt = receipt;
+    }
+
+    public void SetReceiptId(Guid receiptId)
+    {
+        if (receiptId == Guid.Empty)
+            throw new ArgumentNullException("Informe o id do recebimento");
     }
 
     public void SetDocument(int document)
     {
         Document = document;
     }
+
     public void SetDueDate(DateOnly dueDate)
     {
         DueDate = dueDate;
     }
 
-    public void SetPaymentDate(DateOnly? paymentDate)
+    public void SetReceiptDate(DateTime? receiptDate)
     {
-        PaymentDate = paymentDate;
+        ReceiptDate = receiptDate;
     }
 
-    public void SetPaymentValue(decimal paymentValue)
+    public void SetReceiptValue(decimal receiptValue)
     {
-        if(paymentValue < 0)
+        if (receiptValue < 0)
             throw new ArgumentException("Pagamento não pode ser negativo.");
-        PaymentValue = paymentValue;
+        ReceiptValue = receiptValue;
     }
 
     public void SetValue(decimal value)
     {
-        if(value < 0)
+        if (value < 0)
             throw new ArgumentException("Valor não pode ser negativo.");
         Value = value;
     }
 
     public void SetInterest(decimal interest)
     {
-        if(interest < 0)
+        if (interest < 0)
             throw new ArgumentException("Juros não pode ser negativo.");
         Interest = interest;
     }
 
     public void SetDiscount(decimal discount)
     {
-        if(discount < 0)
+        if (discount < 0)
             throw new ArgumentException("Desconto não pode ser negativo.");
         Discount = discount;
     }
 
     public void SetInstallment(int installment)
     {
-        if(installment <= 0)
+        if (installment <= 0)
             throw new ArgumentException("Parcela inválida");
         Installment = installment;
     }
 
-    public void SetCostCenter(string costCenter)
+    public void SetCostCenterId(Guid costCenterId)
     {
+        if (costCenterId == Guid.Empty)
+            throw new ArgumentNullException("Informe o id do centro de custo");
+        CostCenterId = costCenterId;
+    }
+
+    public void SetCostCenter(CostCenter costCenter)
+    {
+        if (costCenter == null)
+            throw new ArgumentNullException("Informe o nome do centro de custo");
         CostCenter = costCenter;
     }
 
@@ -134,5 +158,25 @@ public class AccountsReceivable : EntityBase
     public void SetStatus(AccountsReceivableStatus status)
     {
         Status = status;
+    }
+
+    public void SetProofImage(string? proofImageBase64)
+    {
+        if (string.IsNullOrEmpty(proofImageBase64)) return;
+        var base64Data = proofImageBase64[(proofImageBase64.IndexOf(',') + 1)..];
+        var proofImage = Convert.FromBase64String(base64Data);
+        ProofImage = proofImage;
+    }
+
+    public void SetTotalInstallment(int totalInstallment)
+    {
+        if (totalInstallment <= 0)
+            throw new ArgumentException("Valor não pode ser negativo.");
+        TotalInstallment = totalInstallment;
+    }
+
+    public string? GetProofImageBase64()
+    {
+        return ProofImage == null ? null : $"data:image/jpeg;base64,{Convert.ToBase64String(ProofImage)}";
     }
 }

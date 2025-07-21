@@ -6,22 +6,30 @@ public class AppConfiguration : EntityBase
     {
     }
 
-    public AppConfiguration(string costCenterSale, int amountToDiscount, int daysValidityEstimate)
+    public AppConfiguration(Guid costCenterSaleId, int amountToDiscount, int daysValidityEstimate)
     {
-        SetCostCenterSale(costCenterSale);
+        SetCostCenterSaleId(costCenterSaleId);
         SetAmountToDiscount(amountToDiscount);
         SetDaysValidityEstimate(daysValidityEstimate);
     }
 
-    public string CostCenterSale { get; private set; }
+    public Guid? CostCenterSaleId { get; private set; }
+    public CostCenter? CostCenterSale { get; private set; }
     public int AmountToDiscount { get; private set; }
     public int DaysValidityEstimate { get; private set; }
 
-    public void SetCostCenterSale(string costCenterSale)
+    public void SetCostCenterSale(CostCenter costCenterSale)
     {
-        if (string.IsNullOrEmpty(costCenterSale))
-            throw new ArgumentNullException(nameof(costCenterSale));
+        ArgumentNullException.ThrowIfNull(costCenterSale);
         CostCenterSale = costCenterSale;
+        CostCenterSaleId = costCenterSale.Id;
+    }
+
+    public void SetCostCenterSaleId(Guid costCenterSaleId)
+    {
+        if (costCenterSaleId == Guid.Empty)
+            throw new ArgumentNullException(nameof(costCenterSaleId));
+        CostCenterSaleId = costCenterSaleId;
     }
 
     public void SetAmountToDiscount(int amountToDiscount)

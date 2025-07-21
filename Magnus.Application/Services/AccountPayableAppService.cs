@@ -26,6 +26,30 @@ public class AccountPayableAppService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task PayAccountPayableAsync(Guid id, PayAccountPayableRequest request,
+        CancellationToken cancellationToken)
+    {
+        var account = await unitOfWork.AccountsPayables.GetByIdAsync(id, cancellationToken);
+        if (account is null)
+            throw new EntityNotFoundException("Contas a pagar não encontrada");
+        account.SetPaymentDate(request.PaymentDate);
+        account.SetPaymentValue(request.PaymentValue);
+        account.SetProofImage(request.ProofImage);
+        account.SetStatus(AccountPayableStatus.Paid);
+        unitOfWork.AccountsPayables.Update(account);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ReversePayAccountPayableAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var account = await unitOfWork.AccountsPayables.GetByIdAsync(id, cancellationToken);
+        if (account is null)
+            throw new EntityNotFoundException("Contas a pagar não encontrada");
+        account.ReversePayment();
+        unitOfWork.AccountsPayables.Update(account);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<AccountsPayableResponse> GetAccountPayableByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var entity = await unitOfWork.AccountsPayables.GetByIdAsync(id, cancellationToken);

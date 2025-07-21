@@ -1,7 +1,7 @@
 namespace Magnus.Application.Dtos.Requests;
 
 public record CreateEstimateRequest(
-    string Description,
+    string? Description,
     DateTime ValiditAt,
     Guid? ClientId,
     string? ClientName,
@@ -9,7 +9,7 @@ public record CreateEstimateRequest(
     Guid? FreightId,
     decimal Freight,
     decimal FinantialDiscount,
-    string Observation,
+    string? Observation,
     Guid UserId,
     IEnumerable<EstimateItemRequest> Items,
     IEnumerable<EstimateReceiptRequest>? Receipts);

@@ -14,7 +14,7 @@ public class AccountsReceivableController(IAccountReceivableAppService accountRe
 {
     [HttpGet("getbyfilter")]
     public async Task<IEnumerable<AccountsReceivableResponse>> GetAccountsReceivablesByFilterAsync(
-        [FromQuery] GetAccountsReceivableFilter filter,
+        [FromQuery] AccountsReceivableFilter filter,
         CancellationToken cancellationToken)
     {
         return await accountReceivableAppService.GetAccountsReceivablesByFilterAsync(filter, cancellationToken);

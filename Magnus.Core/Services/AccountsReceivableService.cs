@@ -34,17 +34,16 @@ public class AccountsReceivableService(
         accountsExists.SetSaleReceiptInstallmentId(accountsReceivable.SaleReceiptInstallmentId);
         accountsExists.SetStatus(accountsReceivable.Status);
         accountsExists.SetClientId(accountsReceivable.ClientId);
-        accountsExists.SetPaymentDate(accountsReceivable.PaymentDate);
-        accountsExists.SetPaymentValue(accountsReceivable.PaymentValue);
-        if(!string.IsNullOrEmpty(accountsReceivable.Observation))
+        if (!string.IsNullOrEmpty(accountsReceivable.Observation))
             accountsExists.SetObservation(accountsReceivable.Observation);
         unitOfWork.AccountsReceivables.Update(accountsExists);
     }
 
-    public async Task<AccountsReceivable?> GetBySaleReceiptInstallmentIdAsync(Guid saleReceiptInstallmentId, CancellationToken cancellationToken)
+    public async Task<AccountsReceivable?> GetBySaleReceiptInstallmentIdAsync(Guid saleReceiptInstallmentId,
+        CancellationToken cancellationToken)
     {
         return await unitOfWork.AccountsReceivables.GetByExpressionAsync(
-                x => x.SaleReceiptInstallmentId == saleReceiptInstallmentId, cancellationToken);
+            x => x.SaleReceiptInstallmentId == saleReceiptInstallmentId, cancellationToken);
     }
 
     public void RemoveRangeAsync(IEnumerable<AccountsReceivable> accountsReceivables)
@@ -57,10 +56,10 @@ public class AccountsReceivableService(
         var client = await clientService.GetByIdAsync(accountsReceivable.ClientId, cancellationToken);
         if (client == null)
             throw new EntityNotFoundException("Nenhum cliente encontrado com esse id");
-        var costCenter = await costCenterService.GetByCodeAsync(accountsReceivable.CostCenter, cancellationToken);
+        var costCenter = await costCenterService.GetByIdAsync((Guid)accountsReceivable.CostCenterId, cancellationToken);
         if (costCenter == null)
             throw new EntityNotFoundException("Nenhum centro de custo encontrado com esse código");
-        accountsReceivable.SetStatus(accountsReceivable.PaymentDate is null
+        accountsReceivable.SetStatus(accountsReceivable.ReceiptDate is null
             ? AccountsReceivableStatus.Open
             : AccountsReceivableStatus.Paid);
         var accountsExists = await unitOfWork.AccountsReceivables.GetByExpressionAsync(
@@ -74,10 +73,10 @@ public class AccountsReceivableService(
         if (accountsReceivable.SaleReceiptInstallmentId is not null)
         {
             var installmentId = accountsReceivable.SaleReceiptInstallmentId.Value;
-            var installmentExists = await saleReceiptService.GetSaleReceiptInstallmentByIdAsync(installmentId, cancellationToken);
-            if(installmentExists is null)
+            var installmentExists =
+                await saleReceiptService.GetSaleReceiptInstallmentByIdAsync(installmentId, cancellationToken);
+            if (installmentExists is null)
                 throw new BusinessRuleException("Nenhuma parcela de recebimento encontrado com esse id");
         }
     }
-    
 }

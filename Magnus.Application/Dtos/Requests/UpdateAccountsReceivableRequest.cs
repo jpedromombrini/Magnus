@@ -1,17 +1,17 @@
 namespace Magnus.Application.Dtos.Requests;
 
 public record UpdateAccountsReceivableRequest(
-    DateTime CreatedAt,
     Guid? SaleReceiptInstallmentId,
     Guid ClientId,
-    string ClientName,
     int Document,
     DateOnly DueDate,
-    DateOnly? PaymentDate,
-    decimal PaymentValue,
+    Guid ReceiptId,
+    DateTime? ReceiptDate,
+    decimal ReceiptValue,
     decimal Value,
     decimal Interest,
     decimal Discount,
     int Installment,
-    string CostCenter,
+    int TotalInstallment,
+    Guid CostCenterId,
     string? Observation);

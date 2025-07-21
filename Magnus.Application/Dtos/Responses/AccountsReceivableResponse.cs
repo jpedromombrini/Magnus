@@ -2,19 +2,21 @@ using Magnus.Core.Enumerators;
 
 namespace Magnus.Application.Dtos.Responses;
 
-public record AccountsReceivableResponse(  DateTime CreatedAt,
+public record AccountsReceivableResponse(
     Guid Id,
+    DateTime CreatedAt,
     Guid? SaleReceiptInstallmentId,
-    Guid ClientId,
-    string ClientName,
+    ClientResponse Client,
     int Document,
     DateOnly DueDate,
-    DateOnly? PaymentDate,
-    decimal PaymentValue,
+    DateOnly? ReceiptDate,
+    Guid? ReceiptId,
+    decimal ReceiptValue,
     decimal Value,
     decimal Interest,
     decimal Discount,
     int Installment,
-    string CostCenter,
+    int TotalInstallment,
+    CostCenterResponse CostCenter,
     string? Observation,
     AccountsReceivableStatus Status);

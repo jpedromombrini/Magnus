@@ -156,10 +156,11 @@ public class SaleService(
         foreach (var saleReceipt in saleReceipts)
         foreach (var installment in saleReceipt.Installments)
         {
-            DateOnly? paymentDate = installment.PaymentDate is DateTime dt ? DateOnly.FromDateTime(dt) : null;
-            var account = new AccountsReceivable(installment.Id, client.Id, client.Name, document,
-                installment.DueDate, paymentDate, installment.PaymentValue, installment.Value, installment.Interest,
-                installment.Discount, installment.Installment, configuration.CostCenterSale);
+            var account = new AccountsReceivable(saleReceipt.ClienteId, installment.Id, document, installment.DueDate,
+                installment.Value, installment.Interest, installment.Discount, installment.Installment,
+                saleReceipt.Installments.Count(), (Guid)configuration.CostCenterSaleId);
+            account.SetClient(client);
+            account.SetCostCenter(configuration.CostCenterSale);
             await accountsReceivableService.CreateAsync(account, cancellationToken);
         }
     }

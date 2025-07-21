@@ -115,8 +115,8 @@ public class InvoiceService(
                 {
                     var reference = DateOnly.FromDateTime(new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1));
                     var accountsPayable = new AccountsPayable(invoice.Number, invoice.SupplierId, DateTime.Now,
-                        installment.DueDate, installment.PaymentDate, installment.Value, 0m,
-                        installment.Discount, installment.Interest, costCenter.Id, installment.Installment, invoice.Id,
+                        installment.DueDate, installment.Value, installment.Discount, installment.Interest,
+                        costCenter.Id, installment.Installment, invoice.Id,
                         null, invoice.LaboratoryId, payment.Id, invoicePayment.Installments.Count, reference);
                     await unitOfWork.AccountsPayables.AddAsync(accountsPayable, cancellationToken);
                 }

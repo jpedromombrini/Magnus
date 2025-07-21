@@ -32,4 +32,9 @@ public class Warehouse : EntityBase
         UserId = user.Id;
         User = user;
     }
+
+    public void SetCode(int code)
+    {
+        Code = code;
+    }
 }

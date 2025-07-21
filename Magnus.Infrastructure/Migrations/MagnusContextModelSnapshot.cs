@@ -67,6 +67,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<decimal>("PaymentValue")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<byte[]>("ProofImage")
+                        .HasColumnType("bytea");
+
                     b.Property<DateOnly>("Reference")
                         .HasColumnType("date");
 
@@ -129,14 +132,8 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<Guid>("ClientId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ClientName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
-
-                    b.Property<string>("CostCenter")
-                        .IsRequired()
-                        .HasColumnType("varchar(8)");
+                    b.Property<Guid?>("CostCenterId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp");
@@ -160,10 +157,16 @@ namespace Magnus.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("varchar(1000)");
 
-                    b.Property<DateOnly?>("PaymentDate")
-                        .HasColumnType("date");
+                    b.Property<byte[]>("ProofImage")
+                        .HasColumnType("bytea");
 
-                    b.Property<decimal>("PaymentValue")
+                    b.Property<DateTime?>("ReceiptDate")
+                        .HasColumnType("timestamp");
+
+                    b.Property<Guid?>("ReceiptId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("ReceiptValue")
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<Guid?>("SaleReceiptInstallmentId")
@@ -172,10 +175,19 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<int>("TotalInstallment")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("Value")
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("CostCenterId");
+
+                    b.HasIndex("ReceiptId");
 
                     b.ToTable("AccountsReceivable", (string)null);
                 });
@@ -189,14 +201,15 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<int>("AmountToDiscount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("CostCenterSale")
-                        .IsRequired()
-                        .HasColumnType("varchar(8)");
+                    b.Property<Guid?>("CostCenterSaleId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("DaysValidityEstimate")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CostCenterSaleId");
 
                     b.ToTable("AppConfiguration", (string)null);
                 });
@@ -274,7 +287,7 @@ namespace Magnus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateOnly>("DateOfBirth")
+                    b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
 
                     b.Property<string>("Name")
@@ -452,7 +465,6 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("timestamp");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
@@ -469,9 +481,8 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Observation")
-                        .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("varchar(300)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -1279,6 +1290,41 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("AccountsPayable");
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsReceivable", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Magnus.Core.Entities.CostCenter", "CostCenter")
+                        .WithMany()
+                        .HasForeignKey("CostCenterId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Magnus.Core.Entities.Receipt", "Receipt")
+                        .WithMany()
+                        .HasForeignKey("ReceiptId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Client");
+
+                    b.Navigation("CostCenter");
+
+                    b.Navigation("Receipt");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.AppConfiguration", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.CostCenter", "CostCenterSale")
+                        .WithMany()
+                        .HasForeignKey("CostCenterSaleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CostCenterSale");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Bar", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Product", null)
@@ -1381,7 +1427,7 @@ namespace Magnus.Infrastructure.Migrations
 
             modelBuilder.Entity("Magnus.Core.Entities.ClientPhone", b =>
                 {
-                    b.HasOne("Magnus.Core.Entities.Client", null)
+                    b.HasOne("Magnus.Core.Entities.Client", "Client")
                         .WithMany("Phones")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1405,17 +1451,21 @@ namespace Magnus.Infrastructure.Migrations
                                 .HasForeignKey("ClientPhoneId");
                         });
 
+                    b.Navigation("Client");
+
                     b.Navigation("Phone")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.ClientSocialMedia", b =>
                 {
-                    b.HasOne("Magnus.Core.Entities.Client", null)
+                    b.HasOne("Magnus.Core.Entities.Client", "Client")
                         .WithMany("SocialMedias")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.CostCenter", b =>

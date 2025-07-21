@@ -4,11 +4,13 @@ using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
+using Magnus.Core.Services.Interfaces;
 
 namespace Magnus.Application.Services;
 
 public class AppConfigurationAppService(
-    IUnitOfWork unitOfWork) : IAppConfigurationAppService
+    IUnitOfWork unitOfWork,
+    ICostCenterService costCenterService) : IAppConfigurationAppService
 {
     public async Task AddAppConfigurationAsync(CreateAppConfigurationRequest request,
         CancellationToken cancellationToken)
@@ -22,8 +24,11 @@ public class AppConfigurationAppService(
     {
         var appConfigurationDb = await unitOfWork.AppConfigurations.GetByIdAsync(id, cancellationToken);
         if (appConfigurationDb is null)
-            throw new EntityNotFoundException(id);
-        appConfigurationDb.SetCostCenterSale(request.CostCenterSale);
+            throw new EntityNotFoundException("Configuração não encontrada");
+        var costeCenter = await costCenterService.GetByIdAsync(request.CostCenterSale.Id, cancellationToken);
+        if (costeCenter is null)
+            throw new EntityNotFoundException("Nenhum centro de custo encontrado com o Id informado");
+        appConfigurationDb.SetCostCenterSale(costeCenter);
         appConfigurationDb.SetAmountToDiscount(request.AmountToDiscount);
         appConfigurationDb.SetDaysValidityEstimate(request.DaysValidityEstimate);
         unitOfWork.AppConfigurations.Update(appConfigurationDb);

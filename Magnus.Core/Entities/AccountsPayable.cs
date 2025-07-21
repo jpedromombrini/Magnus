@@ -1,4 +1,5 @@
 using Magnus.Core.Enumerators;
+using Magnus.Core.Exceptions;
 
 namespace Magnus.Core.Entities;
 
@@ -13,9 +14,7 @@ public class AccountsPayable : EntityBase
         Guid supplierId,
         DateTime createdAt,
         DateOnly dueDate,
-        DateTime? paymentDate,
         decimal value,
-        decimal paymentValue,
         decimal discount,
         decimal interest,
         Guid costCenterId,
@@ -31,9 +30,7 @@ public class AccountsPayable : EntityBase
         SetSupplierId(supplierId);
         SetCreatedAt(createdAt);
         SetDueDate(dueDate);
-        SetPaymentDate(paymentDate);
         SetValue(value);
-        SetPaymentValue(paymentValue);
         SetDiscount(discount);
         SetInterest(interest);
         SetCostCenter(costCenterId);
@@ -67,6 +64,7 @@ public class AccountsPayable : EntityBase
     public Payment Payment { get; private set; }
     public int TotalInstallment { get; private set; }
     public DateOnly Reference { get; private set; }
+    public byte[]? ProofImage { get; private set; }
     public List<AccountsPayableOccurrence>? Occurrences { get; private set; }
 
     public void SetDocument(int document)
@@ -116,7 +114,16 @@ public class AccountsPayable : EntityBase
     {
         if (paymentValue < 0)
             throw new ArgumentOutOfRangeException(nameof(paymentValue), "O valor do pagamento não pode ser negativo.");
+        if (paymentValue != Value + Interest - Discount)
+            throw new BusinessRuleException("Valor pagamento difere de valor + juros - desconto");
         PaymentValue = paymentValue;
+    }
+
+    public void ReversePayment()
+    {
+        PaymentDate = null;
+        PaymentValue = 0;
+        AccountPayableStatus = AccountPayableStatus.Open;
     }
 
     public void SetDiscount(decimal discount)
@@ -199,5 +206,18 @@ public class AccountsPayable : EntityBase
             throw new ArgumentException("Ocorrência não pode ser nula");
         Occurrences ??= [];
         Occurrences.Add(occurrence);
+    }
+
+    public void SetProofImage(string? proofImageBase64)
+    {
+        if (string.IsNullOrEmpty(proofImageBase64)) return;
+        var base64Data = proofImageBase64[(proofImageBase64.IndexOf(',') + 1)..];
+        var proofImage = Convert.FromBase64String(base64Data);
+        ProofImage = proofImage;
+    }
+
+    public string? GetProofImageBase64()
+    {
+        return ProofImage == null ? null : $"data:image/jpeg;base64,{Convert.ToBase64String(ProofImage)}";
     }
 }

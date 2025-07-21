@@ -55,7 +55,7 @@ public static class TransferWarehouseMapper
 
     public static TransferWarehouseItemResponse MapToResponse(this TransferWarehouseItem entity)
     {
-        return new TransferWarehouseItemResponse(entity.Id, entity.ProductId,
+        return new TransferWarehouseItemResponse(entity.Id, entity.TransferWarehouse.CreatedAt, entity.ProductId,
             entity.ProductInternalCode, entity.ProductName, entity.RequestedAmount, entity.AutorizedAmount,
             entity.TransferWarehouseId, entity.Status,
             entity.TransferWarehouse.WarehouseOriginName, entity.TransferWarehouse.WarehouseDestinyName);
