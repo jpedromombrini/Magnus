@@ -153,6 +153,7 @@ public class SaleService(
         CancellationToken cancellationToken)
     {
         var configuration = await configurationService.GetAppConfigurationAsync(cancellationToken);
+        List<AccountsReceivable> accountsReceivables = [];
         foreach (var saleReceipt in saleReceipts)
         foreach (var installment in saleReceipt.Installments)
         {
@@ -161,7 +162,9 @@ public class SaleService(
                 saleReceipt.Installments.Count(), (Guid)configuration.CostCenterSaleId);
             account.SetClient(client);
             account.SetCostCenter(configuration.CostCenterSale);
-            await accountsReceivableService.CreateAsync(account, cancellationToken);
+            accountsReceivables.Add(account);
         }
+
+        await accountsReceivableService.CreateAsync(accountsReceivables, cancellationToken);
     }
 }

@@ -1,7 +1,7 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
-using Magnus.Application.Services;
 using Magnus.Application.Services.Interfaces;
+using Magnus.Core.Enumerators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +17,13 @@ public class CostCenterController(
     public async Task<IEnumerable<CostCenterResponse>> GetAllCostCentersAsync(CancellationToken cancellationToken)
     {
         return await costCenterAppService.GetCostCentersAsync(cancellationToken);
+    }
+
+    [HttpGet("getbytype")]
+    public async Task<IEnumerable<CostCenterResponse>> GetAllByTypeCostCentersAsync(
+        [FromQuery] CostcenterGroupType costcenterGroupType, CancellationToken cancellationToken)
+    {
+        return await costCenterAppService.GetCostCentersByTypeAsync(costcenterGroupType, cancellationToken);
     }
 
     [HttpGet("GetByName")]
@@ -36,7 +43,8 @@ public class CostCenterController(
     }
 
     [HttpPost]
-    public async Task AddCostCenterAsync([FromBody] CreateCostCenterRequest request, CancellationToken cancellationToken)
+    public async Task AddCostCenterAsync([FromBody] CreateCostCenterRequest request,
+        CancellationToken cancellationToken)
     {
         await costCenterAppService.AddCostCenterAsync(request, cancellationToken);
     }

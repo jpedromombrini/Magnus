@@ -9,7 +9,7 @@ public record AccountsReceivableResponse(
     ClientResponse Client,
     int Document,
     DateOnly DueDate,
-    DateOnly? ReceiptDate,
+    DateTime? ReceiptDate,
     Guid? ReceiptId,
     decimal ReceiptValue,
     decimal Value,
@@ -17,6 +17,7 @@ public record AccountsReceivableResponse(
     decimal Discount,
     int Installment,
     int TotalInstallment,
-    CostCenterResponse CostCenter,
+    CostCenterResponse? CostCenter,
     string? Observation,
-    AccountsReceivableStatus Status);
+    AccountsReceivableStatus Status,
+    string? ProofImage);

@@ -66,6 +66,13 @@ public class AccountsReceivable : EntityBase
         ClientId = clientId;
     }
 
+    public void ReversePayment()
+    {
+        ReceiptDate = null;
+        ReceiptValue = 0;
+        Status = AccountsReceivableStatus.Open;
+    }
+
     public void SetClient(Client client)
     {
         ArgumentNullException.ThrowIfNull(client);

@@ -8,6 +8,11 @@ public static class AccountsReceivableMapper
 {
     #region Request
 
+    public static List<AccountsReceivable> MapToEntity(List<CreateAccountsReceivableRequest> requests)
+    {
+        return requests.Select(MapToEntity).ToList();
+    }
+
     public static AccountsReceivable MapToEntity(this CreateAccountsReceivableRequest request)
     {
         var account = new AccountsReceivable(request.ClientId, request.SaleReceiptInstallmentId, request.Document,
@@ -31,13 +36,13 @@ public static class AccountsReceivableMapper
         return account;
     }
 
-    public static IEnumerable<AccountsReceivable> MapToEntity(
+    public static List<AccountsReceivable> MapToEntity(
         this IEnumerable<CreateAccountsReceivableRequest> requests)
     {
         return requests.Select(MapToEntity).ToList();
     }
 
-    public static IEnumerable<AccountsReceivable> MapToEntity(
+    public static List<AccountsReceivable> MapToEntity(
         this IEnumerable<UpdateAccountsReceivableRequest> requests)
     {
         return requests.Select(MapToEntity).ToList();
@@ -51,9 +56,9 @@ public static class AccountsReceivableMapper
     {
         var accountResponse = new AccountsReceivableResponse(entity.Id, entity.CreatedAt,
             entity.SaleReceiptInstallmentId, entity.Client.MapToResponse(), entity.Document, entity.DueDate,
-            entity.DueDate, entity.ReceiptId, entity.ReceiptValue, entity.Value, entity.Interest, entity.Discount,
-            entity.Installment, entity.TotalInstallment, entity.CostCenter.MapToResponse(), entity.Observation,
-            entity.Status);
+            entity.ReceiptDate, entity.ReceiptId, entity.ReceiptValue, entity.Value, entity.Interest, entity.Discount,
+            entity.Installment, entity.TotalInstallment, entity.CostCenter?.MapToResponse(), entity.Observation,
+            entity.Status, entity.GetProofImageBase64());
         return accountResponse;
     }
 

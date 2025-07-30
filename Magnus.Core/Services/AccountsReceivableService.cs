@@ -12,12 +12,6 @@ public class AccountsReceivableService(
     ISaleReceiptService saleReceiptService,
     IUnitOfWork unitOfWork) : IAccountsReceivableService
 {
-    public async Task CreateAsync(AccountsReceivable accountsReceivable, CancellationToken cancellationToken)
-    {
-        await Validate(accountsReceivable, cancellationToken);
-        await unitOfWork.AccountsReceivables.AddAsync(accountsReceivable, cancellationToken);
-    }
-
     public async Task UpdateAsync(Guid id, AccountsReceivable accountsReceivable, CancellationToken cancellationToken)
     {
         var accountsExists = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
@@ -49,6 +43,12 @@ public class AccountsReceivableService(
     public void RemoveRangeAsync(IEnumerable<AccountsReceivable> accountsReceivables)
     {
         unitOfWork.AccountsReceivables.DeleteAccountsReceivableRange(accountsReceivables);
+    }
+
+    public async Task CreateAsync(IEnumerable<AccountsReceivable> accountsReceivables,
+        CancellationToken cancellationToken)
+    {
+        foreach (var accountsReceivable in accountsReceivables) await Validate(accountsReceivable, cancellationToken);
     }
 
     private async Task Validate(AccountsReceivable accountsReceivable, CancellationToken cancellationToken)

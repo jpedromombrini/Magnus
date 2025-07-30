@@ -1,10 +1,10 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Entities;
+using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
 
@@ -45,6 +45,13 @@ public class CostCenterAppService(
     public async Task<IEnumerable<CostCenterResponse>> GetCostCentersAsync(CancellationToken cancellationToken)
     {
         return (await unitOfWork.CostCenters.GetAllAsync(cancellationToken)).MapToResponse();
+    }
+
+    public async Task<IEnumerable<CostCenterResponse>> GetCostCentersByTypeAsync(
+        CostcenterGroupType costcenterGroupType, CancellationToken cancellationToken)
+    {
+        return (await unitOfWork.CostCenters.GetAllByTypeGroupAsync(costcenterGroupType, cancellationToken))
+            .MapToResponse();
     }
 
     public async Task<IEnumerable<CostCenterResponse>> GetCostCentersByFilterAsync(

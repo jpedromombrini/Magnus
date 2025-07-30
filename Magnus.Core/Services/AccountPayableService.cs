@@ -58,6 +58,6 @@ public class AccountPayableService(
                 , cancellationToken);
         if (accountsExists is not null)
             throw new BusinessRuleException(
-                "Já existe um contas a pagar com a combinação Fornecedor, Documento e Data vendimento");
+                "Já existe um contas a pagar com a combinação Fornecedor, Documento e Data vencimento");
     }
 }

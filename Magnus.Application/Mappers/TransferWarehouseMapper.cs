@@ -42,7 +42,7 @@ public static class TransferWarehouseMapper
 
     #region Response
 
-    public static TransferWarehouseResponse MapToResponse(this TransferWarehouse? entity)
+    public static TransferWarehouseResponse MapToResponse(this TransferWarehouse entity)
     {
         var items = new List<TransferWarehouseItemResponse>(entity.Items.Count);
         items.AddRange(entity.Items.MapToResponse());

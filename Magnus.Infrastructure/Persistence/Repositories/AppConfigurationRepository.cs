@@ -21,6 +21,8 @@ public class AppConfigurationRepository(MagnusContext context)
     {
         return await _context.AppConfigurations
             .Include(x => x.CostCenterSale)
+            .ThenInclude(x => x.CostCenterSubGroup)
+            .ThenInclude(x => x.CostCenterGroup)
             .ToListAsync(cancellationToken);
     }
 }

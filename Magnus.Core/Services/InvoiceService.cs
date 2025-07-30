@@ -118,6 +118,7 @@ public class InvoiceService(
                         installment.DueDate, installment.Value, installment.Discount, installment.Interest,
                         costCenter.Id, installment.Installment, invoice.Id,
                         null, invoice.LaboratoryId, payment.Id, invoicePayment.Installments.Count, reference);
+                    accountsPayable.SetSupplierName(invoice.SupplierName);
                     await unitOfWork.AccountsPayables.AddAsync(accountsPayable, cancellationToken);
                 }
             }

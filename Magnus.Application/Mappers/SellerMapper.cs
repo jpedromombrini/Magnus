@@ -23,6 +23,7 @@ public static class SellerMapper
     {
         return requests.Select(MapToEntity).ToList();
     }
+
     public static IEnumerable<Seller> MapToEntity(this IEnumerable<UpdateSellerRequest> requests)
     {
         return requests.Select(MapToEntity).ToList();
@@ -34,7 +35,8 @@ public static class SellerMapper
 
     public static SellerResponse MapToResponse(this Seller entity)
     {
-        return new SellerResponse(entity.Id, entity.Name, entity.Document?.Value, entity.Phone.Number,  entity.Email.Address, entity.UserId ?? Guid.Empty);
+        return new SellerResponse(entity.Id, entity.Name, entity.Document?.Value, entity.Phone.Number,
+            entity.Email.Address, entity.UserId);
     }
 
     public static IEnumerable<SellerResponse> MapToResponse(this IEnumerable<Seller> entity)

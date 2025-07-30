@@ -114,7 +114,10 @@ public class TransferWarehouseAppService(
     public async Task<TransferWarehouseResponse> GetTransferWarehouseByIdAsync(Guid id,
         CancellationToken cancellationToken)
     {
-        return (await unitOfWork.TransferWarehouses.GetByIdAsync(id, cancellationToken)).MapToResponse();
+        var transferWarehouse = await unitOfWork.TransferWarehouses.GetByIdAsync(id, cancellationToken);
+        if (transferWarehouse is null)
+            throw new EntityNotFoundException("Nenhuma transferência encontrada com esse id");
+        return transferWarehouse.MapToResponse();
     }
 
     public async Task DeleteTransferWarehouseAsync(Guid id, CancellationToken cancellationToken)

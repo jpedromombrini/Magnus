@@ -43,6 +43,7 @@ public static class ServiceRegistration
         services.AddScoped<IFreightAppService, FreightAppService>();
         services.AddScoped<IStockMovementAppService, StockMovementAppService>();
         services.AddScoped<IAccountPayableAppService, AccountPayableAppService>();
+        services.AddScoped<IReportAppService, ReportAppService>();
 
         #endregion
 

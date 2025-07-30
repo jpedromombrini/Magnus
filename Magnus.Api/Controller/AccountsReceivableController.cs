@@ -28,10 +28,23 @@ public class AccountsReceivableController(IAccountReceivableAppService accountRe
     }
 
     [HttpPost]
-    public async Task AddAccountsReceivableAsync([FromBody] CreateAccountsReceivableRequest request,
+    public async Task AddAccountsReceivableAsync([FromBody] List<CreateAccountsReceivableRequest> request,
         CancellationToken cancellationToken)
     {
         await accountReceivableAppService.AddAccountsReceivableAsync(request, cancellationToken);
+    }
+
+    [HttpPost("{id:guid}/receipt")]
+    public async Task ReceiptAccountsAsync(Guid id, [FromBody] ReceiptAccountReceivableRequest request,
+        CancellationToken cancellationToken)
+    {
+        await accountReceivableAppService.ReceiptAccountPayableAsync(id, request, cancellationToken);
+    }
+
+    [HttpPost("{id:guid}/reversereceipt")]
+    public async Task AddAccountsPayableAsync(Guid id, CancellationToken cancellationToken)
+    {
+        await accountReceivableAppService.ReverseReceiptAccountPayableAsync(id, cancellationToken);
     }
 
     [HttpPut("{id:guid}")]

@@ -32,6 +32,9 @@ public class AccountPayableAppService(
         var account = await unitOfWork.AccountsPayables.GetByIdAsync(id, cancellationToken);
         if (account is null)
             throw new EntityNotFoundException("Contas a pagar não encontrada");
+        account.SetInterest(request.Interest);
+        account.SetDiscount(request.Discount);
+        account.SetValue(request.Value);
         account.SetPaymentDate(request.PaymentDate);
         account.SetPaymentValue(request.PaymentValue);
         account.SetProofImage(request.ProofImage);

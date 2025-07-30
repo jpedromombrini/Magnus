@@ -12,8 +12,7 @@ namespace Magnus.Application.Services;
 
 public class SaleAppService(
     IUnitOfWork unitOfWork,
-    ISaleService saleService,
-    ISaleReceiptService saleReceiptService) : ISaleAppService
+    ISaleService saleService) : ISaleAppService
 {
     public async Task AddSaleAsync(CreateSaleRequest request, CancellationToken cancellationToken)
     {
@@ -48,24 +47,23 @@ public class SaleAppService(
     public async Task<IEnumerable<SaleResponse>> GetSalesByFilterAsync(GetSaleFilter filter,
         CancellationToken cancellationToken)
     {
-        if (filter.Status == SaleStatus.All)
-        {
+        if (filter.UserType == UserType.Admin)
             return (await unitOfWork.Sales.GetAllByExpressionAsync(x =>
                     x.CreateAt.Date >= filter.InitialDate.Date &&
                     x.CreateAt.Date <= filter.FinalDate.Date &&
-                    (filter.ClientId == Guid.Empty || x.ClientId == filter.ClientId) &&
-                    (filter.UserId == Guid.Empty || x.UserId == filter.UserId) &&
-                    (filter.Document == 0 || x.Document == filter.Document),
+                    (filter.ClientId == null || x.ClientId == filter.ClientId) &&
+                    (filter.UserId == null || x.UserId == filter.UserId) &&
+                    (filter.Document == 0 || x.Document == filter.Document) &&
+                    (filter.Status == SaleStatus.All || x.Status == filter.Status),
                 cancellationToken)).MapToResponse();
-        }
 
         return (await unitOfWork.Sales.GetAllByExpressionAsync(x =>
                 x.CreateAt.Date >= filter.InitialDate.Date &&
                 x.CreateAt.Date <= filter.FinalDate.Date &&
-                (filter.ClientId == Guid.Empty || x.ClientId == filter.ClientId) &&
-                (filter.UserId == Guid.Empty || x.UserId == filter.UserId) &&
+                (filter.ClientId == null || x.ClientId == filter.ClientId) &&
+                x.UserId == filter.UserId &&
                 (filter.Document == 0 || x.Document == filter.Document) &&
-                (x.Status == filter.Status),
+                (filter.Status == SaleStatus.All || x.Status == filter.Status),
             cancellationToken)).MapToResponse();
     }
 

@@ -9,7 +9,7 @@ public class Estimate : EntityBase
     {
     }
 
-    public Estimate(string description, DateTime validitAt, Guid? clientId, string? clientName, decimal value,
+    public Estimate(string? description, DateTime validitAt, Guid? clientId, string? clientName, decimal value,
         decimal freight, decimal finantialDiscount, Guid userId)
     {
         SetCreatedAt(DateTime.Now);
@@ -24,7 +24,7 @@ public class Estimate : EntityBase
     }
 
     public int Code { get; private set; }
-    public string Description { get; private set; }
+    public string? Description { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime ValiditAt { get; private set; }
     public Guid? ClientId { get; private set; }
@@ -33,14 +33,14 @@ public class Estimate : EntityBase
     public Guid? FreightId { get; private set; }
     public decimal Freight { get; private set; }
     public decimal FinantialDiscount { get; private set; }
-    public string Observation { get; set; }
+    public string? Observation { get; set; }
     public Guid UserId { get; private set; }
     public User User { get; private set; }
     public ICollection<EstimateItem> Items { get; private set; }
     public ICollection<EstimateReceipt>? Receipts { get; private set; }
     public EstimateStatus EstimateStatus { get; private set; }
 
-    public void SetDescription(string description)
+    public void SetDescription(string? description)
     {
         Description = description;
     }
@@ -77,7 +77,7 @@ public class Estimate : EntityBase
         FinantialDiscount = finantialDiscount;
     }
 
-    public void SetObservation(string observation)
+    public void SetObservation(string? observation)
     {
         Observation = observation;
     }

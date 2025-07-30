@@ -42,7 +42,7 @@ public class Supplier : EntityBase
         Phone = phone;
     }
 
-    public void SetAddress(Address address)
+    public void SetAddress(Address? address)
     {
         Address = address;
     }

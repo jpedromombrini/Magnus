@@ -1,6 +1,6 @@
 namespace Magnus.Application.Dtos.Requests;
 
-public record PayAccountPayableRequest(
+public record ReceiptAccountReceivableRequest(
     decimal Value,
     decimal Interest,
     decimal Discount,

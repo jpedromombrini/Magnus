@@ -87,7 +87,7 @@ public static class ProductMapper
 
     public static IEnumerable<BarResponse> MapToResponse(this IEnumerable<Bar>? entities)
     {
-        return entities.Select(MapToResponse).ToList();
+        return entities is null ? [] : entities.Select(MapToResponse).ToList();
     }
 
     #endregion

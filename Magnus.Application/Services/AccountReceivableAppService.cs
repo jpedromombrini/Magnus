@@ -14,11 +14,23 @@ public class AccountReceivableAppService(
     IAccountsReceivableService accountsReceivableService,
     IUnitOfWork unitOfWork) : IAccountReceivableAppService
 {
-    public async Task AddAccountsReceivableAsync(CreateAccountsReceivableRequest request,
+    public async Task ReverseReceiptAccountPayableAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var account = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
+        if (account is null)
+            throw new EntityNotFoundException("Contas a pagar não encontrada");
+        account.ReversePayment();
+        unitOfWork.AccountsReceivables.Update(account);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AddAccountsReceivableAsync(List<CreateAccountsReceivableRequest> request,
         CancellationToken cancellationToken)
     {
         var accounts = request.MapToEntity();
         await accountsReceivableService.CreateAsync(accounts, cancellationToken);
+        foreach (var account in accounts)
+            await unitOfWork.AccountsReceivables.AddAsync(account, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
@@ -34,9 +46,9 @@ public class AccountReceivableAppService(
         AccountsReceivableFilter filter, CancellationToken cancellationToken)
     {
         var accounts = await unitOfWork.AccountsReceivables.GetAllByExpressionAsync(x =>
-            (filter.ClientId == null || x.ClientId == filter.ClientId) &&
+            (filter.ClientId == Guid.Empty || x.ClientId == filter.ClientId) &&
             (filter.Document == 0 || x.Document == filter.Document) &&
-            (filter.ReceiptId == null || filter.ReceiptId == x.ReceiptId) &&
+            (filter.ReceiptId == Guid.Empty || filter.ReceiptId == x.ReceiptId) &&
             (filter.InitialDueDate == null || x.DueDate >= filter.InitialDueDate) &&
             (filter.FinalDueDate == null || x.DueDate <= filter.FinalDueDate) &&
             (filter.InitialEntryDate == null || x.CreatedAt.Date >= filter.InitialEntryDate) &&
@@ -62,6 +74,23 @@ public class AccountReceivableAppService(
         if (account == null)
             throw new EntityNotFoundException("Nenhum contas a receber encontrado com esse id");
         unitOfWork.AccountsReceivables.Delete(account);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ReceiptAccountPayableAsync(Guid id, ReceiptAccountReceivableRequest request,
+        CancellationToken cancellationToken)
+    {
+        var account = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
+        if (account is null)
+            throw new EntityNotFoundException("Contas a receber não encontrado");
+        account.SetInterest(request.Interest);
+        account.SetDiscount(request.Discount);
+        account.SetValue(request.Value);
+        account.SetReceiptDate(request.PaymentDate);
+        account.SetReceiptValue(request.PaymentValue);
+        account.SetProofImage(request.ProofImage);
+        account.SetStatus(AccountsReceivableStatus.Paid);
+        unitOfWork.AccountsReceivables.Update(account);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

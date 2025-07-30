@@ -30,22 +30,25 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
 
         object result;
 
-        switch (exception)
+        if (exception is EntityNotFoundException)
         {
-            case EntityNotFoundException:
-                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
-                result = new { message = exception.Message };
-                break;
-
-            case AuthenticationException:
-                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                result = new { message = "Autenticação falhou." };
-                break;
-
-            default:
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                result = new { message = "Erro interno no servidor." };
-                break;
+            context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            result = new { message = exception.Message };
+        }
+        else if (exception is AuthenticationException)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            result = new { message = "Autenticação falhou." };
+        }
+        else if (exception is BusinessRuleException)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            result = new { message = exception.Message };
+        }
+        else
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            result = new { message = "Erro interno no servidor." };
         }
 
         var json = JsonSerializer.Serialize(result);
