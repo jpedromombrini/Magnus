@@ -1,6 +1,6 @@
 namespace Magnus.Application.Dtos.Responses;
 
-public record InvoiceItemResponse( 
+public record InvoiceItemResponse(
     Guid Id,
     Guid ProductId,
     int ProductInternalCode,
@@ -8,5 +8,4 @@ public record InvoiceItemResponse(
     int Amount,
     decimal TotalValue,
     DateOnly Validity,
-    string Lot,
-    bool Bonus);
+    string Lot);

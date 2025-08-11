@@ -2,6 +2,7 @@ namespace Magnus.Application.Dtos.Requests;
 
 public record UpdateEstimateRequest(
     Guid Id,
+    DateTime CreatedAt,
     string? Description,
     DateTime ValiditAt,
     Guid? ClientId,

@@ -10,7 +10,8 @@ public static class EstimateMapper
 
     public static Estimate MapToEntity(this CreateEstimateRequest request)
     {
-        var estimate = new Estimate(request.Description, request.ValiditAt, request.ClientId, request.ClientName,
+        var estimate = new Estimate(request.CreatedAt, request.Description, request.ValiditAt, request.ClientId,
+            request.ClientName,
             request.Value,
             request.Freight, request.FinantialDiscount, request.UserId);
         if (string.IsNullOrEmpty(request.Observation))
@@ -26,7 +27,8 @@ public static class EstimateMapper
 
     public static Estimate MapToEntity(this UpdateEstimateRequest request)
     {
-        var estimate = new Estimate(request.Description, request.ValiditAt, request.ClientId, request.ClientName,
+        var estimate = new Estimate(request.CreatedAt, request.Description, request.ValiditAt, request.ClientId,
+            request.ClientName,
             request.Value,
             request.Freight, request.FinantialDiscount, request.UserId);
         if (string.IsNullOrEmpty(request.Observation))

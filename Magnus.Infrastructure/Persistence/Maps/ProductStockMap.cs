@@ -18,5 +18,9 @@ public class ProductStockMap : IEntityTypeConfiguration<ProductStock>
         builder.Property(x => x.WarehouseName)
             .IsRequired()
             .HasColumnType("varchar(100)");
+        builder.HasOne(x => x.Product)
+            .WithMany()
+            .HasForeignKey(x => x.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

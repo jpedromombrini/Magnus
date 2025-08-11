@@ -30,5 +30,6 @@ public interface IUnitOfWork : IDisposable
     IAccountsReceivableRepository AccountsReceivables { get; }
     IFreightRepository Freights { get; }
     IStockMovementRepository StockMovements { get; }
+    ICampaignRepository Campaigns { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

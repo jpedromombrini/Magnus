@@ -6,4 +6,4 @@ public record SellerResponse(
     string? Document,
     string Phone,
     string Email,
-    Guid? UserId);
+    UserResponse User);

@@ -60,8 +60,6 @@ public class TransferWarehouseItem : EntityBase
 
     public void SetAutorizedAmount(int autorizedAmount)
     {
-        if (autorizedAmount <= 0)
-            throw new ArgumentException("Informe a quantidade autorizada do produto");
         AutorizedAmount = autorizedAmount;
     }
 

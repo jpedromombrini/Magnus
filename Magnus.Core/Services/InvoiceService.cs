@@ -25,7 +25,6 @@ public class InvoiceService(
             throw new EntityNotFoundException(invoice.LaboratoryId);
         invoice.SetSupplierName(supplier.Name);
         var totalItemsValue = invoice.Items
-            .Where(x => x.Bonus == false)
             .Sum(x => x.TotalValue);
         ValidateFinantial(invoice);
         ValidateItems(invoice);
@@ -42,12 +41,14 @@ public class InvoiceService(
         {
             var stock = await unitOfWork.ProductStocks
                 .GetByExpressionAsync(x =>
-                        x.ProductId == product.ProductId,
+                        x.ProductId == product.ProductId &&
+                        x.WarehouseId == 0,
                     cancellationToken);
             if (stock is null)
             {
-                listProductStock.Add(
-                    new ProductStock(product.ProductId, product.TotalAmount, 0, "Principal"));
+                var productStockNew = new ProductStock(product.ProductId, product.TotalAmount, 0);
+                productStockNew.SetWarehouseName("Principal");
+                listProductStock.Add(productStockNew);
             }
             else
             {
@@ -73,6 +74,7 @@ public class InvoiceService(
             x.SupplierId == invoice.SupplierId, cancellationToken);
         var payments = await unitOfWork.AccountsPayables.GetAllByExpressionAsync(
             x => x.InvoiceId == invoice.Id, cancellationToken);
+        await ReverseStockAsync(invoice, cancellationToken);
         unitOfWork.AuditProducts.RemoveRange(audits);
         unitOfWork.AccountsPayables.RemoveRange(payments);
         unitOfWork.Invoices.Delete(invoice);
@@ -80,7 +82,7 @@ public class InvoiceService(
 
     private static void ValidateFinantial(Invoice invoice)
     {
-        if (invoice.UpdateFinantial)
+        if (invoice.UpdateFinantial && !invoice.Bonus)
         {
             var totalInstallments = invoice.InvoicePayments
                 .SelectMany(x => x.Installments)
@@ -92,16 +94,29 @@ public class InvoiceService(
         }
     }
 
+    private async Task ReverseStockAsync(Invoice invoice, CancellationToken cancellationToken)
+    {
+        foreach (var item in invoice.Items)
+        {
+            var stock = await unitOfWork.ProductStocks.GetByExpressionAsync(
+                x => x.ProductId == item.ProductId && x.WarehouseId == 0, cancellationToken);
+            if (stock is null)
+                throw new BusinessRuleException("Não foi possível encontrar o item para estorno");
+            stock.DecreaseAmount(item.Amount);
+            unitOfWork.ProductStocks.Update(stock);
+        }
+    }
+
     private static void ValidateItems(Invoice invoice)
     {
-        var totalItems = invoice.Items.Where(x => !x.Bonus).Sum(x => x.TotalValue);
+        var totalItems = invoice.Items.Sum(x => x.TotalValue);
         if (totalItems != invoice.Value)
             throw new BusinessRuleException("Total do total do pedido difere do total dos itens");
     }
 
     private async Task GenerateAccountsPayableAsync(Invoice invoice, CancellationToken cancellationToken)
     {
-        if (invoice is { UpdateFinantial: true, InvoicePayments: not null, CostCenterId: not null })
+        if (invoice is { UpdateFinantial: true, InvoicePayments: not null, CostCenterId: not null, Bonus: false })
         {
             var costCenter = await unitOfWork.CostCenters.GetByIdAsync((Guid)invoice.CostCenterId, cancellationToken);
             if (costCenter is null)

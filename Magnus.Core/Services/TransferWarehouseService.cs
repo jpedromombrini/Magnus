@@ -33,8 +33,8 @@ public class TransferWarehouseService(
         if (productStockDestiny is null)
         {
             productStockDestiny = new ProductStock(transferWarehouseItem.ProductId,
-                transferWarehouseItem.AutorizedAmount, destinationWarehouseId,
-                transferWarehouseItem.TransferWarehouse.WarehouseDestinyName);
+                transferWarehouseItem.AutorizedAmount, destinationWarehouseId);
+            productStockDestiny.SetWarehouseName(transferWarehouseItem.TransferWarehouse.WarehouseDestinyName);
             await unitOfWork.ProductStocks.AddAsync(productStockDestiny, cancellationToken);
         }
         else
@@ -69,8 +69,8 @@ public class TransferWarehouseService(
         if (productStockOrigin is null)
         {
             var productStock = new ProductStock(transferWarehouseItem.ProductId,
-                transferWarehouseItem.AutorizedAmount, destinationWarehouseId,
-                transferWarehouseItem.TransferWarehouse.WarehouseDestinyName);
+                transferWarehouseItem.AutorizedAmount, destinationWarehouseId);
+            productStock.SetWarehouseName(transferWarehouseItem.TransferWarehouse.WarehouseDestinyName);
 
             await unitOfWork.ProductStocks.AddAsync(productStock, cancellationToken);
         }

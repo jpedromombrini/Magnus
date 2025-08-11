@@ -22,7 +22,8 @@ public class StockMovementService(IUnitOfWork unitOfWork)
             if (productStock is null)
             {
                 productStock = new ProductStock(stockMovement.ProductId, stockMovement.Amount,
-                    stockMovement.WarehouseId, stockMovement.WarehouseName);
+                    stockMovement.WarehouseId);
+                productStock.SetWarehouseName(stockMovement.WarehouseName);
                 await unitOfWork.ProductStocks.AddAsync(productStock, cancellationToken);
             }
             else
@@ -37,7 +38,7 @@ public class StockMovementService(IUnitOfWork unitOfWork)
             productStock.DecreaseAmount(stockMovement.Amount);
         }
 
-        
+
         await unitOfWork.AuditProducts.AddAsync(auditProduct, cancellationToken);
     }
 }

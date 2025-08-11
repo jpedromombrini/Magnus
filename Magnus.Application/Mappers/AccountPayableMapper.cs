@@ -1,6 +1,7 @@
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Core.Entities;
+using Magnus.Core.Helpers;
 
 namespace Magnus.Application.Mappers;
 
@@ -10,7 +11,8 @@ public static class AccountPayableMapper
 
     public static AccountsPayable MapToEntity(this CreateAccountsPayableRequest request)
     {
-        return new AccountsPayable(request.Document, request.SupplierId, DateTime.Now, request.DueDate,
+        return new AccountsPayable(request.Document, request.SupplierId, DateTimeHelper.NowInBrasilia(),
+            request.DueDate,
             request.Value, request.Discount, request.Interest,
             request.CostCenterId, request.Installment, request.InvoiceId, request.UserPaymentId, request.LaboratoryId,
             request.PaymentId, request.TotalInstallment, request.Reference);
@@ -23,7 +25,8 @@ public static class AccountPayableMapper
 
     public static AccountsPayable MapToEntity(this UpdateAccountsPayableRequest request)
     {
-        return new AccountsPayable(request.Document, request.SupplierId, DateTime.Now, request.DueDate,
+        return new AccountsPayable(request.Document, request.SupplierId, DateTimeHelper.NowInBrasilia(),
+            request.DueDate,
             request.Value, request.Discount, request.Interest,
             request.CostCenterId, request.Installment, request.InvoiceId, request.UserPaymentId, request.LaboratoryId,
             request.PaymentId, request.TotalInstallment, request.Reference);

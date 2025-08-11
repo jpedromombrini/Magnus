@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Core.Entities;
@@ -14,7 +13,7 @@ public static class InvoiceMapper
         var invoice = new Invoice(request.Number, request.Serie, request.Key, request.DateEntry, request.Date,
             request.SupplierId, request.SupplierName, request.Freight, request.Deduction, request.Value,
             request.Observation, request.InvoiceSituation, request.DoctorId, request.UpdateFinantial,
-            request.CostCenterId, request.LaboratoryId);
+            request.CostCenterId, request.LaboratoryId, request.Bonus);
         invoice.SetItems(request.Items.MapToEntity());
         if (!request.UpdateFinantial) return invoice;
         if (request.Payments != null)
@@ -27,7 +26,7 @@ public static class InvoiceMapper
         var invoice = new Invoice(request.Number, request.Serie, request.Key, request.DateEntry, request.Date,
             request.SupplierId, request.SupplierName, request.Freight, request.Deduction, request.Value,
             request.Observation, request.InvoiceSituation, request.DoctorId, request.UpdateFinantial,
-            request.CostCenterId, request.LaboratoryId);
+            request.CostCenterId, request.LaboratoryId, request.Bonus);
         invoice.SetItems(request.Items.MapToEntity());
         if (!request.UpdateFinantial) return invoice;
         if (request.Payments != null)
@@ -60,7 +59,7 @@ public static class InvoiceMapper
     public static InvoiceItem MapToEntity(this InvoiceItemRequest request)
     {
         return new InvoiceItem(request.ProductId, request.ProductInternalCode, request.ProductName, request.Amount,
-            request.TotalValue, request.Bonus, request.Validate, request.Lot);
+            request.TotalValue, request.Validate, request.Lot);
     }
 
     public static IEnumerable<InvoiceItem> MapToEntity(this IEnumerable<InvoiceItemRequest> requests)
@@ -90,7 +89,7 @@ public static class InvoiceMapper
     public static InvoiceItemResponse MapToResponse(this InvoiceItem entity)
     {
         return new InvoiceItemResponse(entity.Id, entity.ProductId, entity.ProductInternalCode, entity.ProductName,
-            entity.Amount, entity.TotalValue, entity.Validate, entity.Lot, entity.Bonus);
+            entity.Amount, entity.TotalValue, entity.Validate, entity.Lot);
     }
 
     public static IEnumerable<InvoiceItemResponse> MapToResponse(this IEnumerable<InvoiceItem> entities)

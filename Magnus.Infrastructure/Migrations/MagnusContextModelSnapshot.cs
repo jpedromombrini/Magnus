@@ -281,6 +281,57 @@ namespace Magnus.Infrastructure.Migrations
                     b.ToTable("Bar", (string)null);
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.Campaign", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateOnly>("FinalDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("InitialDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Campain", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.CampaignItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CampaignId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampaignId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CampainItem", (string)null);
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.Client", b =>
                 {
                     b.Property<Guid>("Id")
@@ -621,6 +672,9 @@ namespace Magnus.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<bool>("Bonus")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid?>("CostCenterId")
                         .HasColumnType("uuid");
 
@@ -684,9 +738,6 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(12,3)");
-
-                    b.Property<bool>("Bonus")
-                        .HasColumnType("boolean");
 
                     b.Property<Guid>("InvoiceId")
                         .HasColumnType("uuid");
@@ -888,6 +939,8 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductId");
+
                     b.ToTable("ProductStock", (string)null);
                 });
 
@@ -1079,10 +1132,11 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<Guid?>("UserId")
-                        .IsRequired()
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Seller", (string)null);
                 });
@@ -1332,6 +1386,23 @@ namespace Magnus.Infrastructure.Migrations
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.CampaignItem", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Campaign", null)
+                        .WithMany("Items")
+                        .HasForeignKey("CampaignId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Magnus.Core.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Client", b =>
@@ -1586,6 +1657,17 @@ namespace Magnus.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.ProductStock", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.SaleItem", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Sale", "Sale")
@@ -1627,6 +1709,11 @@ namespace Magnus.Infrastructure.Migrations
 
             modelBuilder.Entity("Magnus.Core.Entities.Seller", b =>
                 {
+                    b.HasOne("Magnus.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.OwnsOne("Magnus.Core.ValueObjects.Document", "Document", b1 =>
                         {
                             b1.Property<Guid>("SellerId")
@@ -1688,6 +1775,8 @@ namespace Magnus.Infrastructure.Migrations
 
                     b.Navigation("Phone")
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.StockMovement", b =>
@@ -1861,6 +1950,11 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.AccountsPayable", b =>
                 {
                     b.Navigation("Occurrences");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.Campaign", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Client", b =>

@@ -17,7 +17,6 @@ public class EstimateService(
         await ValidateClient(estimate, cancellationToken);
         await ValidateUser(estimate, cancellationToken);
         estimate.ValidateTotals();
-        estimate.SetCreatedAt(DateTime.Now);
         estimate.SetEstimateStatus(EstimateStatus.Open);
         await unitOfWork.Estimates.AddAsync(estimate, cancellationToken);
     }
@@ -36,9 +35,9 @@ public class EstimateService(
             estimateDb.SetFreightId((Guid)estimate.FreightId);
         estimateDb.SetFreight(estimate.Freight);
         estimateDb.SetObservation(estimate.Observation);
+        estimateDb.SetCreatedAt(estimate.CreatedAt);
         estimateDb.SetValue(estimate.Value);
         estimateDb.SetValidity(estimate.ValiditAt);
-        estimateDb.SetUserId(estimate.UserId);
         estimateDb.SetFinantialDiscount(estimate.FinantialDiscount);
         estimateDb.SetClientId(estimate.ClientId);
         estimateDb.SetClientName(estimate.ClientName);

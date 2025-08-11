@@ -1,5 +1,6 @@
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 
 namespace Magnus.Core.Entities;
 
@@ -9,10 +10,11 @@ public class Estimate : EntityBase
     {
     }
 
-    public Estimate(string? description, DateTime validitAt, Guid? clientId, string? clientName, decimal value,
+    public Estimate(DateTime createdAt, string? description, DateTime validitAt, Guid? clientId, string? clientName,
+        decimal value,
         decimal freight, decimal finantialDiscount, Guid userId)
     {
-        SetCreatedAt(DateTime.Now);
+        SetCreatedAt(createdAt);
         SetDescription(description);
         SetValidity(validitAt);
         SetClientId(clientId);
@@ -119,7 +121,7 @@ public class Estimate : EntityBase
 
     public void SetCreatedAt(DateTime createdAt)
     {
-        CreatedAt = createdAt;
+        CreatedAt = DateTimeHelper.NowInBrasilia(createdAt);
     }
 
     public void ValidateTotals()

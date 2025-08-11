@@ -7,14 +7,13 @@ public class InvoiceItem : EntityBase
     }
 
     public InvoiceItem(Guid productId, int productInternalCode, string productName, int amount, decimal totalValue,
-        bool bonus, DateOnly validate, string lot)
+        DateOnly validate, string lot)
     {
         SetProductId(productId);
         SetProductInternalCode(productInternalCode);
         SetProductName(productName);
         SetAmount(amount);
         SetTotalValue(totalValue);
-        SetBonus(bonus);
         SetValidate(validate);
         SetLot(lot);
     }
@@ -24,7 +23,6 @@ public class InvoiceItem : EntityBase
     public string ProductName { get; private set; }
     public int Amount { get; private set; }
     public decimal TotalValue { get; private set; }
-    public bool Bonus { get; private set; }
     public Guid InvoiceId { get; private set; }
     public DateOnly Validate { get; private set; }
     public string Lot { get; private set; }
@@ -63,11 +61,6 @@ public class InvoiceItem : EntityBase
         if (totalValue < 0)
             throw new ArgumentException("O valor total não pode ser negativo.");
         TotalValue = totalValue;
-    }
-
-    public void SetBonus(bool bonus)
-    {
-        Bonus = bonus;
     }
 
     public void SetInvoice(Invoice invoice)

@@ -1,6 +1,7 @@
 namespace Magnus.Application.Dtos.Requests;
 
 public record CreateEstimateRequest(
+    DateTime CreatedAt,
     string? Description,
     DateTime ValiditAt,
     Guid? ClientId,

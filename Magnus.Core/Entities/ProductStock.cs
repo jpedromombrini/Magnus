@@ -4,15 +4,15 @@ namespace Magnus.Core.Entities;
 
 public class ProductStock : EntityBase
 {
-    public ProductStock(Guid productId, int amount, int warehouseId, string warehouseName)
+    public ProductStock(Guid productId, int amount, int warehouseId)
     {
         SetProductId(productId);
         SetAmount(amount);
         SetWarehouseId(warehouseId);
-        SetWarehouseName(warehouseName);
     }
 
     public Guid ProductId { get; private set; }
+    public Product Product { get; private set; }
     public int Amount { get; private set; }
     public int WarehouseId { get; private set; }
     public string WarehouseName { get; private set; }
@@ -53,5 +53,10 @@ public class ProductStock : EntityBase
     public void IncreaseAmount(int amount)
     {
         Amount += amount;
+    }
+
+    public void SetProduct(Product product)
+    {
+        Product = product;
     }
 }

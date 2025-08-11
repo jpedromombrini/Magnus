@@ -73,7 +73,8 @@ public class WarehouseAppService(
                 if (stock != null)
                     amount = stock.Amount;
 
-                productResponse.Add(new ProductByStockResponse(product.Id, product.Name, product.Bars.MapToResponse(),
+                productResponse.Add(new ProductByStockResponse(product.Id, product.Name, product.ApplyPriceRule,
+                    product.Bars.MapToResponse(),
                     warehouse.Id, amount));
             }
 

@@ -20,4 +20,5 @@ public record CreateInvoiceRequest(
     Guid? DoctorId,
     bool UpdateFinantial,
     Guid? CostCenterId,
-    Guid LaboratoryId);
+    Guid LaboratoryId,
+    bool Bonus);

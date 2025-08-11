@@ -16,7 +16,7 @@ public class SellerMap : IEntityTypeConfiguration<Seller>
         builder.OwnsOne(x => x.Email)
             .Property(x => x.Address)
             .HasColumnName("Email")
-            .HasColumnType("varchar(100)");  
+            .HasColumnType("varchar(100)");
         builder.OwnsOne(x => x.Document)
             .Property(x => x.Value)
             .HasColumnName("Document")
@@ -25,8 +25,10 @@ public class SellerMap : IEntityTypeConfiguration<Seller>
             .Property(x => x.Number)
             .HasColumnName("Number")
             .IsRequired()
-            .HasColumnType("varchar(15)"); 
-        builder.Property(x => x.UserId)
-            .IsRequired();
+            .HasColumnType("varchar(15)");
+        builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

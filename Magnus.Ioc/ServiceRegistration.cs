@@ -44,6 +44,7 @@ public static class ServiceRegistration
         services.AddScoped<IStockMovementAppService, StockMovementAppService>();
         services.AddScoped<IAccountPayableAppService, AccountPayableAppService>();
         services.AddScoped<IReportAppService, ReportAppService>();
+        services.AddScoped<ICampaignAppService, CampaignAppService>();
 
         #endregion
 
@@ -70,6 +71,7 @@ public static class ServiceRegistration
         services.AddScoped<IEstimateService, EstimateService>();
         services.AddScoped<IAccountPayableService, AccountPayableService>();
         services.AddScoped<IStockMovementService, StockMovementService>();
+        services.AddScoped<ICampaignService, CampaignService>();
 
         #endregion
 

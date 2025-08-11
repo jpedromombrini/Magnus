@@ -38,6 +38,7 @@ public class UnitOfWork : IUnitOfWork
         AccountsReceivables = new AccountsReceivableRepository(_context);
         Freights = new FreightRepository(_context);
         StockMovements = new StockMovementRepository(_context);
+        Campaigns = new CampaignRepository(_context);
     }
 
     public IProductRepository Products { get; }
@@ -68,6 +69,7 @@ public class UnitOfWork : IUnitOfWork
     public IAccountsReceivableRepository AccountsReceivables { get; }
     public IFreightRepository Freights { get; }
     public IStockMovementRepository StockMovements { get; }
+    public ICampaignRepository Campaigns { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {

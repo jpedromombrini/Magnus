@@ -36,7 +36,7 @@ public static class SellerMapper
     public static SellerResponse MapToResponse(this Seller entity)
     {
         return new SellerResponse(entity.Id, entity.Name, entity.Document?.Value, entity.Phone.Number,
-            entity.Email.Address, entity.UserId);
+            entity.Email.Address, entity.User.MapToResponse());
     }
 
     public static IEnumerable<SellerResponse> MapToResponse(this IEnumerable<Seller> entity)

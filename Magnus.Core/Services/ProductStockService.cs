@@ -36,15 +36,26 @@ public class ProductStockService(
     {
         var stock = await unitOfWork.ProductStocks.GetByExpressionAsync(
             x => x.ProductId == productId && x.WarehouseId == warehouse.Code, cancellationToken);
-        if (stock == null) stock = new ProductStock(productId, amount, warehouse.Code, warehouse.Name);
-        else stock.IncreaseAmount(amount);
+        if (stock == null)
+        {
+            var product = await unitOfWork.Products.GetByIdAsync(stock.ProductId, cancellationToken);
+            if (product is null)
+                throw new BusinessRuleException("nenhum produto encontrado com esse Id");
+            stock = new ProductStock(productId, amount, warehouse.Code);
+            stock.SetWarehouseName(warehouse.Name);
+            stock.SetProduct(product);
+        }
+        else
+        {
+            stock.IncreaseAmount(amount);
+        }
+
         unitOfWork.ProductStocks.Update(stock);
     }
 
     public async Task CreateProductStockMovementAsync(ProductStock productStock, CancellationToken cancellationToken)
     {
         var (product, wareHouse) = await ValidadeProductStock(productStock, cancellationToken);
-        productStock.SetWarehouseName(wareHouse.Name);
         await CheckStockProduct(productStock, cancellationToken);
         await CreateAuditProduck(productStock, cancellationToken, product, wareHouse);
     }
@@ -85,6 +96,8 @@ public class ProductStockService(
                 cancellationToken);
         if (wareHouse == null)
             throw new BusinessRuleException("Nenhum depósito encontrado com esse código");
+        productStock.SetProduct(product);
+        productStock.SetWarehouseName(wareHouse.Name);
         return (product, wareHouse);
     }
 }

@@ -21,8 +21,8 @@ public class TransferWarehouseController(
         CancellationToken cancellationToken)
     {
         return await transferWarehouseAppService.GetTransferWarehouseByFilterAsync(x =>
-                x.CreatedAt >= initialDate.Date
-                && x.CreatedAt <= finalDate.Date
+                x.CreatedAt.Date >= initialDate.Date
+                && x.CreatedAt.Date <= finalDate.Date
                 && (warehouseId == 0 || x.WarehouseOriginId == warehouseId || x.WarehouseDestinyId == warehouseId),
             cancellationToken);
     }

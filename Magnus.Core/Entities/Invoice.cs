@@ -24,7 +24,8 @@ public class Invoice : EntityBase
         Guid? doctorId,
         bool updateFinantial,
         Guid? costCenterId,
-        Guid laboratoryId)
+        Guid laboratoryId,
+        bool bonus)
     {
         SetNumber(number);
         SetSerie(serie);
@@ -42,6 +43,7 @@ public class Invoice : EntityBase
         SetUpdateFinantial(updateFinantial);
         SetCostCenterId(costCenterId);
         SetLaboratoryId(laboratoryId);
+        SetBonus(bonus);
         Items = [];
     }
 
@@ -63,6 +65,7 @@ public class Invoice : EntityBase
     public bool UpdateFinantial { get; private set; }
     public Guid? CostCenterId { get; private set; }
     public Guid LaboratoryId { get; private set; }
+    public bool Bonus { get; private set; }
 
     public void SetNumber(int number)
     {
@@ -186,5 +189,10 @@ public class Invoice : EntityBase
     public void SetLaboratoryId(Guid laboratoryId)
     {
         LaboratoryId = laboratoryId;
+    }
+
+    public void SetBonus(bool bonus)
+    {
+        Bonus = bonus;
     }
 }

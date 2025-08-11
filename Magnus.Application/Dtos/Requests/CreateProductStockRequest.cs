@@ -1,6 +1,6 @@
 namespace Magnus.Application.Dtos.Requests;
 
-public record CreateProductStockMovement(
+public record CreateProductStockRequest(
     Guid ProductId,
     int Amount,
-    int WarehouseDestinyCode);
+    int WarehouseId);

@@ -7,6 +7,4 @@ public record InvoiceItemRequest(
     int Amount,
     decimal TotalValue,
     DateOnly Validate,
-    string Lot,
-    bool Bonus
-);
+    string Lot);

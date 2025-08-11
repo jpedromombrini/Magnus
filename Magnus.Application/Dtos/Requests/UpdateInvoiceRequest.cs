@@ -2,7 +2,8 @@ using Magnus.Core.Enumerators;
 
 namespace Magnus.Application.Dtos.Requests;
 
-public record UpdateInvoiceRequest(  int Number,
+public record UpdateInvoiceRequest(
+    int Number,
     int Serie,
     string? Key,
     DateTime DateEntry,
@@ -19,4 +20,5 @@ public record UpdateInvoiceRequest(  int Number,
     Guid? DoctorId,
     bool UpdateFinantial,
     Guid? CostCenterId,
-    Guid LaboratoryId);
+    Guid LaboratoryId,
+    bool Bonus);

@@ -18,7 +18,18 @@ public class AccountsPayableRepository(MagnusContext context)
 
     public void RemoveRange(IEnumerable<AccountsPayable> entities)
     {
-        _context.AccountsPayables.RemoveRange(entities);
+        foreach (var entity in entities)
+        {
+            if (entity.Payment != null)
+            {
+                var tracked = _context.ChangeTracker.Entries<Payment>()
+                    .FirstOrDefault(e => e.Entity.Id == entity.Payment.Id);
+                if (tracked != null)
+                    context.Entry(tracked.Entity).State = EntityState.Detached;
+            }
+
+            context.Remove(entity);
+        }
     }
 
     public override async Task<IEnumerable<AccountsPayable>> GetAllAsync(CancellationToken cancellationToken)

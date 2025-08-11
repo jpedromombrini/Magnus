@@ -20,6 +20,7 @@ public class Seller : EntityBase
     public Phone Phone { get; private set; }
     public Email Email { get; private set; }
     public Guid? UserId { get; private set; }
+    public User User { get; private set; }
 
     public void SetName(string name)
     {
@@ -48,5 +49,10 @@ public class Seller : EntityBase
         if (userId == Guid.Empty)
             throw new ArgumentNullException("Informe o Id do usuário");
         UserId = userId;
+    }
+
+    public void SetUser(User user)
+    {
+        User = user;
     }
 }

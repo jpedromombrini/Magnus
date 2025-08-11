@@ -14,7 +14,7 @@ public class ReportAppService(IUnitOfWork unitOfWork) : IReportAppService
         var sellers = (await unitOfWork.Sellers.GetAllAsync(cancellationToken)).MapToResponse();
         foreach (var seller in sellers)
         {
-            var sales = (await unitOfWork.Sales.GetAllByExpressionAsync(x => x.UserId == seller.UserId,
+            var sales = (await unitOfWork.Sales.GetAllByExpressionAsync(x => x.UserId == seller.User.Id,
                 cancellationToken)).MapToResponse();
             saleBySellerReport.Add(new SaleBySellerResponse(seller, sales));
         }
