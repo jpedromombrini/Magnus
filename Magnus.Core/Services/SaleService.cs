@@ -12,16 +12,37 @@ public class SaleService(
     IAuditProductService auditProductService,
     IClientService clientService,
     IUserService userService,
-    ISaleReceiptService saleReceiptService,
     IAccountsReceivableService accountsReceivableService,
     IAppConfigurationService configurationService,
     IUnitOfWork unitOfWork) : ISaleService
 {
+    public async Task<Sale> CreateSaleByEstimateAsync(Estimate estimate, CancellationToken cancellationToken)
+    {
+        await ValidateSaleExistWithEstimateIdAsync(estimate.Id, cancellationToken);
+        var client = await ValidateClientEstimate(estimate, cancellationToken);
+        var saleItems = estimate.Items.Select(item =>
+                new SaleItem(item.ProductId, item.ProductName, item.Amount, item.Value, item.TotalValue, item.Discount))
+            .ToList();
+        var saleReceipts = CreateSaleReceipts(client.Id, estimate.Receipts);
+        var sale = new Sale(client.Id, estimate.UserId, estimate.Value, estimate.Freight,
+            estimate.FinantialDiscount);
+        if (estimate.FreightId is not null)
+        {
+            sale.SetFreight(estimate.Freight);
+            sale.SetFreightId((Guid)estimate.FreightId);
+        }
+
+        sale.AddRangeReceipts(saleReceipts);
+        sale.AddItems(saleItems);
+        sale.SetClientName(client.Name);
+        sale.SetStatus(SaleStatus.Invoiced);
+        sale.SetEstimateId(estimate.Id);
+        return sale;
+    }
+
     public async Task CreateAsync(Sale sale, CancellationToken cancellationToken)
     {
-        var client = await clientService.GetByIdAsync(sale.ClientId, cancellationToken);
-        if (client is null)
-            throw new BusinessRuleException("Cliente não encontrado");
+        var client = await clientService.ValidateClientAsync(sale.ClientId, cancellationToken);
         var user = await userService.GetUserByIdAsync(sale.UserId, cancellationToken);
         if (user is null)
             throw new BusinessRuleException("Usuário não encontrado");
@@ -52,31 +73,6 @@ public class SaleService(
         await UpdateReceipts(saleDb, sale.Receipts, cancellationToken);
     }
 
-    public async Task Invoice(Sale sale, CancellationToken cancellationToken)
-    {
-        var client = await clientService.GetByIdAsync(sale.ClientId, cancellationToken);
-        if (client is null)
-            throw new BusinessRuleException("Cliente não encontrado");
-        if (sale.GetTotalItemValue() != sale.Value)
-            throw new BusinessRuleException("Total do itens diferente do total do pedido");
-        var receipts = await saleReceiptService.GetSaleReceiptsAsync(sale.Id, cancellationToken);
-        if (receipts is null)
-            throw new BusinessRuleException("Pedido sem financeiro");
-        ValidateFinantial(sale);
-
-        var warehouse = await warehouseService.GetByUserIdAsync(sale.UserId, cancellationToken);
-        if (warehouse == null)
-            throw new BusinessRuleException("Nenhum depósito encontrado");
-        foreach (var item in sale.Items)
-            await ValidateStockAsync(item, warehouse.Code, cancellationToken);
-        foreach (var item in sale.Items)
-            await productStockService.SubtractProductStockAsync(item.ProductId, warehouse, item.Amount,
-                cancellationToken);
-        await auditProductService.SaleMovimentAsync(sale, warehouse.Code, cancellationToken);
-        await GenerateAccountsReceivable(client, sale.Document, receipts, cancellationToken);
-        sale.SetStatus(SaleStatus.Invoiced);
-    }
-
     public async Task<Sale?> GetSaleByDocument(int documentId, CancellationToken cancellationToken)
     {
         return await unitOfWork.Sales.GetByExpressionAsync(x => x.Document == documentId, cancellationToken);
@@ -94,6 +90,28 @@ public class SaleService(
                 cancellationToken);
         sale.SetReasonCancel(reason);
         sale.SetStatus(SaleStatus.Canceled);
+    }
+
+    public async Task Invoice(Sale sale, Client client, CancellationToken cancellationToken)
+    {
+        if (sale.GetTotalItemValue() != sale.Value)
+            throw new BusinessRuleException("Total do itens diferente do total do pedido");
+
+        ValidateFinantial(sale);
+        var warehouse = await ValidateWarehouseAsync(sale.UserId, cancellationToken);
+        await MovimentStockAsync(sale, warehouse, cancellationToken);
+
+        await auditProductService.SaleMovimentAsync(sale, warehouse.Code, cancellationToken);
+
+        await GenerateAccountsReceivable(client, sale.Document, sale.Receipts, cancellationToken);
+        sale.SetStatus(SaleStatus.Invoiced);
+    }
+
+    private async Task ValidateSaleExistWithEstimateIdAsync(Guid estimateId, CancellationToken cancellationToken)
+    {
+        var sale = await unitOfWork.Sales.GetByExpressionAsync(x => x.EstimateId == estimateId, cancellationToken);
+        if (sale is not null)
+            throw new BusinessRuleException($"Já existe um pedido criado com esse orçamento, pedido: {sale.Document}");
     }
 
     private async Task UpdateItems(Sale sale, IEnumerable<SaleItem> items, CancellationToken cancellationToken)
@@ -142,9 +160,13 @@ public class SaleService(
 
     private static void ValidateFinantial(Sale sale)
     {
+        if (sale.Receipts is null || sale.Receipts.Count == 0)
+            throw new BusinessRuleException("Pedido sem financeiro");
+
         var totalInstallments = sale.Receipts
             .SelectMany(receipt => receipt.Installments)
             .Sum(installment => installment.Value);
+
         if (sale.GetRealValue() - totalInstallments != 0)
             throw new BusinessRuleException("Total das parcelas diverge do total do pedido");
     }
@@ -165,6 +187,52 @@ public class SaleService(
             accountsReceivables.Add(account);
         }
 
-        await accountsReceivableService.CreateAsync(accountsReceivables, cancellationToken);
+        await accountsReceivableService.CreateAsync(accountsReceivables, client, cancellationToken);
+    }
+
+    private async Task<Client> ValidateClientEstimate(Estimate estimate, CancellationToken cancellationToken)
+    {
+        if (estimate.ClientId is null || estimate.ClientId == Guid.Empty)
+            throw new BusinessRuleException("Informe um cliente para o orçamento");
+        var client = await clientService.ValidateClientAsync((Guid)estimate.ClientId, cancellationToken);
+        if (client is null)
+            throw new EntityNotFoundException("cliente não encontrado com esse Id");
+        return client;
+    }
+
+    private List<SaleReceipt> CreateSaleReceipts(Guid clientId, ICollection<EstimateReceipt>? receipts)
+    {
+        var saleReceipts = new List<SaleReceipt>();
+        if (receipts is null)
+            throw new BusinessRuleException("O orçamento não tem financeiro");
+        foreach (var saleReceipt in receipts)
+        {
+            var receipt = new SaleReceipt(clientId, saleReceipt.UserId, saleReceipt.ReceiptId);
+            foreach (var installment in saleReceipt.Installments)
+                receipt.AddInstallment(new SaleReceiptInstallment(installment.DueDate,
+                    installment.PaymentDate, installment.PaymentValue, installment.Value, installment.Discount,
+                    installment.Interest, installment.Installment, null));
+
+            saleReceipts.Add(receipt);
+        }
+
+        return saleReceipts;
+    }
+
+    private async Task<Warehouse> ValidateWarehouseAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var warehouse = await warehouseService.GetByUserIdAsync(userId, cancellationToken);
+        if (warehouse == null)
+            throw new BusinessRuleException("Nenhum depósito encontrado");
+        return warehouse;
+    }
+
+    private async Task MovimentStockAsync(Sale sale, Warehouse warehouse, CancellationToken cancellationToken)
+    {
+        foreach (var item in sale.Items)
+            await ValidateStockAsync(item, warehouse.Code, cancellationToken);
+        foreach (var item in sale.Items)
+            await productStockService.SubtractProductStockAsync(item.ProductId, warehouse, item.Amount,
+                cancellationToken);
     }
 }

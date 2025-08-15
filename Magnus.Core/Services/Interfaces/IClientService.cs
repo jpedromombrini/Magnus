@@ -4,5 +4,5 @@ namespace Magnus.Core.Services.Interfaces;
 
 public interface IClientService
 {
-    Task<Client?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<Client> ValidateClientAsync(Guid id, CancellationToken cancellationToken);
 }

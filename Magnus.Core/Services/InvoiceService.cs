@@ -16,7 +16,7 @@ public class InvoiceService(
                                                                 && x.Number == invoice.Number
                                                                 && x.Serie == invoice.Serie, cancellationToken);
         if (invoiceDb is not null)
-            throw new ApplicationException("Já existe uma NF com esses dados");
+            throw new BusinessRuleException("Já existe uma NF com esses dados");
         var supplier = await unitOfWork.Suppliers.GetByIdAsync(invoice.SupplierId, cancellationToken);
         if (supplier is null)
             throw new EntityNotFoundException(invoice.SupplierId);

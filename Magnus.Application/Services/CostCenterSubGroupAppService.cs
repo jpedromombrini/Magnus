@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
@@ -20,12 +19,12 @@ public class CostCenterSubGroupAppService(
             await unitOfWork.CostCenterSubGroups.GetByExpressionAsync(
                 x => x.Code == request.Code && x.CostCenterGroupId == request.CostCenterGroupId, cancellationToken);
         if (costCenterSubGroup is not null)
-            throw new ApplicationException("Já existe um subgrupo de centro de custo com esse código para esse grupo");
+            throw new BusinessRuleException("Já existe um subgrupo de centro de custo com esse código para esse grupo");
         costCenterSubGroup = await unitOfWork.CostCenterSubGroups.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower() && x.CostCenterGroupId == request.CostCenterGroupId,
             cancellationToken);
         if (costCenterSubGroup is not null)
-            throw new ApplicationException("Já existe um subgrupo de centro de custo com esse nome");
+            throw new BusinessRuleException("Já existe um subgrupo de centro de custo com esse nome");
         await unitOfWork.CostCenterSubGroups.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

@@ -19,7 +19,7 @@ public static class ServiceRegistration
         services.AddScoped<ILaboratoryAppService, LaboratoryAppService>();
         services.AddScoped<IUserAppService, UserAppService>();
         services.AddScoped<IAuthAppService, AuthAppService>();
-        services.AddScoped<IClientAppService, ClientAppAppService>();
+        services.AddScoped<IClientAppService, ClientAppService>();
         services.AddScoped<IDoctorAppService, DoctorAppService>();
         services.AddScoped<ISellerAppService, SellerAppService>();
         services.AddScoped<ISupplierAppService, SupplierAppService>();
@@ -45,6 +45,7 @@ public static class ServiceRegistration
         services.AddScoped<IAccountPayableAppService, AccountPayableAppService>();
         services.AddScoped<IReportAppService, ReportAppService>();
         services.AddScoped<ICampaignAppService, CampaignAppService>();
+        services.AddScoped<IProductGroupAppService, ProductGroupAppService>();
 
         #endregion
 

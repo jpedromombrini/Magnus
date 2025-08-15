@@ -31,5 +31,8 @@ public interface IUnitOfWork : IDisposable
     IFreightRepository Freights { get; }
     IStockMovementRepository StockMovements { get; }
     ICampaignRepository Campaigns { get; }
+    IProductGroupRepository ProductGroups { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    Task ExecuteInTransactionAsync(Func<Task> action, CancellationToken cancellationToken);
+    Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> action, CancellationToken cancellationToken);
 }

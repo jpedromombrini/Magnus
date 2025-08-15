@@ -4,7 +4,9 @@ namespace Magnus.Core.Services.Interfaces;
 
 public interface IAccountsReceivableService
 {
-    Task CreateAsync(IEnumerable<AccountsReceivable> accountsReceivables, CancellationToken cancellationToken);
+    Task CreateAsync(IEnumerable<AccountsReceivable> accountsReceivables, Client client,
+        CancellationToken cancellationToken);
+
     Task UpdateAsync(Guid id, AccountsReceivable accountsReceivable, CancellationToken cancellationToken);
 
     Task<AccountsReceivable?> GetBySaleReceiptInstallmentIdAsync(Guid saleReceiptInstallmentId,

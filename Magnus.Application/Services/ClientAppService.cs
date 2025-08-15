@@ -10,7 +10,7 @@ using Magnus.Core.ValueObjects;
 
 namespace Magnus.Application.Services;
 
-public class ClientAppAppService(
+public class ClientAppService(
     IUnitOfWork unitOfWork) : IClientAppService
 {
     public async Task AddClientAsync(CreateClientRequest request, CancellationToken cancellationToken)
@@ -18,16 +18,16 @@ public class ClientAppAppService(
         var clientDb =
             await unitOfWork.Clients.GetByExpressionAsync(x => x.Document.Value == request.Document, cancellationToken);
         if (clientDb is not null)
-            throw new ApplicationException("Já existe um cliente com esse documento");
+            throw new BusinessRuleException("Já existe um cliente com esse documento");
         clientDb = await unitOfWork.Clients.GetByExpressionAsync(
             x => x.Email != null && request.Email != null && x.Email.Address.ToLower() == request.Email.ToLower(),
             cancellationToken);
         if (clientDb is not null)
-            throw new ApplicationException("Já existe um cliente com esse email");
+            throw new BusinessRuleException("Já existe um cliente com esse email");
         clientDb = await unitOfWork.Clients.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(),
             cancellationToken);
         if (clientDb is not null)
-            throw new ApplicationException("Já existe um cliente com esse nome");
+            throw new BusinessRuleException("Já existe um cliente com esse nome");
         Client client = new(request.Name, new Document(request.Document));
         if (!string.IsNullOrEmpty(request.RegisterNumber)) client.SetRegisterNumber(request.RegisterNumber);
         if (request.Email is not null) client.SetEmail(new Email(request.Email));

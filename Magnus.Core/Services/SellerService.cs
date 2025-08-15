@@ -3,7 +3,6 @@ using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
-using Magnus.Core.ValueObjects;
 
 namespace Magnus.Core.Services;
 
@@ -14,10 +13,10 @@ public class SellerService(IUnitOfWork unitOfWork) : ISellerService
         var sellerDb = await unitOfWork.Sellers.GetByExpressionAsync(
             x => x.Name.ToLower() == seller.Name.ToLower(), cancellationToken);
         if (sellerDb is not null)
-            throw new ApplicationException("Já existe um vendedor com esse nome");
+            throw new BusinessRuleException("Já existe um vendedor com esse nome");
         var userDb = await unitOfWork.Users.GetUserByEmailAsync(seller.Email.Address, cancellationToken);
         if (userDb is not null)
-            throw new ApplicationException("Já existe um usuário com esse e-mail");
+            throw new BusinessRuleException("Já existe um usuário com esse e-mail");
         var user = new User(seller.Email, password, seller.Name, DateTime.Now,
             DateTime.Now.AddYears(1), true, UserType.Seller);
         await unitOfWork.Users.AddAsync(user, cancellationToken);

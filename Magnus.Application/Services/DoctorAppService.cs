@@ -18,7 +18,7 @@ public class DoctorAppService(
         var doctorDb = await unitOfWork.Doctors.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (doctorDb is not null)
-            throw new ApplicationException("Já existe um médico com esse nome");
+            throw new BusinessRuleException("Já existe um médico com esse nome");
         await unitOfWork.Doctors.AddAsync(mapper.Map<Doctor>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

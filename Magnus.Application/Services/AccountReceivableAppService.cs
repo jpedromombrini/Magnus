@@ -12,6 +12,7 @@ namespace Magnus.Application.Services;
 
 public class AccountReceivableAppService(
     IAccountsReceivableService accountsReceivableService,
+    IClientService clientService,
     IUnitOfWork unitOfWork) : IAccountReceivableAppService
 {
     public async Task ReverseReceiptAccountPayableAsync(Guid id, CancellationToken cancellationToken)
@@ -28,7 +29,8 @@ public class AccountReceivableAppService(
         CancellationToken cancellationToken)
     {
         var accounts = request.MapToEntity();
-        await accountsReceivableService.CreateAsync(accounts, cancellationToken);
+        var client = await clientService.ValidateClientAsync(request[0].ClientId, cancellationToken);
+        await accountsReceivableService.CreateAsync(accounts, client, cancellationToken);
         foreach (var account in accounts)
             await unitOfWork.AccountsReceivables.AddAsync(account, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

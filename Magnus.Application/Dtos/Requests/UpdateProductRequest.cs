@@ -8,4 +8,5 @@ public record UpdateProductRequest(
     IEnumerable<BarRequest>? Bars,
     Guid LaboratoryId,
     bool ApplyPriceRule,
-    IEnumerable<ProductPriceTableRequest>? ProductPriceTable);
+    IEnumerable<ProductPriceTableRequest>? ProductPriceTable,
+    Guid? ProductGroupId);

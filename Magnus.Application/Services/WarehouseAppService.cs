@@ -21,7 +21,7 @@ public class WarehouseAppService(
             await unitOfWork.Warehouses.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(),
                 cancellationToken);
         if (warehouseDb != null)
-            throw new ApplicationException("já existe um depósito com esse nome");
+            throw new BusinessRuleException("já existe um depósito com esse nome");
         await unitOfWork.Warehouses.AddAsync(mapper.Map<Warehouse>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

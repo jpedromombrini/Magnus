@@ -1,12 +1,8 @@
-using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Filters;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
-using Magnus.Core.Entities;
-using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
 
@@ -21,12 +17,12 @@ public class CostCenterGroupAppService(
             await unitOfWork.CostCenterGroups.GetByExpressionAsync(
                 x => x.Code == request.Code && x.CostcenterGroupType == request.CostcenterGroupType, cancellationToken);
         if (costCenterGroupDb is not null)
-            throw new ApplicationException("Já existe um grupo de centro de custo com esse código");
+            throw new BusinessRuleException("Já existe um grupo de centro de custo com esse código");
         costCenterGroupDb = await unitOfWork.CostCenterGroups.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower() && x.CostcenterGroupType == request.CostcenterGroupType,
             cancellationToken);
         if (costCenterGroupDb is not null)
-            throw new ApplicationException("Já existe um grupo de centro de custo com esse nome");
+            throw new BusinessRuleException("Já existe um grupo de centro de custo com esse nome");
         await unitOfWork.CostCenterGroups.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

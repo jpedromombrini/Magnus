@@ -33,14 +33,16 @@ public class CampaignAppService(
         return (await unitOfWork.Campaigns.GetAllAsync(cancellationToken)).MapToResponse();
     }
 
-    public async Task<IEnumerable<CampaignResponse>> GetCampaignsByFilterAsync(GetCampaingnFilter filter,
+    public async Task<IEnumerable<CampaignResponse>> GetCampaignsByFilterAsync(
+        GetCampaingnFilter filter,
         CancellationToken cancellationToken)
     {
         return (await unitOfWork.Campaigns.GetAllByExpressionAsync(
-                x => (x.InitialDate >= filter.InitialDate ||
-                      x.FinalDate <= filter.FinalDate) &&
-                     (filter.Active == null ||
-                      x.Active == filter.Active), cancellationToken))
+                x =>
+                    x.InitialDate <= filter.FinalDate &&
+                    x.FinalDate >= filter.InitialDate &&
+                    (filter.Active == null || x.Active == filter.Active),
+                cancellationToken))
             .MapToResponse();
     }
 

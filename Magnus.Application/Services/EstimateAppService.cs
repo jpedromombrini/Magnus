@@ -16,7 +16,9 @@ namespace Magnus.Application.Services;
 
 public class EstimateAppService(
     IUnitOfWork unitOfWork,
-    IEstimateService estimateService) : IEstimateAppService
+    IEstimateService estimateService,
+    IClientService clientService,
+    ISaleService saleService) : IEstimateAppService
 {
     public async Task AddEstimateAsync(CreateEstimateRequest request, CancellationToken cancellationToken)
     {
@@ -27,8 +29,18 @@ public class EstimateAppService(
 
     public async Task CreateSaleAsync(Guid id, CancellationToken cancellationToken)
     {
-        await estimateService.CreateSaleAsync(id, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        var estimateDb = await estimateService.ValidateEstimate(id, cancellationToken);
+        var sale = await saleService.CreateSaleByEstimateAsync(estimateDb, cancellationToken);
+        var client = await clientService.ValidateClientAsync(sale.ClientId, cancellationToken);
+        await unitOfWork.ExecuteInTransactionAsync(async () =>
+        {
+            await unitOfWork.Sales.AddAsync(sale, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await saleService.Invoice(sale, client, cancellationToken);
+            estimateDb.SetEstimateStatus(EstimateStatus.Invoiced);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }, cancellationToken);
     }
 
     public async Task UpdateEstimateAsync(Guid id, UpdateEstimateRequest request, CancellationToken cancellationToken)

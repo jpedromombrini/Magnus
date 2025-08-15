@@ -12,7 +12,8 @@ namespace Magnus.Application.Services;
 
 public class SaleAppService(
     IUnitOfWork unitOfWork,
-    ISaleService saleService) : ISaleAppService
+    ISaleService saleService,
+    IClientService clientService) : ISaleAppService
 {
     public async Task AddSaleAsync(CreateSaleRequest request, CancellationToken cancellationToken)
     {
@@ -35,7 +36,8 @@ public class SaleAppService(
         var saleDb = await unitOfWork.Sales.GetByIdAsync(id, cancellationToken);
         if (saleDb == null)
             throw new EntityNotFoundException("Pedido não encontrado");
-        await saleService.Invoice(saleDb, cancellationToken);
+        var client = await clientService.ValidateClientAsync(saleDb.ClientId, cancellationToken);
+        await saleService.Invoice(saleDb, client, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 

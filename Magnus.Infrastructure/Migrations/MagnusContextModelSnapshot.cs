@@ -888,9 +888,29 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<Guid?>("ProductGroupId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductGroupId");
+
                     b.ToTable("Product", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.ProductGroup", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductGroup", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.ProductPriceTable", b =>
@@ -1648,6 +1668,16 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("InvoicePayment");
                 });
 
+            modelBuilder.Entity("Magnus.Core.Entities.Product", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.ProductGroup", "ProductGroup")
+                        .WithMany("Products")
+                        .HasForeignKey("ProductGroupId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ProductGroup");
+                });
+
             modelBuilder.Entity("Magnus.Core.Entities.ProductPriceTable", b =>
                 {
                     b.HasOne("Magnus.Core.Entities.Product", null)
@@ -2003,6 +2033,11 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("Bars");
 
                     b.Navigation("ProductPriceTables");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.ProductGroup", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Sale", b =>

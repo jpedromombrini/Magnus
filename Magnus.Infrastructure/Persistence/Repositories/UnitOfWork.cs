@@ -39,7 +39,59 @@ public class UnitOfWork : IUnitOfWork
         Freights = new FreightRepository(_context);
         StockMovements = new StockMovementRepository(_context);
         Campaigns = new CampaignRepository(_context);
+        ProductGroups = new ProductGroupRepository(_context);
     }
+
+
+    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        return await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ExecuteInTransactionAsync(Func<Task> action, CancellationToken cancellationToken)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            await action();
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
+    public async Task<T> ExecuteInTransactionAsync<T>(Func<Task<T>> action, CancellationToken cancellationToken)
+    {
+        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            var result = await action();
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+
+            return result;
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+    }
+
+    #region Repositorios
 
     public IProductRepository Products { get; }
     public ILaboratoryRepository Laboratories { get; }
@@ -70,14 +122,7 @@ public class UnitOfWork : IUnitOfWork
     public IFreightRepository Freights { get; }
     public IStockMovementRepository StockMovements { get; }
     public ICampaignRepository Campaigns { get; }
+    public IProductGroupRepository ProductGroups { get; }
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
-    {
-        return await _context.SaveChangesAsync(cancellationToken);
-    }
-
-    public void Dispose()
-    {
-        _context.Dispose();
-    }
+    #endregion
 }

@@ -9,8 +9,7 @@ namespace Magnus.Core.Services;
 public class EstimateService(
     IUnitOfWork unitOfWork,
     IClientService clientService,
-    IUserService userService,
-    ISaleService saleService) : IEstimateService
+    IUserService userService) : IEstimateService
 {
     public async Task CreateEstimateAsync(Estimate estimate, CancellationToken cancellationToken)
     {
@@ -23,10 +22,7 @@ public class EstimateService(
 
     public async Task UpdateEstimateAsync(Guid id, Estimate estimate, CancellationToken cancellationToken)
     {
-        var estimateDb = await unitOfWork.Estimates.GetByIdAsync(id, cancellationToken);
-        if (estimateDb == null)
-            throw new EntityNotFoundException("orçamento não encontrado com o Id informado");
-
+        var estimateDb = await ValidateEstimate(id, cancellationToken);
         await ValidateClient(estimate, cancellationToken);
         await ValidateUser(estimate, cancellationToken);
         estimate.ValidateTotals();
@@ -47,53 +43,12 @@ public class EstimateService(
         unitOfWork.Estimates.Update(estimateDb);
     }
 
-    public async Task CreateSaleAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<Estimate> ValidateEstimate(Guid estimateId, CancellationToken cancellationToken)
     {
-        var estimateDb = await unitOfWork.Estimates.GetByIdAsync(id, cancellationToken);
+        var estimateDb = await unitOfWork.Estimates.GetByIdAsync(estimateId, cancellationToken);
         if (estimateDb == null)
             throw new EntityNotFoundException("orçamento não encontrado com o Id informado");
-        var saleExists =
-            await unitOfWork.Sales.GetByExpressionAsync(x => x.EstimateId == estimateDb.Id, cancellationToken);
-        if (saleExists is not null)
-            throw new BusinessRuleException(
-                $"Já existe um pedido criado com esse orçamento, pedido: {saleExists.Document}");
-        if (estimateDb.ClientId is null || estimateDb.ClientId == Guid.Empty)
-            throw new BusinessRuleException("Informe um cliente para o orçamento");
-        var client = await clientService.GetByIdAsync((Guid)estimateDb.ClientId, cancellationToken);
-        if (client is null)
-            throw new EntityNotFoundException("cliente não encontrado com esse Id");
-        var saleItems = estimateDb.Items.Select(item =>
-                new SaleItem(item.ProductId, item.ProductName, item.Amount, item.Value, item.TotalValue, item.Discount))
-            .ToList();
-        var saleReceipts = new List<SaleReceipt>();
-        if (estimateDb.Receipts is not null)
-            foreach (var saleReceipt in estimateDb.Receipts)
-            {
-                var receipt = new SaleReceipt(client.Id, saleReceipt.UserId, saleReceipt.ReceiptId);
-                foreach (var installment in saleReceipt.Installments)
-                    receipt.AddInstallment(new SaleReceiptInstallment(installment.DueDate,
-                        installment.PaymentDate, installment.PaymentValue, installment.Value, installment.Discount,
-                        installment.Interest, installment.Installment, null));
-
-                saleReceipts.Add(receipt);
-            }
-
-        var sale = new Sale(client.Id, estimateDb.UserId, estimateDb.Value, estimateDb.Freight,
-            estimateDb.FinantialDiscount);
-        if (estimateDb.FreightId is not null)
-        {
-            sale.SetFreight(estimateDb.Freight);
-            sale.SetFreightId((Guid)estimateDb.FreightId);
-        }
-
-        sale.AddRangeReceipts(saleReceipts);
-        sale.AddItems(saleItems);
-        sale.SetClientName(client.Name);
-        sale.SetStatus(SaleStatus.Invoiced);
-        sale.SetEstimateId(estimateDb.Id);
-        await unitOfWork.Sales.AddAsync(sale, cancellationToken);
-        await saleService.Invoice(sale, cancellationToken);
-        estimateDb.SetEstimateStatus(EstimateStatus.Invoiced);
+        return estimateDb;
     }
 
     private void UpdateReceipts(Estimate estimate, IEnumerable<EstimateReceipt> receipts)
@@ -139,11 +94,7 @@ public class EstimateService(
     private async Task ValidateClient(Estimate estimate, CancellationToken cancellationToken)
     {
         if (estimate.ClientId != null)
-        {
-            var client = await clientService.GetByIdAsync((Guid)estimate.ClientId, cancellationToken);
-            if (client == null)
-                throw new BusinessRuleException("Cliente informado não encontrado");
-        }
+            await clientService.ValidateClientAsync((Guid)estimate.ClientId, cancellationToken);
     }
 
     private async Task ValidateUser(Estimate estimate, CancellationToken cancellationToken)

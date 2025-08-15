@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
@@ -18,7 +17,7 @@ public class ReceiptAppService(
         var receiptDb = await unitOfWork.Receipts.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (receiptDb is not null)
-            throw new ApplicationException("Já existe um Recebimento com esse nome");
+            throw new BusinessRuleException("Já existe um Recebimento com esse nome");
         await unitOfWork.Receipts.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -49,7 +48,7 @@ public class ReceiptAppService(
     public async Task<ReceiptResponse> GetReceiptByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         var receiptDb = await unitOfWork.Receipts.GetByIdAsync(id, cancellationToken);
-        if(receiptDb is null)
+        if (receiptDb is null)
             throw new EntityNotFoundException(id);
         return receiptDb.MapToResponse();
     }

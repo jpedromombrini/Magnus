@@ -20,12 +20,12 @@ public class CostCenterAppService(
                 x => x.Code == request.Code && x.CostCenterSubGroupId == request.CostCenterSubGroupId,
                 cancellationToken);
         if (costcenterDb is not null)
-            throw new ApplicationException("Já existe um centro de custo com esse código para esse subgrupo");
+            throw new BusinessRuleException("Já existe um centro de custo com esse código para esse subgrupo");
         costcenterDb = await unitOfWork.CostCenters.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower() && x.CostCenterSubGroupId == request.CostCenterSubGroupId,
             cancellationToken);
         if (costcenterDb is not null)
-            throw new ApplicationException("Já existe um centro de custo com esse nome");
+            throw new BusinessRuleException("Já existe um centro de custo com esse nome");
         await unitOfWork.CostCenters.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

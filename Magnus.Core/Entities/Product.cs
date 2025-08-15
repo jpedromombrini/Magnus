@@ -21,6 +21,8 @@ public class Product : EntityBase
     public Guid LaboratoryId { get; private set; }
     public bool ApplyPriceRule { get; private set; }
     public ICollection<ProductPriceTable>? ProductPriceTables { get; private set; }
+    public Guid? ProductGroupId { get; private set; }
+    public ProductGroup ProductGroup { get; private set; }
 
     public void SetName(string name)
     {
@@ -82,5 +84,15 @@ public class Product : EntityBase
     public void SetApplyPriceRule(bool applyPriceRule)
     {
         ApplyPriceRule = applyPriceRule;
+    }
+
+    public void SetProductGroupId(Guid? productGroupId)
+    {
+        ProductGroupId = productGroupId;
+    }
+
+    public void SetProductGroup(ProductGroup productGroup)
+    {
+        ProductGroup = productGroup;
     }
 }

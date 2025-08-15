@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
@@ -17,12 +16,15 @@ public class UserAppService(
 {
     public async Task AddUserAsync(CreateUserRequest request, CancellationToken cancellationToken)
     {
-        var userDb = await unitOfWork.Users.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
+        var userDb =
+            await unitOfWork.Users.GetByExpressionAsync(x => x.Name.ToLower() == request.Name.ToLower(),
+                cancellationToken);
         if (userDb is not null)
-            throw new ApplicationException("Já existe um usuário com esse nome");
-        userDb = await unitOfWork.Users.GetByExpressionAsync(x => x.Email.Address.ToLower() == request.Email.ToLower(), cancellationToken);
+            throw new BusinessRuleException("Já existe um usuário com esse nome");
+        userDb = await unitOfWork.Users.GetByExpressionAsync(x => x.Email.Address.ToLower() == request.Email.ToLower(),
+            cancellationToken);
         if (userDb is not null)
-            throw new ApplicationException("Já existe um usuário com esse email");
+            throw new BusinessRuleException("Já existe um usuário com esse email");
         await unitOfWork.Users.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

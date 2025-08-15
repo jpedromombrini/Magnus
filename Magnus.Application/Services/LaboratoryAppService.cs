@@ -18,7 +18,7 @@ public class LaboratoryAppService(
         var laboratoryDb = await unitOfWork.Laboratories.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (laboratoryDb is not null)
-            throw new ApplicationException("Já existe um laboratório com esse nome");
+            throw new BusinessRuleException("Já existe um laboratório com esse nome");
         await unitOfWork.Laboratories.AddAsync(mapper.Map<Laboratory>(request), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

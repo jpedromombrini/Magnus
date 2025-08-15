@@ -8,4 +8,5 @@ public record ProductResponse(
     IEnumerable<BarResponse>? Bars,
     Guid LaboratoryId,
     bool ApplyPriceRule,
-    IEnumerable<ProductPriceTableResponse>? ProductPriceTable);
+    IEnumerable<ProductPriceTableResponse>? ProductPriceTable,
+    Guid? ProductGroupId);

@@ -15,6 +15,7 @@ public static class ProductMapper
             product.AddBars(request.Bars.MapToEntity());
         if (request.ProductPriceTable is not null)
             product.AddProductPriceTables(request.ProductPriceTable.MapToEntity());
+        product.SetProductGroupId(request.ProductGroupId);
         return product;
     }
 
@@ -25,6 +26,7 @@ public static class ProductMapper
             product.AddProductPriceTables(request.ProductPriceTable.MapToEntity());
         if (request.Bars is not null)
             product.AddBars(request.Bars.MapToEntity());
+        product.SetProductGroupId(request.ProductGroupId);
         return product;
     }
 
@@ -61,7 +63,7 @@ public static class ProductMapper
         if (entity.ProductPriceTables is not null)
             prices = entity.ProductPriceTables.MapToResponse();
         return new ProductResponse(entity.Id, entity.InternalCode, entity.Name, entity.Price, bars,
-            entity.LaboratoryId, entity.ApplyPriceRule, prices);
+            entity.LaboratoryId, entity.ApplyPriceRule, prices, entity.ProductGroupId);
     }
 
     public static IEnumerable<ProductResponse> MapToResponse(this IEnumerable<Product> entities)

@@ -15,7 +15,13 @@ public class ProductService(
         var productDb = await unitOfWork.Products.GetByExpressionAsync(
             x => x.Name.ToLower() == product.Name.ToLower(), cancellationToken);
         if (productDb is not null)
-            throw new ApplicationException("Já existe um produto com esse nome");
+            throw new BusinessRuleException("Já existe um produto com esse nome");
+        if (product.ProductGroupId != null && product.ProductGroupId != Guid.Empty)
+        {
+            var productGroup =
+                await unitOfWork.ProductGroups.GetByIdAsync((Guid)product.ProductGroupId, cancellationToken);
+            if (productGroup != null) productDb?.SetProductGroup(productGroup);
+        }
     }
 
     public async Task<Product> UpdateProductAsync(Guid id, Product product, CancellationToken cancellationToken)
@@ -28,6 +34,14 @@ public class ProductService(
         productDb.SetName(product.Name);
         productDb.SetLaboratoryId(product.LaboratoryId);
         productDb.SetApplyPriceRule(product.ApplyPriceRule);
+        productDb.SetProductGroupId(product.ProductGroupId);
+        if (product.ProductGroupId != null && product.ProductGroupId != Guid.Empty)
+        {
+            var productGroup =
+                await unitOfWork.ProductGroups.GetByIdAsync((Guid)product.ProductGroupId, cancellationToken);
+            if (productGroup != null) productDb?.SetProductGroup(productGroup);
+        }
+
         UpdateBarsAsync(product, productDb);
         UpdatePriceTableAsync(product, productDb);
         return productDb;

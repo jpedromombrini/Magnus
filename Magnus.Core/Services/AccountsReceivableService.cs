@@ -17,7 +17,7 @@ public class AccountsReceivableService(
         var accountsExists = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
         if (accountsExists is null)
             throw new EntityNotFoundException("Nenhuma contas a receber encontrado com esse id");
-        await Validate(accountsReceivable, cancellationToken);
+        await Validate(accountsReceivable, accountsReceivable.Client, cancellationToken);
         accountsExists.SetCostCenter(accountsReceivable.CostCenter);
         accountsExists.SetDueDate(accountsReceivable.DueDate);
         accountsExists.SetDocument(accountsReceivable.Document);
@@ -45,17 +45,19 @@ public class AccountsReceivableService(
         unitOfWork.AccountsReceivables.DeleteAccountsReceivableRange(accountsReceivables);
     }
 
-    public async Task CreateAsync(IEnumerable<AccountsReceivable> accountsReceivables,
+    public async Task CreateAsync(IEnumerable<AccountsReceivable> accountsReceivables, Client client,
         CancellationToken cancellationToken)
     {
-        foreach (var accountsReceivable in accountsReceivables) await Validate(accountsReceivable, cancellationToken);
+        foreach (var accountsReceivable in accountsReceivables)
+        {
+            await Validate(accountsReceivable, client, cancellationToken);
+            await unitOfWork.AccountsReceivables.AddAsync(accountsReceivable, cancellationToken);
+        }
     }
 
-    private async Task Validate(AccountsReceivable accountsReceivable, CancellationToken cancellationToken)
+    private async Task Validate(AccountsReceivable accountsReceivable, Client client,
+        CancellationToken cancellationToken)
     {
-        var client = await clientService.GetByIdAsync(accountsReceivable.ClientId, cancellationToken);
-        if (client == null)
-            throw new EntityNotFoundException("Nenhum cliente encontrado com esse id");
         var costCenter = await costCenterService.GetByIdAsync((Guid)accountsReceivable.CostCenterId, cancellationToken);
         if (costCenter == null)
             throw new EntityNotFoundException("Nenhum centro de custo encontrado com esse código");

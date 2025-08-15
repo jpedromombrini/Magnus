@@ -53,6 +53,7 @@ public class MagnusContext(DbContextOptions<MagnusContext> options) : DbContext(
     public DbSet<StockMovement> StockMovements { get; set; }
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<CampaignItem> CampaignItems { get; set; }
+    public DbSet<ProductGroup> ProductGroups { get; set; }
 
     #endregion
 }

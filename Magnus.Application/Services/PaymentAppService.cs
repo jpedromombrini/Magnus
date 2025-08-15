@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using AutoMapper;
 using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
@@ -18,7 +17,7 @@ public class PaymentAppService(
         var paymentDb = await unitOfWork.Payments.GetByExpressionAsync(
             x => x.Name.ToLower() == request.Name.ToLower(), cancellationToken);
         if (paymentDb is not null)
-            throw new ApplicationException("Já existe um pagamento com esse nome");
+            throw new BusinessRuleException("Já existe um pagamento com esse nome");
         await unitOfWork.Payments.AddAsync(request.MapToEntity(), cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
@@ -46,7 +45,7 @@ public class PaymentAppService(
 
     public async Task<PaymentResponse> GetPaymentByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var payment =  await unitOfWork.Payments.GetByIdAsync(id, cancellationToken);
+        var payment = await unitOfWork.Payments.GetByIdAsync(id, cancellationToken);
         if (payment is null)
             throw new EntityNotFoundException(id);
         return payment.MapToResponse();
