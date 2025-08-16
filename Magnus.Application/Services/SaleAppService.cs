@@ -3,6 +3,7 @@ using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
+using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
 using Magnus.Core.Repositories;
@@ -13,6 +14,7 @@ namespace Magnus.Application.Services;
 public class SaleAppService(
     IUnitOfWork unitOfWork,
     ISaleService saleService,
+    IAppConfigurationService configurationService,
     IClientService clientService) : ISaleAppService
 {
     public async Task AddSaleAsync(CreateSaleRequest request, CancellationToken cancellationToken)
@@ -93,5 +95,36 @@ public class SaleAppService(
             throw new EntityNotFoundException(id.ToString());
         await saleService.CancelSale(saleDb, request.Reason, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task GenerateAccontsReceivable(CancellationToken cancellationToken)
+    {
+        var sales = await unitOfWork.Sales.GetAllByExpressionAsync(x => x.Status == SaleStatus.Invoiced,
+            cancellationToken);
+        var configuration = await configurationService.GetAppConfigurationAsync(cancellationToken);
+        foreach (var sale in sales)
+        {
+            var crs = new List<AccountsReceivable>();
+            var client = await clientService.ValidateClientAsync(sale.ClientId, cancellationToken);
+            foreach (var receipt in sale.Receipts)
+            foreach (var installment in receipt.Installments)
+            {
+                var crExists =
+                    await unitOfWork.AccountsReceivables.GetByExpressionAsync(
+                        x => x.SaleReceiptInstallmentId == installment.Id, cancellationToken);
+                if (crExists is null)
+                {
+                    var cr = new AccountsReceivable(receipt.ClienteId, installment.Id, sale.Document,
+                        installment.DueDate, installment.Value, installment.Interest, installment.Discount,
+                        installment.Installment, receipt.Installments.Count, (Guid)configuration.CostCenterSaleId);
+                    cr.SetClient(client);
+                    cr.SetStatus(AccountsReceivableStatus.Open);
+                    crs.Add(cr);
+                }
+            }
+
+            foreach (var cr in crs) await unitOfWork.AccountsReceivables.AddAsync(cr, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
     }
 }

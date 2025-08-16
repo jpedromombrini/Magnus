@@ -34,10 +34,11 @@ public class SaleController(
     }
 
     [HttpPost]
-    public async Task AddSaleAsync([FromBody] CreateSaleRequest  request, CancellationToken cancellationToken)
+    public async Task AddSaleAsync([FromBody] CreateSaleRequest request, CancellationToken cancellationToken)
     {
         await saleAppService.AddSaleAsync(request, cancellationToken);
     }
+
     [HttpPost("invoice")]
     public async Task InvoiceSaleAsync([FromBody] InvoiceSaleRequest request, CancellationToken cancellationToken)
     {
@@ -56,9 +57,17 @@ public class SaleController(
     {
         await saleAppService.DeleteSaleAsync(id, cancellationToken);
     }
+
     [HttpPost("{id:guid}/cancel")]
-    public async Task CancelSaleAsync(Guid id, [FromBody] SaleCancelReasonRequest request, CancellationToken cancellationToken)
+    public async Task CancelSaleAsync(Guid id, [FromBody] SaleCancelReasonRequest request,
+        CancellationToken cancellationToken)
     {
         await saleAppService.CancelSaleAsync(id, request, cancellationToken);
+    }
+
+    [HttpGet("generateCr")]
+    public async Task GenerateCrAsync(CancellationToken cancellationToken)
+    {
+        await saleAppService.GenerateAccontsReceivable(cancellationToken);
     }
 }

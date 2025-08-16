@@ -14,4 +14,5 @@ public interface ISaleAppService
     Task<SaleResponse> GetSaleByIdAsync(Guid id, CancellationToken cancellationToken);
     Task DeleteSaleAsync(Guid id, CancellationToken cancellationToken);
     Task CancelSaleAsync(Guid id, SaleCancelReasonRequest reason, CancellationToken cancellationToken);
+    Task GenerateAccontsReceivable(CancellationToken cancellationToken);
 }
