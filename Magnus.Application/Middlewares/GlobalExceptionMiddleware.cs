@@ -45,6 +45,11 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             result = new { message = exception.Message };
         }
+        else if (exception is AuthenticationException)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            result = new { message = "Usuário ou senha inválidos" };
+        }
         else
         {
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

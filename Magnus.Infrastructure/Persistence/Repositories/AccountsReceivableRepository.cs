@@ -16,6 +16,36 @@ public class AccountsReceivableRepository(MagnusContext context)
         _context.AccountsReceivables.RemoveRange(accountsReceivables);
     }
 
+    public async Task<IEnumerable<AccountsReceivable>> GetAllByFilterAsync(
+        Expression<Func<AccountsReceivable, bool>> predicate,
+        Guid? userId, CancellationToken cancellationToken)
+    {
+        var query = _context.AccountsReceivables
+            .Where(predicate)
+            .Include(x => x.Client)
+            .ThenInclude(c => c.Address)
+            .Include(x => x.Client)
+            .ThenInclude(c => c.Phones)
+            .Include(x => x.Client)
+            .ThenInclude(c => c.SocialMedias)
+            .AsQueryable();
+
+        if (userId.HasValue && userId.Value != Guid.Empty)
+            query = from ar in query
+                join sri in _context.SaleReceiptInstallments
+                    on ar.SaleReceiptInstallmentId equals sri.Id into sriJoin
+                from sri in sriJoin.DefaultIfEmpty()
+                join sr in _context.SaleReceipts
+                    on sri.SaleReceiptId equals sr.Id into srJoin
+                from sr in srJoin.DefaultIfEmpty()
+                where sr != null && sr.UserId == userId.Value
+                select ar;
+
+        return await query
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
     public override async Task<AccountsReceivable?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return await _context.AccountsReceivables

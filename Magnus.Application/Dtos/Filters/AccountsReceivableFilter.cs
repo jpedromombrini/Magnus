@@ -12,4 +12,5 @@ public record AccountsReceivableFilter(
     Guid? ClientId,
     Guid? ReceiptId,
     int Document,
-    AccountsReceivableStatus Status);
+    AccountsReceivableStatus Status,
+    Guid? UserId);
