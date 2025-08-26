@@ -1,4 +1,5 @@
 using Magnus.Core.Enumerators;
+using Magnus.Core.Helpers;
 
 namespace Magnus.Core.Entities;
 
@@ -20,7 +21,7 @@ public class AccountsReceivable : EntityBase
         int totalInstallment,
         Guid costCenterId)
     {
-        CreatedAt = DateTime.Now;
+        CreatedAt = DateTimeHelper.NowInBrasilia();
         SetSaleReceiptInstallmentId(saleReceiptInstallmentId);
         SetClientId(clientId);
         SetDocument(document);
@@ -53,6 +54,8 @@ public class AccountsReceivable : EntityBase
     public byte[]? ProofImage { get; private set; }
     public int TotalInstallment { get; private set; }
     public AccountsReceivableStatus Status { get; private set; }
+    public Guid? RootAccontsReceivableId { get; private set; }
+    public ICollection<AccountsReceivableOccurence>? AccountsReceivableOccurences { get; private set; }
 
     public void SetSaleReceiptInstallmentId(Guid? saleReceiptInstallmentId)
     {
@@ -151,7 +154,7 @@ public class AccountsReceivable : EntityBase
     public void SetCostCenter(CostCenter costCenter)
     {
         if (costCenter == null)
-            throw new ArgumentNullException("Informe o nome do centro de custo");
+            throw new ArgumentNullException("Informe o centro de custo");
         CostCenter = costCenter;
     }
 
@@ -185,5 +188,16 @@ public class AccountsReceivable : EntityBase
     public string? GetProofImageBase64()
     {
         return ProofImage == null ? null : $"data:image/jpeg;base64,{Convert.ToBase64String(ProofImage)}";
+    }
+
+    public void SetRootAccontsReceivableId(Guid? rootAccontsReceivableId)
+    {
+        RootAccontsReceivableId = rootAccontsReceivableId;
+    }
+
+    public void AddOcurrence(AccountsReceivableOccurence occurrence)
+    {
+        AccountsReceivableOccurences ??= [];
+        AccountsReceivableOccurences.Add(occurrence);
     }
 }

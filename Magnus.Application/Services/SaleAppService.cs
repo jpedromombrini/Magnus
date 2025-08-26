@@ -112,18 +112,19 @@ public class SaleAppService(
                 var crExists =
                     await unitOfWork.AccountsReceivables.GetByExpressionAsync(
                         x => x.SaleReceiptInstallmentId == installment.Id, cancellationToken);
-                if (crExists is null)
+                if (crExists is not null && (crExists.ReceiptId is null || crExists.ReceiptId == Guid.Empty))
                 {
-                    var cr = new AccountsReceivable(receipt.ClienteId, installment.Id, sale.Document,
-                        installment.DueDate, installment.Value, installment.Interest, installment.Discount,
-                        installment.Installment, receipt.Installments.Count, (Guid)configuration.CostCenterSaleId);
-                    cr.SetClient(client);
-                    cr.SetStatus(AccountsReceivableStatus.Open);
-                    crs.Add(cr);
+                    var receiptnew = await unitOfWork.Receipts.GetByIdAsync(receipt.ReceiptId, cancellationToken);
+                    if (receiptnew is not null)
+                    {
+                        crExists.SetReceiptId(receipt.ReceiptId);
+                        crExists.SetReceipt(receiptnew);
+                    }
+
+                    unitOfWork.AccountsReceivables.Update(crExists);
                 }
             }
 
-            foreach (var cr in crs) await unitOfWork.AccountsReceivables.AddAsync(cr, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

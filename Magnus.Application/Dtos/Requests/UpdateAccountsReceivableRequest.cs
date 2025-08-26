@@ -5,7 +5,7 @@ public record UpdateAccountsReceivableRequest(
     Guid ClientId,
     int Document,
     DateOnly DueDate,
-    Guid ReceiptId,
+    Guid? ReceiptId,
     DateTime? ReceiptDate,
     decimal ReceiptValue,
     decimal Value,
@@ -13,5 +13,5 @@ public record UpdateAccountsReceivableRequest(
     decimal Discount,
     int Installment,
     int TotalInstallment,
-    Guid CostCenterId,
+    Guid? CostCenterId,
     string? Observation);

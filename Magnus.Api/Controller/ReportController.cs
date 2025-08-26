@@ -12,10 +12,26 @@ namespace Magnus.Api.Controller;
 public class ReportController(IReportAppService reportAppService) : ControllerBase
 {
     [HttpGet("saleBySellerReport")]
-    public async Task<IEnumerable<SaleBySellerResponse>> GetAccountsReceivablesByFilterAsync(
-        [FromQuery] SaleBySaleReportFilter filter,
+    public async Task<IEnumerable<SaleBySellerResponse>> SaleBySellerReportAsync(
+        [FromQuery] SalesBySellerFilter filter,
         CancellationToken cancellationToken)
     {
         return await reportAppService.SaleBySellerReport(filter.InitialDate, filter.FinalDate, cancellationToken);
+    }
+
+    [HttpGet("saleByProductReport")]
+    public async Task<IEnumerable<SaleByProductResponse>> SaleByProductReportAsync(
+        [FromQuery] SalesByProductFilter filter,
+        CancellationToken cancellationToken)
+    {
+        return await reportAppService.SaleByProductReport(filter.InitialDate, filter.FinalDate, cancellationToken);
+    }
+
+    [HttpGet("saleByGroupReport")]
+    public async Task<IEnumerable<SaleByGroupResponse>> SaleByGroupReportAsync(
+        [FromQuery] SalesByGroupFilter filter,
+        CancellationToken cancellationToken)
+    {
+        return await reportAppService.SaleByGroupReport(filter.InitialDate, filter.FinalDate, cancellationToken);
     }
 }

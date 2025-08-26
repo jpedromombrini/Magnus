@@ -18,6 +18,7 @@ public class ProductRepository(MagnusContext context) : Repository<Product>(cont
             .Where(predicate)
             .Include(x => x.Bars)
             .Include(x => x.ProductPriceTables)
+            .Include(x => x.ProductGroup)
             .ToListAsync(cancellationToken);
     }
 
@@ -27,6 +28,7 @@ public class ProductRepository(MagnusContext context) : Repository<Product>(cont
             .AsNoTracking()
             .Include(x => x.Bars)
             .Include(x => x.ProductPriceTables)
+            .Include(x => x.ProductGroup)
             .ToListAsync(cancellationToken);
     }
 
@@ -35,6 +37,7 @@ public class ProductRepository(MagnusContext context) : Repository<Product>(cont
         return await _context.Products
             .Include(x => x.Bars)
             .Include(x => x.ProductPriceTables)
+            .Include(x => x.ProductGroup)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 

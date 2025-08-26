@@ -1,6 +1,7 @@
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 
@@ -118,10 +119,10 @@ public class TransferWarehouseService(
         int originWarehouseId,
         int destinationWarehouseId)
     {
-        var auditIn = new AuditProduct(transferWarehouseItem.ProductId, DateTime.Now, 0,
+        var auditIn = new AuditProduct(transferWarehouseItem.ProductId, DateTimeHelper.NowInBrasilia(), 0,
             transferWarehouseItem.AutorizedAmount,
             0, AuditProductType.In, null, 0, destinationWarehouseId, transferId, null, null);
-        var auditOut = new AuditProduct(transferWarehouseItem.ProductId, DateTime.Now, 0,
+        var auditOut = new AuditProduct(transferWarehouseItem.ProductId, DateTimeHelper.NowInBrasilia(), 0,
             transferWarehouseItem.AutorizedAmount,
             0, AuditProductType.Out, null, 0, originWarehouseId, transferId, null, null);
         List<AuditProduct> audits = [auditIn, auditOut];

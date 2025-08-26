@@ -28,18 +28,17 @@ public class AccountsReceivableRepository(MagnusContext context)
             .ThenInclude(c => c.Phones)
             .Include(x => x.Client)
             .ThenInclude(c => c.SocialMedias)
+            .Include(x => x.Receipt)
+            .Include(x => x.AccountsReceivableOccurences)
+            .ThenInclude(x => x.User)
             .AsQueryable();
 
         if (userId.HasValue && userId.Value != Guid.Empty)
-            query = from ar in query
-                join sri in _context.SaleReceiptInstallments
-                    on ar.SaleReceiptInstallmentId equals sri.Id into sriJoin
-                from sri in sriJoin.DefaultIfEmpty()
-                join sr in _context.SaleReceipts
-                    on sri.SaleReceiptId equals sr.Id into srJoin
-                from sr in srJoin.DefaultIfEmpty()
-                where sr != null && sr.UserId == userId.Value
-                select ar;
+            query = query.Where(ar => _context.SaleReceipts
+                .Where(sr => sr.UserId == userId.Value)
+                .Any(sr => _context.SaleReceiptInstallments
+                    .Where(sri => sri.SaleReceiptId == sr.Id)
+                    .Any(sri => sri.Id == ar.SaleReceiptInstallmentId)));
 
         return await query
             .AsNoTracking()
@@ -59,6 +58,8 @@ public class AccountsReceivableRepository(MagnusContext context)
             .ThenInclude(x => x.CostCenterSubGroup)
             .ThenInclude(x => x.CostCenterGroup)
             .Include(x => x.Receipt)
+            .Include(x => x.AccountsReceivableOccurences)
+            .ThenInclude(x => x.User)
             .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 
@@ -76,6 +77,8 @@ public class AccountsReceivableRepository(MagnusContext context)
             .ThenInclude(x => x.CostCenterSubGroup)
             .ThenInclude(x => x.CostCenterGroup)
             .Include(x => x.Receipt)
+            .Include(x => x.AccountsReceivableOccurences)
+            .ThenInclude(x => x.User)
             .ToListAsync(cancellationToken);
     }
 
@@ -94,6 +97,8 @@ public class AccountsReceivableRepository(MagnusContext context)
             .ThenInclude(x => x.CostCenterSubGroup)
             .ThenInclude(x => x.CostCenterGroup)
             .Include(x => x.Receipt)
+            .Include(x => x.AccountsReceivableOccurences)
+            .ThenInclude(x => x.User)
             .Where(predicate)
             .ToListAsync(cancellationToken);
     }
@@ -112,6 +117,8 @@ public class AccountsReceivableRepository(MagnusContext context)
             .ThenInclude(x => x.CostCenterSubGroup)
             .ThenInclude(x => x.CostCenterGroup)
             .Include(x => x.Receipt)
+            .Include(x => x.AccountsReceivableOccurences)
+            .ThenInclude(x => x.User)
             .FirstOrDefaultAsync(predicate, cancellationToken);
     }
 }

@@ -1,6 +1,7 @@
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 
@@ -49,7 +50,7 @@ public class SaleService(
 
         sale.SetClientName(client.Name);
         sale.SetUserId(user.Id);
-        sale.SetCreateAt(DateTime.Now);
+        sale.SetCreateAt(DateTimeHelper.NowInBrasilia());
         sale.SetStatus(SaleStatus.Open);
     }
 
@@ -90,6 +91,12 @@ public class SaleService(
                 cancellationToken);
         sale.SetReasonCancel(reason);
         sale.SetStatus(SaleStatus.Canceled);
+
+        var estimateDb = await unitOfWork.Estimates.GetByIdAsync((Guid)sale.EstimateId, cancellationToken);
+        if (estimateDb is null)
+            throw new BusinessRuleException("orçamento não encontrado");
+        estimateDb.SetEstimateStatus(EstimateStatus.Open);
+        sale.SetEstimateId(Guid.Empty);
     }
 
     public async Task Invoice(Sale sale, Client client, CancellationToken cancellationToken)
@@ -175,17 +182,27 @@ public class SaleService(
         CancellationToken cancellationToken)
     {
         var configuration = await configurationService.GetAppConfigurationAsync(cancellationToken);
+        if (configuration.CostCenterSale is null)
+            throw new BusinessRuleException("Informe o centro de custo");
         List<AccountsReceivable> accountsReceivables = [];
         foreach (var saleReceipt in saleReceipts)
-        foreach (var installment in saleReceipt.Installments)
         {
-            var account = new AccountsReceivable(saleReceipt.ClienteId, installment.Id, document, installment.DueDate,
-                installment.Value, installment.Interest, installment.Discount, installment.Installment,
-                saleReceipt.Installments.Count(), (Guid)configuration.CostCenterSaleId);
-            account.SetClient(client);
-            account.SetCostCenter(configuration.CostCenterSale);
-            accountsReceivables.Add(account);
+            var receipt = await unitOfWork.Receipts.GetByIdAsync(saleReceipt.ReceiptId, cancellationToken);
+            foreach (var installment in saleReceipt.Installments)
+            {
+                var account = new AccountsReceivable(saleReceipt.ClienteId, installment.Id, document,
+                    installment.DueDate,
+                    installment.Value, installment.Interest, installment.Discount, installment.Installment,
+                    saleReceipt.Installments.Count(), (Guid)configuration.CostCenterSaleId);
+                account.SetClient(client);
+                account.SetCostCenter(configuration.CostCenterSale);
+                account.SetCostCenterId((Guid)configuration.CostCenterSaleId);
+                account.SetReceipt(receipt);
+                account.SetReceiptId(receipt.Id);
+                accountsReceivables.Add(account);
+            }
         }
+
 
         await accountsReceivableService.CreateAsync(accountsReceivables, client, cancellationToken);
     }

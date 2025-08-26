@@ -1,6 +1,6 @@
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
-using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 
@@ -12,7 +12,8 @@ public class AuditProductService(
     public async Task SaleMovimentAsync(Sale sale, int warehouseCode, CancellationToken cancellationToken)
     {
         var audits = new List<AuditProduct>(sale.Items.Count);
-        audits.AddRange(sale.Items.Select(item => new AuditProduct(item.ProductId, DateTime.Now, sale.Document,
+        audits.AddRange(sale.Items.Select(item => new AuditProduct(item.ProductId, DateTimeHelper.NowInBrasilia(),
+            sale.Document,
             item.Amount, item.TotalPrice, AuditProductType.Out, null, 999, warehouseCode, null, sale.ClientId,
             sale.Id)));
         await unitOfWork.AuditProducts.AddRangeAsync(audits, cancellationToken);

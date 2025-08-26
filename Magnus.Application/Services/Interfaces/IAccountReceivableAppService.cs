@@ -6,10 +6,10 @@ namespace Magnus.Application.Services.Interfaces;
 
 public interface IAccountReceivableAppService
 {
-    Task ReceiptAccountPayableAsync(Guid id, ReceiptAccountReceivableRequest request,
+    Task ReceiptAccountReceivableAsync(Guid id, ReceiptAccountReceivableRequest request,
         CancellationToken cancellationToken);
 
-    Task ReverseReceiptAccountPayableAsync(Guid id, CancellationToken cancellationToken);
+    Task ReverseReceiptAccountReceivableAsync(Guid id, CancellationToken cancellationToken);
 
     Task AddAccountsReceivableAsync(List<CreateAccountsReceivableRequest> request, CancellationToken cancellationToken);
 
@@ -20,5 +20,6 @@ public interface IAccountReceivableAppService
         CancellationToken cancellationToken);
 
     Task<AccountsReceivableResponse> GetAccountsReceivableByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task RenegociateAsync(Guid id, AccountsReceivableRenegociateRequest request, CancellationToken cancellationToken);
     Task DeleteAccountsReceivableAsync(Guid id, CancellationToken cancellationToken);
 }

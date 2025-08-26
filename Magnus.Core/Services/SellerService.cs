@@ -1,6 +1,7 @@
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 
@@ -17,8 +18,8 @@ public class SellerService(IUnitOfWork unitOfWork) : ISellerService
         var userDb = await unitOfWork.Users.GetUserByEmailAsync(seller.Email.Address, cancellationToken);
         if (userDb is not null)
             throw new BusinessRuleException("Já existe um usuário com esse e-mail");
-        var user = new User(seller.Email, password, seller.Name, DateTime.Now,
-            DateTime.Now.AddYears(1), true, UserType.Seller);
+        var user = new User(seller.Email, password, seller.Name, DateTimeHelper.NowInBrasilia(),
+            DateTimeHelper.NowInBrasilia().AddYears(1), true, UserType.Seller);
         await unitOfWork.Users.AddAsync(user, cancellationToken);
         seller.SetUserId(user.Id);
         var warehouse = new Warehouse(seller.Name, user);

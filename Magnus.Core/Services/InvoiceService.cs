@@ -1,6 +1,7 @@
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 
@@ -59,7 +60,8 @@ public class InvoiceService(
 
         await unitOfWork.ProductStocks.AddRangeAsync(listProductStock, cancellationToken);
         List<AuditProduct> audits = [];
-        audits.AddRange(invoice.Items.Select(item => new AuditProduct(item.ProductId, DateTime.Now, invoice.Number,
+        audits.AddRange(invoice.Items.Select(item => new AuditProduct(item.ProductId, DateTimeHelper.NowInBrasilia(),
+            invoice.Number,
             item.Amount, item.TotalValue, AuditProductType.In, invoice.SupplierId, invoice.Serie, 0, null, null,
             null)));
         await unitOfWork.Invoices.AddAsync(invoice, cancellationToken);
@@ -128,8 +130,10 @@ public class InvoiceService(
                     throw new BusinessRuleException("Pagamento não encontrado");
                 foreach (var installment in invoicePayment.Installments)
                 {
-                    var reference = DateOnly.FromDateTime(new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1));
-                    var accountsPayable = new AccountsPayable(invoice.Number, invoice.SupplierId, DateTime.Now,
+                    var reference = DateOnly.FromDateTime(new DateTime(DateTimeHelper.NowInBrasilia().Year,
+                        DateTimeHelper.NowInBrasilia().Month, 1));
+                    var accountsPayable = new AccountsPayable(invoice.Number, invoice.SupplierId,
+                        DateTimeHelper.NowInBrasilia(),
                         installment.DueDate, installment.Value, installment.Discount, installment.Interest,
                         costCenter.Id, installment.Installment, invoice.Id,
                         null, invoice.LaboratoryId, payment.Id, invoicePayment.Installments.Count, reference);

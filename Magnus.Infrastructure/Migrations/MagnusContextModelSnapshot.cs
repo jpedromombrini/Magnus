@@ -169,6 +169,9 @@ namespace Magnus.Infrastructure.Migrations
                     b.Property<decimal>("ReceiptValue")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<Guid?>("RootAccontsReceivableId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("SaleReceiptInstallmentId")
                         .HasColumnType("uuid");
 
@@ -190,6 +193,34 @@ namespace Magnus.Infrastructure.Migrations
                     b.HasIndex("ReceiptId");
 
                     b.ToTable("AccountsReceivable", (string)null);
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsReceivableOccurence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AccountsReceivableId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Occurrence")
+                        .IsRequired()
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountsReceivableId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AccountsReceivableOccurence", (string)null);
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.AppConfiguration", b =>
@@ -1177,7 +1208,7 @@ namespace Magnus.Infrastructure.Migrations
                         .HasColumnType("timestamp");
 
                     b.Property<string>("Observation")
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("varchar(500)");
 
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uuid");
@@ -1387,6 +1418,25 @@ namespace Magnus.Infrastructure.Migrations
                     b.Navigation("CostCenter");
 
                     b.Navigation("Receipt");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsReceivableOccurence", b =>
+                {
+                    b.HasOne("Magnus.Core.Entities.AccountsReceivable", "AccountsReceivable")
+                        .WithMany("AccountsReceivableOccurences")
+                        .HasForeignKey("AccountsReceivableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Magnus.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AccountsReceivable");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.AppConfiguration", b =>
@@ -1980,6 +2030,11 @@ namespace Magnus.Infrastructure.Migrations
             modelBuilder.Entity("Magnus.Core.Entities.AccountsPayable", b =>
                 {
                     b.Navigation("Occurrences");
+                });
+
+            modelBuilder.Entity("Magnus.Core.Entities.AccountsReceivable", b =>
+                {
+                    b.Navigation("AccountsReceivableOccurences");
                 });
 
             modelBuilder.Entity("Magnus.Core.Entities.Campaign", b =>

@@ -6,6 +6,7 @@ using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 using QuestPDF.Fluent;
@@ -254,7 +255,7 @@ public class EstimateAppService(
                     footer.Item().Text(text =>
                     {
                         text.Span("Gerado em: ").SemiBold().FontSize(8);
-                        text.Span($"{DateTime.Now:dd/MM/yyyy HH:mm}").FontSize(8);
+                        text.Span($"{DateTimeHelper.NowInBrasilia():dd/MM/yyyy HH:mm}").FontSize(8);
                     });
                 });
             });

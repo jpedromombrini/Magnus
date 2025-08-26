@@ -20,4 +20,5 @@ public record AccountsReceivableResponse(
     CostCenterResponse? CostCenter,
     string? Observation,
     AccountsReceivableStatus Status,
-    string? ProofImage);
+    string? ProofImage,
+    IEnumerable<AccountsReceivableOccurenceResponse>? AccountsReceivableOccurences);

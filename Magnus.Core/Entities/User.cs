@@ -1,4 +1,5 @@
 using Magnus.Core.Enumerators;
+using Magnus.Core.Helpers;
 using Magnus.Core.ValueObjects;
 
 namespace Magnus.Core.Entities;
@@ -51,7 +52,7 @@ public class User : EntityBase
 
     public void SetInitialDate(DateTime initialDate)
     {
-        if (initialDate > DateTime.Now)
+        if (initialDate > DateTimeHelper.NowInBrasilia())
             throw new ArgumentException("A data inicial não pode ser no futuro.", nameof(initialDate));
         InitialDate = initialDate;
     }

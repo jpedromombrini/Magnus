@@ -1,4 +1,5 @@
 using Magnus.Core.Enumerators;
+using Magnus.Core.Helpers;
 
 namespace Magnus.Core.Entities;
 
@@ -20,7 +21,7 @@ public class StockMovement : EntityBase
     {
     }
 
-    public DateTime CreatAt { get; private set; } = DateTime.Now;
+    public DateTime CreatAt { get; private set; } = DateTimeHelper.NowInBrasilia();
     public Guid ProductId { get; private set; }
     public Product Product { get; private set; }
     public int Amount { get; private set; }

@@ -9,4 +9,5 @@ public record ProductResponse(
     Guid LaboratoryId,
     bool ApplyPriceRule,
     IEnumerable<ProductPriceTableResponse>? ProductPriceTable,
-    Guid? ProductGroupId);
+    Guid? ProductGroupId,
+    string? ProductGroupResponse);

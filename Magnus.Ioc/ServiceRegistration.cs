@@ -1,8 +1,10 @@
 using Magnus.Application.Services;
 using Magnus.Application.Services.Interfaces;
+using Magnus.Core.Infrastructure;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services;
 using Magnus.Core.Services.Interfaces;
+using Magnus.Infrastructure.Identity;
 using Magnus.Infrastructure.Persistence.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using AppConfigurationService = Magnus.Core.Services.AppConfigurationService;
@@ -81,6 +83,8 @@ public static class ServiceRegistration
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         #endregion
+
+        services.AddScoped<IUserContext, UserContext>();
 
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }

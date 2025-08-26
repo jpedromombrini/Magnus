@@ -3,8 +3,10 @@ using Magnus.Application.Dtos.Requests;
 using Magnus.Application.Dtos.Responses;
 using Magnus.Application.Mappers;
 using Magnus.Application.Services.Interfaces;
+using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Infrastructure;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 
@@ -13,18 +15,9 @@ namespace Magnus.Application.Services;
 public class AccountReceivableAppService(
     IAccountsReceivableService accountsReceivableService,
     IClientService clientService,
+    IUserContext userContext,
     IUnitOfWork unitOfWork) : IAccountReceivableAppService
 {
-    public async Task ReverseReceiptAccountPayableAsync(Guid id, CancellationToken cancellationToken)
-    {
-        var account = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
-        if (account is null)
-            throw new EntityNotFoundException("Contas a pagar não encontrada");
-        account.ReversePayment();
-        unitOfWork.AccountsReceivables.Update(account);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-    }
-
     public async Task AddAccountsReceivableAsync(List<CreateAccountsReceivableRequest> request,
         CancellationToken cancellationToken)
     {
@@ -71,6 +64,41 @@ public class AccountReceivableAppService(
         return account.MapToResponse();
     }
 
+    public async Task RenegociateAsync(Guid id, AccountsReceivableRenegociateRequest request,
+        CancellationToken cancellationToken)
+    {
+        var account = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
+        if (account == null)
+            throw new EntityNotFoundException("Nenhum contas a receber encontrado com esse id");
+        var receiptReq = request.ReceiptAccountReceivableRequest;
+        account.SetInterest(receiptReq.Interest);
+        account.SetDiscount(receiptReq.Discount);
+        account.SetValue(receiptReq.Value);
+        account.SetReceiptDate(receiptReq.PaymentDate);
+        account.SetReceiptValue(receiptReq.PaymentValue);
+        account.SetProofImage(receiptReq.ProofImage);
+        account.SetStatus(AccountsReceivableStatus.Paid);
+        var user = await unitOfWork.Users.GetByIdAsync(userContext.GetUserId(), cancellationToken);
+        if (user == null)
+            throw new BusinessRuleException("Usuário não encontrado");
+        var occurence = new AccountsReceivableOccurence(account.Id, user.Id, "Título recebido e renegociado");
+        occurence.SetAccountsReceivable(account);
+        occurence.SetUser(user);
+        account.AddOcurrence(occurence);
+        var accounts = request.AccountsReceivables.MapToEntity();
+        await accountsReceivableService.CreateAsync(accounts, account.Client, cancellationToken);
+        foreach (var accountReceivable in accounts)
+        {
+            var occurenceRenegociate = new AccountsReceivableOccurence(account.Id, user.Id,
+                $"Título renegociado, título original {account.Client.Name}, {account.Document}, {account.DueDate.ToString("dd/MM/yyyy")}, {account.Value:c}");
+            accountReceivable.AddOcurrence(occurenceRenegociate);
+            accountReceivable.SetReceiptId(account.Id);
+            await unitOfWork.AccountsReceivables.AddAsync(accountReceivable, cancellationToken);
+        }
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task DeleteAccountsReceivableAsync(Guid id, CancellationToken cancellationToken)
     {
         var account = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
@@ -80,7 +108,24 @@ public class AccountReceivableAppService(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task ReceiptAccountPayableAsync(Guid id, ReceiptAccountReceivableRequest request,
+    public async Task ReverseReceiptAccountReceivableAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var account = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
+        if (account is null)
+            throw new EntityNotFoundException("Contas a pagar não encontrada");
+        account.ReversePayment();
+        var user = await unitOfWork.Users.GetByIdAsync(userContext.GetUserId(), cancellationToken);
+        if (user == null)
+            throw new BusinessRuleException("Usuário não encontrado");
+        var occurence = new AccountsReceivableOccurence(account.Id, user.Id, "Título estornado");
+        occurence.SetAccountsReceivable(account);
+        occurence.SetUser(user);
+        account.AddOcurrence(occurence);
+        unitOfWork.AccountsReceivables.Update(account);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task ReceiptAccountReceivableAsync(Guid id, ReceiptAccountReceivableRequest request,
         CancellationToken cancellationToken)
     {
         var account = await unitOfWork.AccountsReceivables.GetByIdAsync(id, cancellationToken);
@@ -93,6 +138,13 @@ public class AccountReceivableAppService(
         account.SetReceiptValue(request.PaymentValue);
         account.SetProofImage(request.ProofImage);
         account.SetStatus(AccountsReceivableStatus.Paid);
+        var user = await unitOfWork.Users.GetByIdAsync(userContext.GetUserId(), cancellationToken);
+        if (user == null)
+            throw new BusinessRuleException("Usuário não encontrado");
+        var occurence = new AccountsReceivableOccurence(account.Id, user.Id, "Título recebido");
+        occurence.SetAccountsReceivable(account);
+        occurence.SetUser(user);
+        account.AddOcurrence(occurence);
         unitOfWork.AccountsReceivables.Update(account);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

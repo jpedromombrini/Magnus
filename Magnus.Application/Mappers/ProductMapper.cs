@@ -62,8 +62,9 @@ public static class ProductMapper
             bars = entity.Bars.MapToResponse();
         if (entity.ProductPriceTables is not null)
             prices = entity.ProductPriceTables.MapToResponse();
+
         return new ProductResponse(entity.Id, entity.InternalCode, entity.Name, entity.Price, bars,
-            entity.LaboratoryId, entity.ApplyPriceRule, prices, entity.ProductGroupId);
+            entity.LaboratoryId, entity.ApplyPriceRule, prices, entity.ProductGroupId, entity.ProductGroup?.Name);
     }
 
     public static IEnumerable<ProductResponse> MapToResponse(this IEnumerable<Product> entities)

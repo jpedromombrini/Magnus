@@ -27,12 +27,12 @@ public static class AccountsReceivableMapper
     {
         var account = new AccountsReceivable(request.ClientId, request.SaleReceiptInstallmentId, request.Document,
             request.DueDate, request.Value, request.Interest, request.Discount, request.Installment,
-            request.TotalInstallment, request.CostCenterId);
+            request.TotalInstallment, (Guid)request.CostCenterId);
         if (!string.IsNullOrEmpty(request.Observation))
             account.SetObservation(request.Observation);
         account.SetReceiptDate(request.ReceiptDate);
         account.SetReceiptValue(request.ReceiptValue);
-        account.SetReceiptId(request.ReceiptId);
+        account.SetReceiptId((Guid)request.ReceiptId);
         return account;
     }
 
@@ -58,13 +58,25 @@ public static class AccountsReceivableMapper
             entity.SaleReceiptInstallmentId, entity.Client.MapToResponse(), entity.Document, entity.DueDate,
             entity.ReceiptDate, entity.ReceiptId, entity.ReceiptValue, entity.Value, entity.Interest, entity.Discount,
             entity.Installment, entity.TotalInstallment, entity.CostCenter?.MapToResponse(), entity.Observation,
-            entity.Status, entity.GetProofImageBase64());
+            entity.Status, entity.GetProofImageBase64(), entity.AccountsReceivableOccurences?.MapToResponse());
         return accountResponse;
     }
 
     public static IEnumerable<AccountsReceivableResponse> MapToResponse(this IEnumerable<AccountsReceivable> entity)
     {
         return entity.Select(MapToResponse).ToList();
+    }
+
+    public static AccountsReceivableOccurenceResponse MapToResponse(this AccountsReceivableOccurence entity)
+    {
+        return new AccountsReceivableOccurenceResponse(entity.CreatAt, entity.AccountsReceivableId, entity.UserId,
+            entity.User.MapToResponse(), entity.Occurrence);
+    }
+
+    public static IEnumerable<AccountsReceivableOccurenceResponse> MapToResponse(
+        this IEnumerable<AccountsReceivableOccurence> entities)
+    {
+        return entities.Select(MapToResponse).ToList();
     }
 
     #endregion

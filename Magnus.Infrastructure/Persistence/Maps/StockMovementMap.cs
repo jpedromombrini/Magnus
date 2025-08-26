@@ -15,7 +15,7 @@ public class StockMovementMap : IEntityTypeConfiguration<StockMovement>
             .HasColumnType("timestamp");
         builder.Property(x => x.Observation)
             .IsRequired(false)
-            .HasColumnType("varchar(100)");
+            .HasColumnType("varchar(500)");
         builder.Property(x => x.WarehouseName)
             .IsRequired()
             .HasColumnType("varchar(100)");

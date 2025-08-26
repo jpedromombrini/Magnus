@@ -1,4 +1,5 @@
 using Magnus.Core.Enumerators;
+using Magnus.Core.Helpers;
 
 namespace Magnus.Core.Entities;
 
@@ -88,14 +89,14 @@ public class Invoice : EntityBase
 
     public void SetDateEntry(DateTime dateEntry)
     {
-        if (dateEntry > DateTime.Now)
+        if (dateEntry > DateTimeHelper.NowInBrasilia())
             throw new ArgumentException("A data de entrada não pode ser no futuro.");
         DateEntry = dateEntry;
     }
 
     public void SetDate(DateTime date)
     {
-        if (date > DateTime.Now)
+        if (date > DateTimeHelper.NowInBrasilia())
             throw new ArgumentException("A data não pode ser no futuro.");
         Date = date;
     }

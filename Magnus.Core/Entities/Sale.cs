@@ -1,4 +1,5 @@
 using Magnus.Core.Enumerators;
+using Magnus.Core.Helpers;
 
 namespace Magnus.Core.Entities;
 
@@ -10,7 +11,7 @@ public class Sale : EntityBase
 
     public Sale(Guid clientId, Guid userId, decimal value, decimal freight, decimal finantialDiscount)
     {
-        SetCreateAt(DateTime.Now);
+        SetCreateAt(DateTimeHelper.NowInBrasilia());
         SetClientId(clientId);
         SetUserId(userId);
         SetValue(value);

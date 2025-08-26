@@ -1,6 +1,7 @@
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 
@@ -64,7 +65,8 @@ public class ProductStockService(
         Product? product,
         Warehouse wareHouse)
     {
-        var audit = new AuditProduct(product.Id, DateTime.Now, 0, productStock.Amount, 0m, AuditProductType.In, null,
+        var audit = new AuditProduct(product.Id, DateTimeHelper.NowInBrasilia(), 0, productStock.Amount, 0m,
+            AuditProductType.In, null,
             998, wareHouse.Code, null, null, null);
         await unitOfWork.AuditProducts.AddAsync(audit, cancellationToken);
     }

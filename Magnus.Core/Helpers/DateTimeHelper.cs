@@ -2,17 +2,24 @@ namespace Magnus.Core.Helpers;
 
 public static class DateTimeHelper
 {
-    private static readonly TimeZoneInfo BrasiliaTimeZone =
-        TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+    private static readonly TimeZoneInfo BrasiliaTimeZone;
+
+    static DateTimeHelper()
+    {
+        var timeZoneId = OperatingSystem.IsWindows()
+            ? "E. South America Standard Time"
+            : "America/Sao_Paulo";
+
+        BrasiliaTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+    }
 
     public static DateTime NowInBrasilia(DateTime? date = null)
     {
         var utcDate = date ?? DateTime.UtcNow;
 
-        if (utcDate.Kind == DateTimeKind.Unspecified)
-            utcDate = DateTime.SpecifyKind(utcDate, DateTimeKind.Utc);
-        else
-            utcDate = utcDate.ToUniversalTime();
+        utcDate = utcDate.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(utcDate, DateTimeKind.Utc)
+            : utcDate.ToUniversalTime();
 
         return TimeZoneInfo.ConvertTimeFromUtc(utcDate, BrasiliaTimeZone);
     }

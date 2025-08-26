@@ -1,6 +1,7 @@
 using Magnus.Core.Entities;
 using Magnus.Core.Enumerators;
 using Magnus.Core.Exceptions;
+using Magnus.Core.Helpers;
 using Magnus.Core.Repositories;
 using Magnus.Core.Services.Interfaces;
 
@@ -12,7 +13,8 @@ public class StockMovementService(IUnitOfWork unitOfWork)
     public async Task CreateStockMovementAsync(StockMovement stockMovement, CancellationToken cancellationToken)
     {
         await unitOfWork.StockMovements.AddAsync(stockMovement, cancellationToken);
-        var auditProduct = new AuditProduct(stockMovement.ProductId, DateTime.Now, 0, stockMovement.Amount, 0,
+        var auditProduct = new AuditProduct(stockMovement.ProductId, DateTimeHelper.NowInBrasilia(), 0,
+            stockMovement.Amount, 0,
             stockMovement.AuditProductType, null, 0, stockMovement.WarehouseId, null, null, null);
         var productStock = await unitOfWork.ProductStocks.GetByExpressionAsync(
             x => x.ProductId == stockMovement.ProductId && x.WarehouseId == stockMovement.WarehouseId,

@@ -1,3 +1,5 @@
+using Magnus.Core.Helpers;
+
 namespace Magnus.Core.Entities;
 
 public class TransferWarehouse : EntityBase
@@ -77,7 +79,7 @@ public class TransferWarehouse : EntityBase
 
     public void SetCreatedAt()
     {
-        CreatedAt = DateTime.Now;
+        CreatedAt = DateTimeHelper.NowInBrasilia();
     }
 
     public void RemoveItem(TransferWarehouseItem transferWarehouseItem)
